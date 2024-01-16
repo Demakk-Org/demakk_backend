@@ -8,5 +8,5 @@
 	utils
 	config
 	controllers
-	server.js
-	.env
+server.js
+.env
