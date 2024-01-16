@@ -5,6 +5,7 @@ const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;
 const client = new MongoClient(MONGODB_ULI);
 
 async function getUser(req, res) {
+  
   try {
     await client.connect();
     const database = client.db("demakk");
