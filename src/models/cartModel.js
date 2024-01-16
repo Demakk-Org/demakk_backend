@@ -1,10 +1,15 @@
-const Cart = {
-  name: "Cart",
-  properties: {
-    _id: { type: "objectId!", mapTo:'id' },
-    userId: "objectId!",
-    orderItems:"OrderItem[]",//ref id
-    updatedAt: "date!",
-  },
-  primaryKey: "_id",
-};
+import {mongoose } from "mongoose";
+
+const {Schema} = mongoose
+
+const CartSchema = new Schema({
+    orderItems:{
+      type: [mongoose.Types.ObjectId],
+      ref:["Order"]
+    },
+    updatedAt: Date,
+});
+
+const Cart = mongoose.model("Cart", CartSchema)
+
+export default Cart

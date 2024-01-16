@@ -1,20 +1,43 @@
+import mongoose from "mongoose";
 
-const Address = {
-  name: "Address",
-  properties: {
-    _id: { type: "objectId", mapTo:'id' },
-    country: "string!",
-    city: "string!",
-    subCity: "string?",
-    woreda: "string?",
-    uniqueIdentifier:"string",//what's this
-    streetAddress:"string",
-    postalCode:"string",
-    createdAt: {
-      type: "date",
-      default: () => new Date(),
-    },
-    updatedAt: "date!",
+const { Schema } = mongoose;
+
+export const AddressSchema = new Schema({
+  country:{
+    type:String,
+    required:true
   },
-  primaryKey: "_id",
-};
+  city:{
+    type:String,
+    required:true
+  },
+  subCity:{
+    type:String,
+    required:false
+  },
+  woreda: {
+    type:String,
+    required:false
+  },
+  uniqueIdentifier:{
+    type:String,
+    required:false
+  },
+  streetAddress:{
+    type:String,
+    required:false
+  },
+  postalCode:{
+    type:String,
+    required:false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: Date,
+})
+
+const Address = mongoose.model('Address', AddressSchema)
+
+export default Address

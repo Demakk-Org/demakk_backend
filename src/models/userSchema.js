@@ -1,10 +1,11 @@
-import mongoose from "mongoose";
+import { mongoose } from "mongoose";
 
 const { Schema } = mongoose;
 
-export const User = new Schema({
+export const UserSchema = new Schema({
   email: {
     type: String,
+    unique: true,
     required: true,
   },
   phoneNumber: {
@@ -19,29 +20,35 @@ export const User = new Schema({
     type: String,
     required: true,
   },
-  role: {
-    type: Role,
-    ref: mongoose.Types.ObjectId,
-  },
-  billingAddress: {
-    type: BillingAddress,
-    ref: mongoose.Types.ObjectId,
-  },
-  shippingAddress: {
-    type: ShippingAddress,
-    ref: mongoose.Types.ObjectId,
-  },
-  cart: {
-    type: Cart,
-    ref: mongoose.Types.ObjectId,
-  },
-  orders: {
-    type: [Order],
-    ref: mongoose.Types.ObjectId,
-  },
+  // role: {
+  //   type: mongoose.Types.ObjectId,
+  //   ref: "Role",
+  // },
+  // billingAddress: {
+  //   type: mongoose.Types.ObjectId,
+  //   ref: "Address",
+  //   required:false
+  // },
+  // shippingAddress: {
+  //   type: mongoose.Types.ObjectId,
+  //   ref: "Address",
+  //   required:false
+  // },
+  // cart: {
+  //   type: mongoose.Types.ObjectId,
+  //   ref: "Cart",
+  // },
+  // orders: {
+  //   type: ["Order"],
+  //   ref: mongoose.Types.ObjectId,
+  // },
   createdAt: {
     type: Date,
     default: Date.now,
   },
-  updatedAt: Date,
+  // updatedAt: Date,
 });
+
+// const User = mongoose.model("User", UserSchema);
+
+// export default User;
