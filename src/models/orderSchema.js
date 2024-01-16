@@ -1,16 +1,33 @@
+import mongoose from "mongoose";
+import OrderStatus from "./orderStatusSchema.js";
+import User from "./userSchema.js"
 
-const Order = {
-  name:"Order",
-  properties:{
-    _id:{type:"objectId", mapTo:"id"},
-    user:"User",//refs to userId
-    orderItems:"OrderItem[]", //min 1 item // refs to list of orderitem ids 
-    orderDate:"date!",
-    deliveryDate:"date?",
-    orderStatus:"OrderStatus",//refs to orderstatus id
-    updatedAt:{
-      type:"date",
-      default: new Date()
-    }
-  }
-}
+const { Schema } = mongoose;
+
+const OrderSchema = new Schema({
+  user: {
+    type: mongoose.Types.ObjectId,
+    ref: 'User',
+  },
+  orderItems: {
+    type: [mongoose.Types.ObjectId],
+    ref: 'OrderItem',
+  },
+  orderDate: {
+    type: Date,
+    required: true,
+  },
+  deliveryDate: Date,
+  orderStatus: {
+    type: mongoose.Types.ObjectId,
+    ref: 'OrderStatus',
+  },
+  updatedAt: {
+    type: Date,
+    default: () => Date.now(),
+  },
+});
+
+const Order = mongoose.model("Order", OrderSchema);
+
+export default Order;

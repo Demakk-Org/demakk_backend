@@ -1,8 +1,14 @@
-const OrderStatus = {
-  name: "OrderStatus",
-  properties: {
-    _id: { type: "objectId", mapTo: "id" },
-    name: "string!",
+import mongoose from "mongoose";
+
+const { Schema } = mongoose;
+
+const OrderStatusSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
   },
-  primaryKey: "_id",
-};
+});
+
+const OrderStatus = mongoose.model("OrderStatus", OrderStatusSchema);
+
+export default OrderStatus;

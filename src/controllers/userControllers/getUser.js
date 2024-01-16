@@ -1,31 +1,21 @@
-import { MongoClient } from "mongodb";
-import dotenv from "dotenv";
-
-const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;
-const client = new MongoClient(MONGODB_ULI);
+import User from "../../models/userSchema.js";
 
 async function getUser(req, res) {
-  
+  const id = req.params?.id;
+
+  if (!id) {
+    res.status(400).send({ message: "Id is required" });
+  }
+
   try {
-    await client.connect();
-    const database = client.db("demakk");
-    const userCollection = database.collection("users");
-    const cursor = userCollection.find({ name: "Melka" });
-
-    if ((await userCollection.countDocuments({ name: "Melka" })) === 0) {
-      console.log("No documents found!");
-      res.status(400).send({ message: "User doesn't exist!" });
-    }
-
-    for await (const doc of cursor) {
-      console.log(doc);
-      res.json({ data: doc });
-    }
+    const user = await User.findById({ _id: id })
+      .populate({ path: "role" })
+      .populate({ path: "billingAddress" })
+      .populate({ path: "shippingAddress" });
+    console.log(user);
+    res.json(user);
   } catch (error) {
-    console.log("Error:", error.message);
-  } finally {
-    await client.close();
-    console.log("Connection closed");
+    console.log(error);
   }
 }
 

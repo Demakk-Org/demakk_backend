@@ -1,25 +1,32 @@
-import dotenv from "dotenv";
-import mongoose from "mongoose";
-import { UserSchema } from "../../models/userSchema.js";
-
-const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;
-
+import OrderStatus from "../../models/orderStatusSchema.js";
+import User from "../../models/userSchema.js";
 
 async function addUser(req, res) {
-  
-  await mongoose.connect(MONGODB_ULI)
+  const {
+    email,
+    phoneNumber,
+    firstName,
+    lastName,
+    role,
+    billingAddress,
+    shippingAddress,
+  } = req.body;
 
-  const User = mongoose.model("User", UserSchema);
+  try {
+    const user = await User.create({
+      email,
+      phoneNumber,
+      firstName,
+      lastName,
+      role,
+      billingAddress,
+      shippingAddress,
+    });
 
-  const user = await User.create({
-    email:"solentolessa@gmail.com",
-    phoneNumber:"9999-9999-99",
-    firstName:"Melka",
-    lastName:"Tole",
-  })
-
-  res.json(user)
-  
+    res.json(user);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export default addUser;

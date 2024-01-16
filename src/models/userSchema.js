@@ -1,4 +1,6 @@
 import { mongoose } from "mongoose";
+import Role from "./roleSchema.js";
+import Address from "./addressSchema.js"
 
 const { Schema } = mongoose;
 
@@ -20,35 +22,37 @@ export const UserSchema = new Schema({
     type: String,
     required: true,
   },
-  // role: {
-  //   type: mongoose.Types.ObjectId,
-  //   ref: "Role",
-  // },
-  // billingAddress: {
-  //   type: mongoose.Types.ObjectId,
-  //   ref: "Address",
-  //   required:false
-  // },
-  // shippingAddress: {
-  //   type: mongoose.Types.ObjectId,
-  //   ref: "Address",
-  //   required:false
-  // },
+  role: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Role',
+  },
+  billingAddress: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Address',
+  },
+  shippingAddress: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Address',
+  },
   // cart: {
   //   type: mongoose.Types.ObjectId,
-  //   ref: "Cart",
+  //   ref: 'Cart',
   // },
   // orders: {
-  //   type: ["Order"],
-  //   ref: mongoose.Types.ObjectId,
+    //   type: mongoose.Types.ObjectId,
+    //   ref: 'Order',
   // },
   createdAt: {
     type: Date,
     default: Date.now,
+    immutable:true
   },
-  // updatedAt: Date,
+  updatedAt: {
+    type:Date,
+    default:()=>Date.now
+  },
 });
 
-// const User = mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
 
-// export default User;
+export default User;
