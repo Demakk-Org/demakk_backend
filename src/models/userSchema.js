@@ -1,24 +1,59 @@
+import { mongoose } from "mongoose";
+import Role from "./roleSchema.js";
+import Address from "./addressSchema.js"
 
-export class User extends Realm.Object {
-  static schema = {
-    name: "User",
-    properties: {
-      _id: { type: "objectId", default: () => new Realm.BSON.ObjectId(), mapTo:'id' },
-      email: "string!",
-      phoneNumber: "string!",
-      firstName: "string!",
-      lastName: "string!",
-      role: "Role", //ref ID
-      billingAddress: "BillingAdress", //ref ID
-      shippingAddress: "ShippingAddress", //ref ID,
-      cart: "Cart", //ref ID
-      orders: "Order[]", //ref ID
-      createdAt: {
-        type: "date",
-        default: () => new Date(),
-      },
-      updatedAt: "date!",
-    },
-    primaryKey: "_id",
-  };
-}
+const { Schema } = mongoose;
+
+export const UserSchema = new Schema({
+  email: {
+    type: String,
+    unique: true,
+    lowercase: true,
+    required: true,
+  },
+  phoneNumber: {
+    type: String,
+    required: true,
+  },
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  role: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Role',
+  },
+  billingAddress: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Address',
+  },
+  shippingAddress: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Address',
+  },
+  cart: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Cart',
+  },
+  orders:[{
+      type: mongoose.Types.ObjectId,
+      ref: 'Order',
+  }],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    immutable:true
+  },
+  updatedAt: {
+    type:Date,
+    default:Date.now
+  },
+});
+
+const User = mongoose.model("User", UserSchema);
+
+export default User;
