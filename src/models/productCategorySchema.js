@@ -1,17 +1,30 @@
 
-const ProductCategory = {
-  name: "ProductCategory",
-  properties: {
-    _id: { type: "objectId!", mapTo: "id" },
-    stockItem: "objectId!",//ref stock item id
-    name: "string!", //ref id
-    additionalPrice: "int",
-    additionalCost:"int",
-    createdAt: {
-      type: "date",
-      default: () => new Date(),
-    },
-    updatedAt: "date!",
+import mongoose from "mongoose";
+
+const { Schema } = mongoose;
+
+const ProductCategorySchema = Schema({
+  stockItem: {
+    type:mongoose.Types.ObjectId,
+    required:true
   },
-  primaryKey: "_id",
-};
+  name: {
+    type: String,
+    required: true,
+  },
+  additionalPrice: Number,
+  additionalCost: Number,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    immutable: true
+  },
+  updatedAt:{
+    type: Date,
+    require: true,
+  },
+})
+
+const ProductCategory = mongoose.model("ProductCategory", ProductCategorySchema);
+
+export default ProductCategory;

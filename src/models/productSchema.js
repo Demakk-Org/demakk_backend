@@ -1,15 +1,31 @@
-const Products = {
-  name: "Products",
-  properties: {
-    _id: { type: "objectId!", mapTo: "id" },
-    name: "string!",
-    description: "string!", //ref id
-    productCategory: "ProductCategory", //ref id
-    createdAt: {
-      type: "date",
-      default: () => new Date(),
-    },
-    updatedAt: "date!",
+import mongoose from "mongoose";
+
+const { Schema } = mongoose;
+
+const ProductSchema = Schema({
+  name: {
+    type: String,
+    required: true,
   },
-  primaryKey: "_id",
-};
+  description: {
+    type: String,
+    required: true,
+  },
+  productCategory: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    immutable: true,
+  },
+  updatedAt: {
+    type: Date,
+    required: true,
+  },
+});
+
+const Product = mongoose.model("Product", ProductSchema);
+
+export default Product;

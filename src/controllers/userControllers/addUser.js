@@ -1,4 +1,3 @@
-import OrderStatus from "../../models/orderStatusSchema.js";
 import User from "../../models/userSchema.js";
 
 async function addUser(req, res) {

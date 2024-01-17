@@ -8,6 +8,7 @@ export const UserSchema = new Schema({
   email: {
     type: String,
     unique: true,
+    lowercase: true,
     required: true,
   },
   phoneNumber: {
@@ -34,14 +35,14 @@ export const UserSchema = new Schema({
     type: mongoose.Types.ObjectId,
     ref: 'Address',
   },
-  // cart: {
-  //   type: mongoose.Types.ObjectId,
-  //   ref: 'Cart',
-  // },
-  // orders: {
-    //   type: mongoose.Types.ObjectId,
-    //   ref: 'Order',
-  // },
+  cart: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Cart',
+  },
+  orders:[{
+      type: mongoose.Types.ObjectId,
+      ref: 'Order',
+  }],
   createdAt: {
     type: Date,
     default: Date.now,
@@ -49,7 +50,7 @@ export const UserSchema = new Schema({
   },
   updatedAt: {
     type:Date,
-    default:()=>Date.now
+    default:Date.now
   },
 });
 
