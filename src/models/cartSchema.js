@@ -1,4 +1,5 @@
 import { mongoose } from "mongoose";
+import Order from "./orderSchema.js";
 
 const { Schema } = mongoose;
 
