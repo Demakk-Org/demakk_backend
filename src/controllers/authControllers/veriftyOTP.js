@@ -14,18 +14,24 @@ const veriftyOTP = async (req, res) => {
     res.status(404).json({ message: "Invalid OTP" });
   } else {
     if (otp.type == "email") {
-      const user = await User.findOneAndUpdate({ email: otp.account }, {
-        emailVerified: true
-      },
-      {
-        returnDocument:'after'
-      });
+      const user = await User.findOneAndUpdate(
+        { email: otp.account },
+        {
+          emailVerified: true,
+        },
+        {
+          returnDocument: "after",
+        }
+      );
 
       res.status(200).json({ message: "Account Verified", user });
     } else if (otp.type == "phoneNumber") {
-      const user = await User.findOneAndUpdate({ phoneNumber: otp.account }, {
-        phoneNumberVerified: true
-      })
+      const user = await User.findOneAndUpdate(
+        { phoneNumber: otp.account },
+        {
+          phoneNumberVerified: true,
+        }
+      );
 
       res.status(200).json({ message: "Account Verified", user });
     }
