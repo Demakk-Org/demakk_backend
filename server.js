@@ -2,9 +2,6 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-const app = express()
-
-
 import userRoute from "./src/routes/UserRouter/userRoute.js";
 import cartRoute from "./src/routes/CartRouter/cartRoute.js";
 import authRoute from "./src/routes/AuthRouter/authRoute.js";
