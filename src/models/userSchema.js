@@ -9,11 +9,20 @@ export const UserSchema = new Schema({
     type: String,
     unique: true,
     lowercase: true,
-    required: true,
+    // required: true,
+    default:""
+  },
+  emailVerified:{
+    type:Boolean,
+    default:false
   },
   phoneNumber: {
     type: String,
-    required: true,
+    default:""
+  },
+  phoneNumberVerified:{
+    type:Boolean,
+    default:false
   },
   firstName: {
     type: String,

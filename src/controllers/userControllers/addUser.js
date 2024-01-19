@@ -1,3 +1,4 @@
+import Cart from "../../models/cartSchema.js";
 import User from "../../models/userSchema.js";
 
 async function addUser(req, res) {
@@ -19,7 +20,6 @@ async function addUser(req, res) {
       firstName,
       lastName,
       role,
-      password,
       billingAddress,
       shippingAddress,
     });
@@ -27,7 +27,9 @@ async function addUser(req, res) {
     res.json(user);
   } catch (e) {
     console.log(e);
+    return res.status(400).json({ error: e.message });
   }
+}
 }
 
 export default addUser;
