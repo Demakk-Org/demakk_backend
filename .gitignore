@@ -1,2 +1,10 @@
 node_modules/
 .env
+functions
+dist/index.html
+.netlify/state.json
+ui-debug.log
+firebase.json
+demakk-backend-b8280c529adc.json
+.gitignore
+.firebaserc
