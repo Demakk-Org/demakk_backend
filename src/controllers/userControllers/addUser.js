@@ -6,6 +6,7 @@ async function addUser(req, res) {
     phoneNumber,
     firstName,
     lastName,
+    password,
     role,
     billingAddress,
     shippingAddress,
@@ -18,6 +19,7 @@ async function addUser(req, res) {
       firstName,
       lastName,
       role,
+      password,
       billingAddress,
       shippingAddress,
     });

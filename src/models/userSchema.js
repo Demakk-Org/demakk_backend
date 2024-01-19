@@ -23,6 +23,10 @@ export const UserSchema = new Schema({
     type: String,
     required: true,
   },
+  password: {
+    type: String,
+    required: true,
+  },
   role: {
     type: mongoose.Types.ObjectId,
     ref: 'Role',
@@ -39,18 +43,18 @@ export const UserSchema = new Schema({
     type: mongoose.Types.ObjectId,
     ref: 'Cart',
   },
-  orders:[{
-      type: mongoose.Types.ObjectId,
-      ref: 'Order',
+  orders: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'Order',
   }],
   createdAt: {
     type: Date,
     default: Date.now,
-    immutable:true
+    immutable: true
   },
   updatedAt: {
-    type:Date,
-    default:Date.now
+    type: Date,
+    default: Date.now
   },
 });
 
