@@ -9,7 +9,6 @@ export const UserSchema = new Schema({
     type: String,
     unique: true,
     lowercase: true,
-    // required: true,
     default:""
   },
   emailVerified:{
@@ -18,7 +17,8 @@ export const UserSchema = new Schema({
   },
   phoneNumber: {
     type: String,
-    default:""
+    default:"",
+    unique:true
   },
   phoneNumberVerified:{
     type:Boolean,
@@ -39,6 +39,7 @@ export const UserSchema = new Schema({
   role: {
     type: mongoose.Types.ObjectId,
     ref: 'Role',
+    required:true
   },
   billingAddress: {
     type: mongoose.Types.ObjectId,
@@ -51,6 +52,7 @@ export const UserSchema = new Schema({
   cart: {
     type: mongoose.Types.ObjectId,
     ref: 'Cart',
+    required:true
   },
   orders: [{
     type: mongoose.Types.ObjectId,
