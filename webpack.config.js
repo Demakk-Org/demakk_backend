@@ -1,16 +1,12 @@
-var config = {
+import path from 'path'
+console.log(path.resolve('dist'))
+const webpackConfig = {
   entry: './server.js',
+  output: {
+    path: path.resolve('dist'),
+    filename: 'bundle.js',
+  },
+  mode: 'development',
 };
-
-const webpackConfig = (env, argv) => {
-  if (argv.mode === 'development') {
-    config.devtool = 'source-map';
-  }
-
-  if (argv.mode === 'production') {
-    //...
-  }
-  return config;
-};
-
+path.resolve()
 export default webpackConfig;

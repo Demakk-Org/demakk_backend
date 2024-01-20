@@ -5,7 +5,7 @@ import veriftyOTP from "../../controllers/authControllers/veriftyOTP.js";
 
 const authRoute = Router()
 
-authRoute.get('/getUserByEmail', getUserByEmail)
+// authRoute.get('/getUserByEmail', getUserByEmail)
 authRoute.post('/sendVerification', sendVerification)
 authRoute.post('/verifyOTP', veriftyOTP)
 
