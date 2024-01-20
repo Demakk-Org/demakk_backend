@@ -9,11 +9,20 @@ export const UserSchema = new Schema({
     type: String,
     unique: true,
     lowercase: true,
-    required: true,
+    default:""
+  },
+  emailVerified:{
+    type:Boolean,
+    default:false
   },
   phoneNumber: {
     type: String,
-    required: true,
+    default:"",
+    unique:true
+  },
+  phoneNumberVerified:{
+    type:Boolean,
+    default:false
   },
   firstName: {
     type: String,
@@ -23,9 +32,14 @@ export const UserSchema = new Schema({
     type: String,
     required: true,
   },
+  password: {
+    type: String,
+    required: true,
+  },
   role: {
     type: mongoose.Types.ObjectId,
     ref: 'Role',
+    required:true
   },
   billingAddress: {
     type: mongoose.Types.ObjectId,
@@ -38,19 +52,20 @@ export const UserSchema = new Schema({
   cart: {
     type: mongoose.Types.ObjectId,
     ref: 'Cart',
+    required:true
   },
-  orders:[{
-      type: mongoose.Types.ObjectId,
-      ref: 'Order',
+  orders: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'Order',
   }],
   createdAt: {
     type: Date,
     default: Date.now,
-    immutable:true
+    immutable: true
   },
   updatedAt: {
-    type:Date,
-    default:Date.now
+    type: Date,
+    default: Date.now
   },
 });
 
