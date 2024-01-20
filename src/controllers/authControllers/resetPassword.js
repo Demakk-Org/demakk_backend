@@ -1,12 +1,12 @@
 import ResetPassword from "../../models/resetPassword.js"
 import User from "../../models/userSchema.js"
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 
 
 const resetPassword = async (req, res) => {
-  const { id, newPassword } = req.body
+  const { id, newPassword, password } = req.body
 
-  if(!newPassword) {
+  if(!newPassword||!password||(password!=newPassword)) {
     res.status(400).json({message:"Bad Request"})
   }
 
@@ -19,10 +19,10 @@ const resetPassword = async (req, res) => {
     res.status(400).json({message:"Reset Session has expired, Please try again!"})
   }
 
-  const password = await bcrypt.hash(newPassword, 10) 
+  const hashedPassword = await bcrypt.hash(newPassword, 10) 
 
   await User.findByIdAndUpdate(reset.id, {
-    password
+    hashedPassword
   },
   {
     returnDocument:'after'

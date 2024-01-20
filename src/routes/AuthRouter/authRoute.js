@@ -1,5 +1,5 @@
 import { Router } from "express";
-import getUserByEmail from "../../controllers/authControllers/getUserByEmail.js";
+// import getUserByEmail from "../../controllers/authControllers/getUserByEmail.js";
 import sendVerification from "../../controllers/authControllers/sendVerification.js";
 import veriftyOTP from "../../controllers/authControllers/veriftyOTP.js";
 
