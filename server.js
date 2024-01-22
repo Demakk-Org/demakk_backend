@@ -12,6 +12,7 @@ const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;
 console.log(PORT);
 
 const app = express()
+app.use(express.json());
 
 mongoose.connect(MONGODB_ULI)
   .then(() => {

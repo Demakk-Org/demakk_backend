@@ -1,17 +1,13 @@
 import express, { Router } from "express";
 
 import getUser from "../../controllers/userControllers/getUser.js";
-import requestResetPassword from "../../controllers/authControllers/requestResetPassword.js";
-import resetPassword from "../../controllers/authControllers/resetPassword.js";
 import addAddress from "../../controllers/userControllers/addAndSetAddress.js";
+import updateAddress from "../../controllers/userControllers/updateAddress.js";
 
 const userRoute = Router();
 
-userRoute.use(express.json());
-
-userRoute.get("/:id", getUser);
-userRoute.post("/requestResetPassword/:id", requestResetPassword);
-userRoute.post("/resetPassword", resetPassword);
+userRoute.get("/", getUser);
 userRoute.post("/addAndSetAddress", addAddress)
+userRoute.put("/address",updateAddress)
 
 export default userRoute;

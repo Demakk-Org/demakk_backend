@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import emailText from "../../libs/emailText.js";
+import emailText from "../../utils/emailText.js";
 import OTP from "../../models/otpSchema.js";
 
 const sendVerification = async (req, res) => {

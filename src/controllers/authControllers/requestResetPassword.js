@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import resetPasswordText from "../../libs/resetPasswordText.js";
+import resetPasswordText from "../../utils/resetPasswordText.js";
 import Jwt from "jsonwebtoken"
 import ResetPassword from "../../models/resetPassword.js";
 

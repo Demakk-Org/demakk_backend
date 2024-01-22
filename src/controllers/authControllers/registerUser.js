@@ -1,4 +1,4 @@
-import QueryByType from "../../libs/queryByType.js";
+import QueryByType from "../../utils/queryByType.js";
 import Cart from "../../models/cartSchema.js";
 import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";

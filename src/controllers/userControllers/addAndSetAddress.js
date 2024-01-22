@@ -1,4 +1,4 @@
-import QueryByType from "../../libs/queryByType.js";
+import QueryByType from "../../utils/queryByType.js";
 import Address from "../../models/addressSchema.js";
 import User from "../../models/userSchema.js";
 
