@@ -4,12 +4,22 @@ import Jwt from "jsonwebtoken"
 import ResetPassword from "../../models/resetPassword.js";
 
 const requestResetPassword = async(req, res) => {
-  const id = req.params.id;
-  const token = req.headers.authorization.split(" ")[1]
+  //email from body
+  //add errors
+  const { account } = req.body
+  
 
-  const decode = Jwt.verify(token, "your_secret_key")
+  if(!email){
+    return res.status(400).json({message:'Bad Request, Please Enter your email address'})
+  }
 
-  const reset = await ResetPassword.create({id, expiresIn:3600})
+  const user = await UserActivation.find({ email})
+  
+  if(!user){
+    return res.status(400).json({message:''})
+  }
+
+  const reset = await ResetPassword.create({})
 
   var  message = {
     from: "Demakk: ",
