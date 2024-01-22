@@ -1,3 +1,4 @@
+import QueryByType from "../../libs/queryByType.js";
 import Cart from "../../models/cartSchema.js";
 import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
@@ -7,34 +8,22 @@ async function registerUser(req, res) {
   const { account, firstName, lastName, password, confirmPassword } = req.body;
 
   if (!account || !firstName || !lastName || !password || !confirmPassword) {
-   return res.status(400).send({ message: "Missing required fields" });
+    return res.status(400).send({ message: "Missing required fields" });
   }
 
   if (password !== confirmPassword) {
     return res.status(400).json({ message: "Passwords do not match" });
   }
 
-  var type;
-  var searchQuery = {}
+  var queryAndType = QueryByType(account);
 
-  if (account.match(/^2519(?:(-|\s)?)?\d{2}(?:(-|\s)?)?\d{2}(?:(-|\s)?)?\d{4}$/)) {
-    type = "phoneNumber";
-    searchQuery = { phoneNumber: account }
-  } else if (
-    account.match(
-      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    )
-  ) {
-    type = "email";
-    searchQuery = { email: account }
-  } else {
-    return res
-      .status(400)
-      .json({ message: "Enter valid phoneNumber or email address!" });
+  if (queryAndType.status == 400) {
+    return res.status(400).json({ message: queryAndType.message });
   }
 
-  const user = await User.find(searchQuery);
-  console.log(user, type, account)
+  const user = await User.find(queryAndType.searchQuery);
+
+  console.log(user, type, account);
   if (user.length != 0) {
     return res.status(400).json({ message: "Account already exists" });
   }
