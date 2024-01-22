@@ -23,7 +23,7 @@ async function registerUser(req, res) {
 
   const user = await User.find(queryAndType.searchQuery);
 
-  console.log(user, type, account);
+  console.log(user, queryAndType.type, account);
   if (user.length != 0) {
     return res.status(400).json({ message: "Account already exists" });
   }
@@ -46,7 +46,7 @@ async function registerUser(req, res) {
     cart: cart._id,
   };
 
-  if (type == "email") {
+  if (queryAndType.type == "email") {
     query.email = account;
   } else {
     query.phoneNumber = account;
@@ -56,7 +56,7 @@ async function registerUser(req, res) {
 
   if (cart) {
     try {
-      const user = await User.create(query);
+      const user = await User.create(query).select("_id name")
       const token = Jwt.sign(
         {
           from: "Demakk Printing Enterprise",

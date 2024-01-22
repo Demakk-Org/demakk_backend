@@ -1,6 +1,4 @@
 import { mongoose } from "mongoose";
-import Role from "./roleSchema.js";
-import Address from "./addressSchema.js"
 
 const { Schema } = mongoose;
 
@@ -58,6 +56,10 @@ export const UserSchema = new Schema({
     type: mongoose.Types.ObjectId,
     ref: 'Order',
   }],
+  blocked: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now,

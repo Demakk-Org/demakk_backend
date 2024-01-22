@@ -4,7 +4,7 @@ const resetPasswordText = (name, id) => {
     <div style="border-bottom:1px solid #eee">
       <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Demakk Ecommerce Site</a>
     </div>
-    <p style="font-size:1.1em">Hi, ${name}</p>
+    <p style="font-size:1.25em">Hi, ${name}</p>
     <p>Your Demmakk password can be reset by clicking the button below. It expires in an hour. If you did not request a new password, please ignore this email.</p>
     <a href='https://demakk.com/user/resetPassword/${id}' style="background: #00466a;margin: 0 auto;width: max-content;padding: 5px 10px;font-size:1rem;color: #fff;border-radius: 4px;cursor:pointer;text-decoration:none">Reset Password</a>
     <p style="font-size:0.9em;">Regards,<br />Demakk</p>

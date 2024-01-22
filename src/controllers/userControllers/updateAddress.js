@@ -1,39 +1,38 @@
 import Jwt from "jsonwebtoken";
 import User from "../../models/userSchema.js";
 
-const updateAddress = async(req, res) => {
-  const token = req.headers.authorization.split(' ')[1];
-  const {addressId, type} = req.body
-  //add type validation
+const updateAddress = async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const { addressId, type } = req.body;
 
-  const tokenValues = Jwt.decode(token, 'your_secret_key')
-  const { uid, iat, exp} = tokenValues
-  
-  if(!token) {
-    return res.status(400).json({message:"No token provided"})
+  const { uid } = Jwt.decode(token, "your_secret_key");
+
+  if (typeof addressId === "string" || typeof type === "string") {
+    return res.status(400).json({
+      message: "Validation Error: addressId and type are type of string",
+    });
   }
 
-  if(Date.now() > exp) {
-    return res.status(400).json({message:"Token not expired"})
-  }
-
-  console.log(tokenValues, Date.now())
-  
-
-  if(!addressId || !type) {
-    return res.status(400).json({message:"Credentials are not provided"})
+  if (!addressId || !type) {
+    return res.status(400).json({ message: "Credentials are not provided" });
   }
 
   var query;
-  if(type=='shippingAddress'){query = {shippingAddress:addressId}}
-  else if(type=='billingAddress'){ query = {billingAddress:addressId}}
-  console.log(query)
+  if (type == "shippingAddress") {
+    query = { shippingAddress: addressId };
+  } else if (type == "billingAddress") {
+    query = { billingAddress: addressId };
+  }
+  console.log(query);
 
-  const user = await User.findByIdAndUpdate(uid, query, {returnDocument:'after'})
-
-  console.log(user)
-
-  res.json(user)
-}
+  try {
+    const user = await User.findByIdAndUpdate(uid, query, {
+      returnDocument: "after",
+    });
+    res.json(user);
+  } catch (error) {
+    return res.status(500).json({ message: "Error occured during updating" });
+  }
+};
 
 export default updateAddress;
