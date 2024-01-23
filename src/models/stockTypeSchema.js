@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
-const StockTypeSchema = Schema.create({
+const StockTypeSchema = new Schema({
   name: {
     type: String,
     required: true,
   },
-})
+});
 
 const StockType = mongoose.model("StockType", StockTypeSchema);
 
-export default StockType;
+export { StockType };
