@@ -7,7 +7,9 @@ const updateAddress = async (req, res) => {
 
   const { uid } = Jwt.decode(token, "your_secret_key");
 
-  if (typeof addressId === "string" || typeof type === "string") {
+  console.log(typeof addressId, typeof type);
+
+  if (typeof addressId != "string" || typeof type != "string") {
     return res.status(400).json({
       message: "Validation Error: addressId and type are type of string",
     });

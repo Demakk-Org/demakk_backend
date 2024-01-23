@@ -2,25 +2,31 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-export const AddressSchema = new Schema({
-  uid:{
-    type:mongoose.Types.ObjectId,
-    ref:"User",
-    required:true
+export const AddressSchema = new Schema(
+  {
+    uid: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    country: String,
+    city: String,
+    subCity: String,
+    woreda: String,
+    uniqueIdentifier: String,
+    streetAddress: String,
+    postalCode: String,
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  country: String,
-  city: String,
-  subCity: String,
-  woreda: String,
-  uniqueIdentifier: String,
-  streetAddress: String,
-  postalCode: String,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: Date,
-});
+  {
+    timestamps: {
+      updatedAt: "updatedAt", // and `updated_at` to store the last updated date
+    },
+  }
+);
 
 const Address = mongoose.model("Address", AddressSchema);
 
