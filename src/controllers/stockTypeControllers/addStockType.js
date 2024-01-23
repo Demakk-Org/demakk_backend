@@ -17,7 +17,9 @@ const addStockType = async (req, res) => {
 
   try {
     const stockType = await StockType.create({ name: stockTypeName });
-    return res.status(201).json(stockType);
+    return res
+      .status(201)
+      .json({ stockType, message: "Stock type created successfully" });
   } catch (error) {
     return res.status(500).json({ message: "Error creating stock type" });
   }

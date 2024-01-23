@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import StockItem from './stockItemSchema.js';
 
 const { Schema } = mongoose;
 
@@ -6,14 +7,21 @@ const ProductCategorySchema = Schema(
   {
     stockItem: {
       type: mongoose.Types.ObjectId,
+      ref: "StockItem",
       required: true,
     },
     name: {
       type: String,
       required: true,
     },
-    additionalPrice: Number,
-    additionalCost: Number,
+    additionalPrice: {
+      type: Number,
+      required: true,
+    },
+    additionalCost: {
+      type: Number,
+      required: true,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

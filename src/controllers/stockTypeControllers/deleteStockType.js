@@ -17,7 +17,9 @@ const deleteStockType = async (req, res) => {
 
   try {
     const stockType = await StockType.findByIdAndDelete(id);
-    return res.status(200).json(stockType);
+    return res
+      .status(200)
+      .json({ stockType, message: "Stock type deleted successfully." });
   } catch (error) {
     return res.status(500).json({ message: "Error creating stock type" });
   }

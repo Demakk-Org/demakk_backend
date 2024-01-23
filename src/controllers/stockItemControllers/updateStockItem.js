@@ -59,7 +59,9 @@ const updateStockItem = async (req, res) => {
         .json({ message: "There is no stock item with this id" });
     }
 
-    return res.status(201).json(stockItem);
+    return res
+      .status(201)
+      .json({ stockItem, message: "Stock Item updated successfully" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

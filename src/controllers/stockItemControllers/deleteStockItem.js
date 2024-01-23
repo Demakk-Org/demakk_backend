@@ -22,7 +22,9 @@ const deleteStockItem = async (req, res) => {
         .status(404)
         .json({ message: "There is no stock item with this id" });
     }
-    return res.status(200).json(stockItem);
+    return res
+      .status(200)
+      .json({ stockItem, message: "Stock Item deleted successfully" });
   } catch (error) {
     return res.status(500).json({ message: "Error deleting stock type" });
   }

@@ -27,7 +27,9 @@ const addStockItem = async (req, res) => {
       costToProduce,
     });
 
-    return res.status(201).json(stockItem);
+    return res
+      .status(201)
+      .json({ stockItem, message: "Stock Item created successfully" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

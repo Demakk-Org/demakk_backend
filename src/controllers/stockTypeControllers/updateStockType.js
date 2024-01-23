@@ -23,7 +23,9 @@ const renameStockType = async (req, res) => {
       },
       { returnDocument: "after" }
     );
-    return res.status(200).json(stockType);
+    return res
+      .status(200)
+      .json({ stockType, message: "Stock type updated successfully." });
   } catch (error) {
     return res.status(500).json({ message: "Error updating stock type" });
   }

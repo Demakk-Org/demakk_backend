@@ -8,6 +8,8 @@ import authRoute from "./src/routes/AuthRouter/authRoute.js";
 import adminRoute from "./src/routes/AdminRouter/adminRoute.js";
 import { stockTypeRoute } from "./src/routes/StockTypeRouter/stockTypeRoute.js";
 import { stockItemRoute } from "./src/routes/StockItemRouter/stockItemRoute.js";
+import { productCategoryRoute } from "./src/routes/ProductCategoryRouter/ProductCategoryRoute.js";
+import { productRoute } from "./src/routes/ProductRouter/ProductRoute.js";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
 const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;
@@ -30,8 +32,10 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/admin", adminRoute);
-app.use("/api/v1/stockItem", stockItemRoute )
-app.use("/api/v1/stockType", stockTypeRoute)
+app.use("/api/v1/stockItem", stockItemRoute);
+app.use("/api/v1/stockType", stockTypeRoute);
+app.use("/api/v1/productCategory", productCategoryRoute);
+app.use("/api/v1/product", productRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port : ${PORT}`);
