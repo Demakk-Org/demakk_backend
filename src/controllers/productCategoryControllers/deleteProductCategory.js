@@ -1,17 +1,19 @@
 import ProductCategory from "../../models/productCategorySchema.js";
+import language from "../../../language.json" assert { type: "json" };
+import dotenv from "dotenv";
+
+const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
 const deleteProductCategory = async (req, res) => {
-  const { productCategoryId } = req.body;
+  let { productCategoryId, lang } = req.body;
 
-  if (!productCategoryId) {
-    return res.status(400).json({
-      message: "Product category Id is required",
-    });
+  if (!lang || !(lang in language)) {
+    lang = LANG;
   }
 
-  if (typeof productCategoryId !== "string") {
+  if (!productCategoryId || typeof productCategoryId !== "string") {
     return res.status(400).json({
-      message: "Product category Id must be a string",
+      message: language[lang].response[400],
     });
   }
 
@@ -19,20 +21,17 @@ const deleteProductCategory = async (req, res) => {
     const productCategory = await ProductCategory.findByIdAndDelete(
       productCategoryId
     );
+
     if (!productCategory) {
-      return res
-        .status(404)
-        .json({ message: "There is no product category item with this id" });
+      return res.status(404).json({ message: language[lang].response[404] });
     }
-    return res
-      .status(200)
-      .json({
-        productCategory,
-        message: "Product category deleted successfully",
-      });
+    return res.status(200).json({
+      productCategory,
+      message: language[lang].response[200],
+    });
   } catch (error) {
-    return res.status(500).json({ message: "Error deleting product category" });
+    return res.status(500).json({ message: language[lang].response[500] });
   }
 };
 
-export default deleteProductCategory;
+export { deleteProductCategory };

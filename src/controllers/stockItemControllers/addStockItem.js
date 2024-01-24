@@ -1,22 +1,27 @@
 import StockItem from "../../models/stockItemSchema.js";
+import language from "../../../language.json" assert { type: "json" };
+import dotenv from "dotenv";
+
+const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
 const addStockItem = async (req, res) => {
-  const { stockTypeId, name, price, costToProduce } = req.body;
+  let { stockTypeId, name, price, costToProduce, lang } = req.body;
 
-  if (!stockTypeId || !name || !price || !costToProduce) {
-    return res.status(400).json({ message: "Please fill all fields" });
+  if (!lang || !(lang in language)) {
+    lang = LANG;
   }
 
-  if (typeof stockTypeId !== "string" || typeof name !== "string") {
-    return res
-      .status(400)
-      .json({ message: "StokeTypeId and Name must be type of string" });
-  }
-
-  if (typeof price !== "number" || typeof costToProduce !== "number") {
-    return res
-      .status(400)
-      .json({ message: "Price and CostToProduce must be type of number" });
+  if (
+    !stockTypeId ||
+    !name ||
+    !price ||
+    !costToProduce ||
+    typeof stockTypeId !== "string" ||
+    !(name instanceof Object && name.constructor === Object) ||
+    typeof price !== "number" ||
+    typeof costToProduce !== "number"
+  ) {
+    return res.status(400).json({ message: language[lang].response[400] });
   }
 
   try {
@@ -29,10 +34,10 @@ const addStockItem = async (req, res) => {
 
     return res
       .status(201)
-      .json({ stockItem, message: "Stock Item created successfully" });
+      .json({ stockItem, message: language[lang].response[201] });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: language[lang].response[500] });
   }
 };
 
-export default addStockItem;
+export { addStockItem };

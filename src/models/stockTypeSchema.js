@@ -4,7 +4,8 @@ const { Schema } = mongoose;
 
 const StockTypeSchema = new Schema({
   name: {
-    type: String,
+    type: Map,
+    of: String,
     required: true,
   },
 });

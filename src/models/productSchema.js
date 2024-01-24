@@ -5,11 +5,13 @@ const { Schema } = mongoose;
 const ProductSchema = Schema(
   {
     name: {
-      type: String,
+      type: Map,
+      of: String,
       required: true,
     },
     description: {
-      type: String,
+      type: Map,
+      of: String,
       required: true,
     },
     productCategory: {

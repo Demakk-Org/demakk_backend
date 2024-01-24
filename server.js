@@ -2,14 +2,14 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-import userRoute from "./src/routes/UserRouter/userRoute.js";
-import cartRoute from "./src/routes/CartRouter/cartRoute.js";
-import authRoute from "./src/routes/AuthRouter/authRoute.js";
-import adminRoute from "./src/routes/AdminRouter/adminRoute.js";
-import { stockTypeRoute } from "./src/routes/StockTypeRouter/stockTypeRoute.js";
-import { stockItemRoute } from "./src/routes/StockItemRouter/stockItemRoute.js";
-import { productCategoryRoute } from "./src/routes/ProductCategoryRouter/ProductCategoryRoute.js";
-import { productRoute } from "./src/routes/ProductRouter/ProductRoute.js";
+import userRoute from "./src/routes/userRoute.js";
+import cartRoute from "./src/routes/cartRoute.js";
+import authRoute from "./src/routes/authRoute.js";
+import adminRoute from "./src/routes/adminRoute.js";
+import { stockTypeRoute } from "./src/routes/stockTypeRoute.js";
+import { stockItemRoute } from "./src/routes/stockItemRoute.js";
+import { productCategoryRoute } from "./src/routes/ProductCategoryRoute.js";
+import { productRoute } from "./src/routes/ProductRoute.js";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
 const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;

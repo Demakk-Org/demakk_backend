@@ -1,33 +1,34 @@
 import StockItem from "../../models/stockItemSchema.js";
+import language from "../../../language.json" assert { type: "json" };
+import dotenv from "dotenv";
+
+const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
 const deleteStockItem = async (req, res) => {
-  const { stockItemId } = req.body;
+  let { stockItemId, lang } = req.body;
 
-  if (!stockItemId) {
-    return res.status(400).json({
-      message: "Stock Item is required",
-    });
+  if (!lang || !(lang in language)) {
+    lang = LANG;
   }
-
-  if (typeof stockItemId !== "string") {
+  if (!stockItemId || typeof stockItemId !== "string") {
     return res.status(400).json({
-      message: "Stock Item must be a string",
+      message: language[lang].response[400],
     });
   }
 
   try {
     const stockItem = await StockItem.findByIdAndDelete(stockItemId);
+
     if (!stockItem) {
-      return res
-        .status(404)
-        .json({ message: "There is no stock item with this id" });
+      return res.status(404).json({ message: language[lang].response[404] });
     }
+
     return res
       .status(200)
-      .json({ stockItem, message: "Stock Item deleted successfully" });
+      .json({ stockItem, message: language[lang].response[200] });
   } catch (error) {
-    return res.status(500).json({ message: "Error deleting stock type" });
+    return res.status(500).json({ message: language[lang].response[500] });
   }
 };
 
-export default deleteStockItem;
+export { deleteStockItem };

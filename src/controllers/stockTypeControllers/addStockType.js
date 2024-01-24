@@ -1,17 +1,21 @@
 import { StockType } from "../../models/stockTypeSchema.js";
+import dotenv from "dotenv";
+
+const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
 const addStockType = async (req, res) => {
-  const { stockTypeName } = req.body;
+  let { stockTypeName, lang } = req.body;
 
-  if (!stockTypeName) {
-    return res.status(400).json({
-      message: "Stock Type is required",
-    });
+  if (!lang || !(lang in language)) {
+    lang = LANG;
   }
 
-  if (typeof stockTypeName !== "string") {
+  if (
+    !stockTypeName ||
+    !(stockTypeName instanceof Object && stockTypeName.constructor === Object)
+  ) {
     return res.status(400).json({
-      message: "Stock Type must be a string",
+      message: language[lang].response[400],
     });
   }
 
@@ -19,10 +23,10 @@ const addStockType = async (req, res) => {
     const stockType = await StockType.create({ name: stockTypeName });
     return res
       .status(201)
-      .json({ stockType, message: "Stock type created successfully" });
+      .json({ stockType, message: language[lang].response[201] });
   } catch (error) {
-    return res.status(500).json({ message: "Error creating stock type" });
+    return res.status(500).json({ message: language[lang].response[200] });
   }
 };
 
-export default addStockType;
+export { addStockType };
