@@ -1,65 +1,49 @@
 import Product from "../../models/productSchema.js";
+import language from "../../../language.json" assert { type: "json" };
+import dotenv from "dotenv";
+
+const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
 const updateProduct = async (req, res) => {
-  const { productId, name, description, productCategoryId } = req.body;
+  let { productId, name, description, productCategoryId, lang } = req.body;
+
+  if (!lang || !(lang in language)) {
+    lang = LANG;
+  }
 
   if (!productId) {
-    return res.status(400).json({ message: "Product category Id is required" });
+    return res.status(400).json({ message: language[lang].response[400] });
   }
 
-  if (typeof productId !== "string") {
-    return res
-      .status(400)
-      .json({ message: "Product Id must be type of string" });
+  if (
+    typeof productId !== "string" ||
+    (name && !(name instanceof Object && name.constructor === Object)) ||
+    (description &&
+      !(description instanceof Object && description.constructor === Object)) ||
+    (productCategoryId && typeof productCategoryId !== "string") ||
+    (!name && !description && !productCategoryId)
+  ) {
+    return res.status(400).json({ message: language[lang].response[400] });
   }
-
-  if (name && typeof name !== "string") {
-    return res.status(400).json({ message: "Name must be type of string" });
-  }
-
-  if (description && typeof description !== "string") {
-    return res
-      .status(400)
-      .json({ message: "Discription must be type of string" });
-  }
-
-  if (productCategoryId && typeof productCategoryId !== "string") {
-    return res
-      .status(400)
-      .json({ message: "Product category id must be type of string" });
-  }
-
-  if (!name && !description && !productCategoryId) {
-    return res
-      .status(400)
-      .json({ message: "Atleast one value must be changed" });
-  }
-
-  const query = {};
-
-  Array.from(Object.keys(req.body)).forEach((key) => {
-    if (req.body[key] && key !== "productId") {
-      query[key] = req.body[key];
-    }
-  });
-
-  console.log(query);
 
   try {
-    const product = await Product.findByIdAndUpdate(productId, query, {
-      returnDocument: "after",
-    });
+    const product = await Product.findById(productId);
+
     if (!product) {
-      return res
-        .status(404)
-        .json({ message: "There is no product with this id" });
+      return res.status(404).json({ message: language[lang].response[404] });
     }
 
+    if (productCategoryId) product.productCategory = productCategoryId;
+    if (name) product.name.set(name["lang"], name["value"]);
+    if (description)
+      product.description.set(description["lang"], description["value"]);
+
+    await product.save();
     return res
       .status(201)
-      .json({ product, message: "Product updated successfully" });
+      .json({ product, message: language[lang].response[201] });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: language[lang].response[500] });
   }
 };
 

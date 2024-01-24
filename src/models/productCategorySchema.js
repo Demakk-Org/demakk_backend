@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import StockItem from './stockItemSchema.js';
+import StockItem from "./stockItemSchema.js";
 
 const { Schema } = mongoose;
 
@@ -11,7 +11,8 @@ const ProductCategorySchema = Schema(
       required: true,
     },
     name: {
-      type: String,
+      type: Map,
+      of: String,
       required: true,
     },
     additionalPrice: {

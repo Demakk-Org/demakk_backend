@@ -10,7 +10,8 @@ const stockItemSchema = new Schema(
       required: true,
     },
     name: {
-      type: String,
+      type: Map,
+      of: String,
       required: true,
     },
     price: {

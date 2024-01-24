@@ -60,6 +60,10 @@ export const UserSchema = new Schema(
         ref: "Order",
       },
     ],
+    lang: {
+      type: String,
+      default: "en",
+    },
     blocked: {
       type: Boolean,
       default: false,

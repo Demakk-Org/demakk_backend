@@ -1,9 +1,11 @@
 import QueryByType from "../../utils/queryByType.js";
 import Address from "../../models/addressSchema.js";
 import User from "../../models/userSchema.js";
+import language from "../../../language.json" assert { type: "json" };
 
 const addAddress = async (req, res) => {
   const {
+    lang,
     type,
     account,
     country,
@@ -15,18 +17,21 @@ const addAddress = async (req, res) => {
     postalCode,
   } = req.body;
 
+  if (!lang || !(lang in language)) {
+    lang = "en";
+  }
+
   var queryAndType = QueryByType(account);
 
   if (!account || !type) {
-    return res.status(404).json({ message: "Bad request" });
+    return res.status(404).json({ message: language.eng.error[404] });
   }
 
   User.findOne(queryAndType.searchQuery)
     .then((user) => {
-      // console.log(user)
       try {
         Address.create({
-          uid:user._id,
+          uid: user._id,
           country,
           city,
           subCity,
@@ -47,16 +52,16 @@ const addAddress = async (req, res) => {
           })
           .catch((err) => {
             console.log(err);
-            return res.status(500).json({ message: "Server error" });
+            return res.status(500).json({ message: language[lang].error[200] });
           });
       } catch (error) {
-        console.log(error.message)
-        return res.status(500).json({ message: "Server error!" });
+        console.log(error.message);
+        return res.status(500).json({ message: language[lang].error[500] });
       }
     })
     .catch((error) => {
-      console.log(error.message)
-      return res.status(404).json({ message: "Server error" });
+      console.log(error.message);
+      return res.status(404).json({ message: language[lang].error[500] });
     });
 };
 

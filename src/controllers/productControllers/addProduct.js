@@ -1,35 +1,43 @@
 import Product from "../../models/productSchema.js";
+import language from "../../../language.json" assert { type: "json" };
+import dotenv from "dotenv";
+
+const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
 const addProduct = async (req, res) => {
-  const { name, description, productCategoryId } = req.body;
+  let { name, description, productCategoryId, lang } = req.body;
+
+  if (!lang || !(lang in language)) {
+    lang = LANG;
+  }
 
   if (!name || !description || !productCategoryId) {
-    return res.status(400).json({ message: "Please fill all fields" });
+    return res.status(400).json({ message: language[lang].response[400] });
   }
 
   if (
-    typeof description !== "string" ||
-    typeof name !== "string" ||
+    !(description instanceof Object && description.constructor === Object) ||
+    !(name instanceof Object && name.constructor === Object) ||
     typeof productCategoryId !== "string"
   ) {
     return res.status(400).json({
-      message:
-        "Name, discription and product category id must be type of string",
+      message: language[lang].response[400],
     });
   }
 
   try {
     const product = await Product.create({
-      productCategory: productCategoryId,
       name,
+      productCategory: productCategoryId,
       description,
     });
 
     return res
       .status(201)
-      .json({ product, message: "Product created successfully" });
+      .json({ product, message: language[lang].response[201] });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    console.log(error.message);
+    return res.status(500).json({ message: language[lang].response[500] });
   }
 };
 

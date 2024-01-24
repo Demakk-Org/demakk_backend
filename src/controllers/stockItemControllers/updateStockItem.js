@@ -1,70 +1,50 @@
 import StockItem from "../../models/stockItemSchema.js";
+import language from "../../../language.json" assert { type: "json" };
+import dotenv from "dotenv";
+
+const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
 const updateStockItem = async (req, res) => {
-  const { stockItemId, stockTypeId, name, price, costToProduce } = req.body;
+  let { stockItemId, stockTypeId, name, price, costToProduce, lang } = req.body;
+
+  if (!lang || !(lang in language)) {
+    lang = LANG;
+  }
 
   if (!stockItemId) {
-    return res.status(400).json({ message: "Stock item Id is required" });
+    return res.status(400).json({ message: language[lang].response[400] });
   }
 
-  if (typeof stockItemId !== "string") {
-    return res
-      .status(400)
-      .json({ message: "Stock item Id must be type of string" });
+  if (
+    typeof stockItemId !== "string" ||
+    (stockTypeId && typeof stockTypeId !== "string") ||
+    (name && !(name instanceof Object && name.constructor === Object)) ||
+    (price && typeof price !== "number") ||
+    (costToProduce && typeof costToProduce !== "number") ||
+    (!stockTypeId && !name && !price && !costToProduce)
+  ) {
+    return res.status(400).json({ message: language[lang].response[400] });
   }
-
-  if (stockTypeId && typeof stockTypeId !== "string") {
-    return res
-      .status(400)
-      .json({ message: "Stock type Id must be type of string" });
-  }
-
-  if (name && typeof name !== "string") {
-    return res.status(400).json({ message: "Name must be type of string" });
-  }
-
-  if (price && typeof price !== "number") {
-    return res.status(400).json({ message: "Price must be type of number" });
-  }
-
-  if (costToProduce && typeof costToProduce !== "number") {
-    return res
-      .status(400)
-      .json({ message: "CostToProduce must be type of number" });
-  }
-
-  if (!stockTypeId && !name && !price && !costToProduce) {
-    return res
-      .status(400)
-      .json({ message: "Atleast one value must be changed" });
-  }
-
-  const query = {};
-
-  Array.from(Object.keys(req.body)).forEach((key) => {
-    if (req.body[key] && key !== "stockItemId") {
-      query[key] = req.body[key];
-    }
-  });
-
-  console.log(query);
 
   try {
-    const stockItem = await StockItem.findByIdAndUpdate(stockItemId, query, {
-      returnDocument: "after",
-    });
+    const stockItem = await StockItem.findById(stockItemId);
+
     if (!stockItem) {
-      return res
-        .status(404)
-        .json({ message: "There is no stock item with this id" });
+      return res.status(404).json({ message: language[lang].response[404] });
     }
+
+    if (stockTypeId) stockItem.stockType = stockTypeId;
+    if (name) stockItem.name.set(name["lang"], name["value"]);
+    if (price) stockItem.price = price;
+    if (costToProduce) stockItem.costToProduce = costToProduce;
+    await stockItem.save();
 
     return res
       .status(201)
-      .json({ stockItem, message: "Stock Item updated successfully" });
+      .json({ stockItem, message: language[lang].response[201] });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: language[lang].response[500] });
   }
 };
 
-export default updateStockItem;
+export { updateStockItem };
