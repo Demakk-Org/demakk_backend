@@ -4,7 +4,7 @@ import User from "../../models/userSchema.js";
 import language from "../../../language.js";
 
 const addAddress = async (req, res) => {
-  const {
+  let {
     lang,
     type,
     account,

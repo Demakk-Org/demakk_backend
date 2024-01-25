@@ -3,7 +3,10 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const reserPasswordSchema = new Schema({
-  id: String,
+  uid: {
+    type: String,
+    required: true,
+  },
   requestedAt: {
     type: Date,
     default: Date.now(),
