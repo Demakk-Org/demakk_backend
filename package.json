@@ -10,7 +10,7 @@
     "start": "node index.js",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "varcel-build":"echo hello"
+    "vercel-build": "echo hello"
   },
   "keywords": [],
   "author": "",
