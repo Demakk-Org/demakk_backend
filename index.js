@@ -37,6 +37,10 @@ app.use("/api/v1/stockType", stockTypeRoute);
 app.use("/api/v1/productCategory", productCategoryRoute);
 app.use("/api/v1/product", productRoute);
 
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port : ${PORT}`);
 });

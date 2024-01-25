@@ -1,5 +1,5 @@
 import Product from "../../models/productSchema.js";
-import language from "../../../language.json" assert { type: "json" };
+import language from "../../../language.js";
 import dotenv from "dotenv";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;

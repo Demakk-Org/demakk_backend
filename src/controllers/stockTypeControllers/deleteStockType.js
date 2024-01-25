@@ -1,5 +1,5 @@
 import { StockType } from "../../models/stockTypeSchema.js";
-import language from "../../../language.json" assert { type: "json" };
+import language from "../../../language.js";
 import dotenv from "dotenv";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;

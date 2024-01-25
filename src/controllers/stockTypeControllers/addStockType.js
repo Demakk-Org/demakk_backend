@@ -1,5 +1,6 @@
 import { StockType } from "../../models/stockTypeSchema.js";
 import dotenv from "dotenv";
+import language from "../../../language.js";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
