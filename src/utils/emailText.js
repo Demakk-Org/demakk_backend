@@ -1,4 +1,3 @@
-
 const emailText = (value) => {
   return `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
   <div style="margin:50px auto;width:70%;padding:20px 0">
@@ -13,10 +12,10 @@ const emailText = (value) => {
     <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
       <p>Demakk Printing Enterprise</p>
       <p>Ethiopia, Addis Ababa,</p>
-      <p>Atena-tera, Damay Bldg.</p>
+      <p>Atena-tera, BY Bldg.</p>
     </div>
   </div>
-</div>`
-}
+</div>`;
+};
 
-export default emailText
+export default emailText;

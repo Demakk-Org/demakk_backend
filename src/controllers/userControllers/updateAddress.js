@@ -4,7 +4,7 @@ import language from "../../../language.js";
 
 const updateAddress = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
-  const { addressId, type, lang } = req.body;
+  let { addressId, type, lang } = req.body;
 
   const { uid } = Jwt.decode(token, "your_secret_key");
 

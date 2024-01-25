@@ -7,7 +7,7 @@ const updateUser = async (req, res) => {
 
   const query = {};
 
-  const {
+  let {
     lang,
     firstName,
     lastName,

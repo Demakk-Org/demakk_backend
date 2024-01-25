@@ -3,19 +3,28 @@ import Cart from "../../models/cartSchema.js";
 import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
+import language from "../../../language.js";
+import dotenv from "dotenv";
+
+const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
 async function registerUser(req, res) {
-  const { account, firstName, lastName, password, confirmPassword } = req.body;
+  let { account, firstName, lastName, password, confirmPassword, lang } =
+    req.body;
+
+  if (!lang || !(lang in language)) {
+    lang = LANG;
+  }
 
   if (!account || !firstName || !lastName || !password || !confirmPassword) {
-    return res.status(400).send({ message: "Missing required fields" });
+    return res.status(400).send({ message: language[lang].response[400] });
   }
 
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: "Passwords do not match" });
+    return res.status(400).json({ message: language[lang].response[402] });
   }
 
-  var queryAndType = QueryByType(account);
+  var queryAndType = QueryByType(account, lang);
 
   if (queryAndType.status == 400) {
     return res.status(400).json({ message: queryAndType.message });
@@ -24,8 +33,9 @@ async function registerUser(req, res) {
   const user = await User.find(queryAndType.searchQuery);
 
   console.log(user, queryAndType.type, account);
+
   if (user.length != 0) {
-    return res.status(400).json({ message: "Account already exists" });
+    return res.status(400).json({ message: language[lang].response[405] });
   }
 
   var cart;
@@ -35,7 +45,7 @@ async function registerUser(req, res) {
     console.log(cart);
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: "Server Error" });
+    return res.status(500).json({ message: language[lang].response[500] });
   }
 
   var query = {
@@ -56,20 +66,27 @@ async function registerUser(req, res) {
 
   if (cart) {
     try {
-      const user = await User.create(query).select("_id name")
+      const user = await User.create(query);
+
       const token = Jwt.sign(
         {
           from: "Demakk Printing Enterprise",
           id: user._id,
           name: user.firstName,
+          iat: Date.now(),
+          lang
         },
         "your_secret_key",
+
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
-      return res.json({ message: "User registration successful", token });
+      return res.json({
+        message: language[lang].response[201],
+        token,
+      });
     } catch (e) {
       console.log(e);
-      return res.status(500).json({ error: "Server Error" });
+      return res.status(500).json({ message: language[lang].response[500] });
     }
   }
 }
