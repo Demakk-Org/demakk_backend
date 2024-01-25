@@ -1,6 +1,6 @@
 import User from "../../models/userSchema.js";
 import Jwt from "jsonwebtoken";
-import language from "../../../language.json" assert { type: "json" };
+import language from "../../../language.js";
 
 async function getUser(req, res) {
   const { lang } = req.body;

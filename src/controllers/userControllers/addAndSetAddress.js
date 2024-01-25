@@ -1,7 +1,7 @@
 import QueryByType from "../../utils/queryByType.js";
 import Address from "../../models/addressSchema.js";
 import User from "../../models/userSchema.js";
-import language from "../../../language.json" assert { type: "json" };
+import language from "../../../language.js";
 
 const addAddress = async (req, res) => {
   const {

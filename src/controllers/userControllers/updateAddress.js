@@ -1,6 +1,6 @@
 import Jwt from "jsonwebtoken";
 import User from "../../models/userSchema.js";
-import language from "../../../language.json" assert { type: "json" };
+import language from "../../../language.js";
 
 const updateAddress = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];

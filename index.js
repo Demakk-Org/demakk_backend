@@ -37,6 +37,10 @@ app.use("/api/v1/stockType", stockTypeRoute);
 app.use("/api/v1/productCategory", productCategoryRoute);
 app.use("/api/v1/product", productRoute);
 
+app.get("/", (req, res) => {
+  res.send("Hello, this is demakk your most trusted ecommerce site");
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port : ${PORT}`);
 });

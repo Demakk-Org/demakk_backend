@@ -1,5 +1,5 @@
 import User from "../../models/userSchema.js";
-import language from "../../../language.json" assert { type: "json" };
+import language from "../../../language.js";
 
 const updateUser = async (req, res) => {
   const tokenValues = Jwt.decode(token, "your_secret_key");
