@@ -1,51 +1,75 @@
 import ResetPassword from "../../models/resetPassword.js";
 import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
+import language from "../../../language.js";
+import dotenv from "dotenv";
+import { ObjectId } from "bson";
+
+const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
 const resetPassword = async (req, res) => {
-  const { id, newPassword, password } = req.body;
+  let { id, newPassword, password, lang } = req.body;
 
-  if (!newPassword || !password) {
-    res.status(400).json({ message: "Bad Request" });
+  if (!lang || !(lang in language)) {
+    lang = LANG;
   }
 
+  if (!id || !newPassword || !password) {
+    return res.status(400).json({ message: language[lang].response[400] });
+  }
+
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).json({ message: language[lang].response[407] });
+  }
+
+  if (newPassword !== password) {
+    return res.status(400).json({ message: language[lang].response[402] });
+  }
+  console.log(id);
   const reset = await ResetPassword.findById(id);
+  console.log(reset);
 
-  if(!reset){
-    res.status(400).json({ message: "Bad Request" });
+  if (!reset) {
+    return res.status(400).json({ message: language[lang].response[404] });
   }
 
-  if(reset.status == 'complete'){
-    res.status(400).json({ message: "Reset Session has expired, Please try again!" });
+  if (reset.status == "complete") {
+    return res.status(400).json({ message: language[lang].response[406] });
   }
 
   const now = new Date(Date.now() - reset.expiresIn);
   const time = reset.requestedAt;
 
   if (now > time) {
-    res
-      .status(400)
-      .json({ message: "Reset Session has expired, Please try again!" });
+    return res.status(400).json({ message: language[lang].response[406] });
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  await User.findByIdAndUpdate(
-    reset.id,
-    {
-      hashedPassword,
-    },
-    {
-      returnDocument: "after",
-    }
-  )
-    .then((response) => {
-      console.log(response);
-      res.json({ response });
-    })
-    .catch((error) => {
-      res.status(error.code).json({ message: error.message });
-    });
+  console.log("why here");
+
+  try {
+    User.findByIdAndUpdate(
+      reset.uid,
+      {
+        password: hashedPassword,
+      },
+      {
+        returnDocument: "after",
+      }
+    )
+      .then((user) => {
+        console.log(user);
+        return res.status(200).json({ message: language[lang].response[203] });
+      })
+      .finally(() => {
+        reset.status = "complete";
+        reset.save();
+      });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ message: language[lang].response[500] });
+  }
 };
 
 export default resetPassword;

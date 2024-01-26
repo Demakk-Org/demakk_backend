@@ -3,9 +3,9 @@ import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
 import queryByType from "../../utils/queryByType.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 async function loginUser(req, res) {
   console.log(req.body);
@@ -27,24 +27,25 @@ async function loginUser(req, res) {
     );
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      console.log("I am here");
       const token = Jwt.sign(
         {
           from: "Demakk Printing Enterprise",
           uid: user._id,
           email: user.email,
           name: user.firstName,
+          phoneNumber: user.phoneNumber,
           iat: Date.now(),
+          lang,
         },
         "your_secret_key",
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
-      return res.json({ token, user });
+      return res.json({ token, message: language[lang].response[205] });
     } else {
-      return res.status(401).json({ message: "Invalid credential" });
+      return res.status(401).json({ message: language[lang].response[402] });
     }
   } catch (error) {
-    return res.status(500).json({ message: "Server error, Try again!" });
+    return res.status(500).json({ message: language[lang].response[500] });
   }
 }
 

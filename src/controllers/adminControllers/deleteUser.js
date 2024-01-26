@@ -1,13 +1,27 @@
+import { config } from "dotenv";
+import language from "../../../language.js";
 import Cart from "../../models/cartSchema.js";
 import User from "../../models/userSchema.js";
+import { ObjectId } from "bson";
+
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const deleteUser = (req, res) => {
-  const { uid } = req.body;
+  let { uid, lang } = req.body;
+
+  if (!lang || !(lang in language)) {
+    lang = LANG;
+  }
 
   if (!uid) {
     return res.status(400).json({
-      status: 400,
-      message: "Please provide user id",
+      message: language[lang].response[415],
+    });
+  }
+
+  if (!ObjectId.isValid(uid)) {
+    return res.status(400).json({
+      message: language[lang].response[418],
     });
   }
 
@@ -15,8 +29,7 @@ const deleteUser = (req, res) => {
     .then((user) => {
       if (!user) {
         return res.status(404).json({
-          status: 404,
-          message: "User not found",
+          message: language[lang].response[416],
         });
       }
 
@@ -24,22 +37,21 @@ const deleteUser = (req, res) => {
         .then((cart) => {
           if (!cart) {
             res.status(404).json({
-              status: 404,
-              message: "Cart not found",
+              message: language[lang].response[417],
             });
           }
         })
         .catch((error) => {
+          console.log(error);
           return res.status(500).json({
-            status: 500,
-            message: "Unable to find and delete the cart, please try again!",
+            message: language[lang].response[500],
           });
         });
     })
     .catch((error) => {
+      console.log(error);
       return res.status(500).json({
-        status: 500,
-        message: "Unable to find the user, please try again!",
+        message: language[lang].response[500],
       });
     })
     .finally(async () => {
@@ -47,15 +59,11 @@ const deleteUser = (req, res) => {
         const user = await User.findByIdAndDelete(uid);
         if (user) {
           return res.status(200).json({
-            status: 200,
-            message: "User deleted successfully",
-            user,
+            message: language[lang].response[204],
           });
         }
       } catch (error) {
-        return res
-          .status(500)
-          .json({ message: "Unable to delete the user, please try again!" });
+        return res.status(500).json({ message: language[lang].response[500] });
       }
     });
 };

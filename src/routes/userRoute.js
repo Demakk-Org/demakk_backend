@@ -11,6 +11,6 @@ const userRoute = Router();
 userRoute.get("/", UserAuthentication, getUser);
 userRoute.post("/addAndSetAddress", UserAuthentication, addAddress);
 userRoute.put("/address", UserAuthentication, updateAddress);
-userRoute.put("/:id", UserAuthentication, updateUser);
+userRoute.put("/", UserAuthentication, updateUser);
 
 export default userRoute;

@@ -9,14 +9,14 @@ import resetPassword from "../controllers/authControllers/resetPassword.js";
 import UserAuthentication from "../middlewares/UserAuthentication.js";
 import changePassword from "../controllers/authControllers/changePassword.js";
 
-const authRoute = Router()
+const authRoute = Router();
 
-authRoute.post('/sendVerification', sendVerification)
-authRoute.post('/verifyOTP', veriftyOTP)
+authRoute.post("/sendVerification", UserAuthentication, sendVerification);
+authRoute.post("/verifyOTP", veriftyOTP);
 authRoute.post("/", registerUser);
 authRoute.post("/login", loginUser);
 authRoute.post("/requestResetPassword", requestResetPassword);
 authRoute.post("/resetPassword", resetPassword);
-authRoute.post("/changePassword", UserAuthentication , changePassword);
+authRoute.post("/changePassword", UserAuthentication, changePassword);
 
 export default authRoute;

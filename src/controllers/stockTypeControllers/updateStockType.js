@@ -11,21 +11,24 @@ const updateStockType = async (req, res) => {
     lang = LANG;
   }
 
-  if (
-    !stockTypeName ||
-    !id ||
-    !(stockTypeName instanceof Object && stockTypeName.constructor === Object)
-  ) {
+  if (!stockTypeName || !id) {
     return res.status(400).json({
       message: language[lang].response[400],
     });
+  }
+
+  if (
+    !(stockTypeName instanceof Object) &&
+    stockTypeName.constructor === Object
+  ) {
+    return res.status(400).json({ message: language[lang].response[423] });
   }
 
   try {
     const stockType = await StockType.findById(id);
 
     if (!stockType) {
-      return res.status(404).json({ message: language[lang].response[404] });
+      return res.status(404).json({ message: language[lang].response[424] });
     }
 
     stockType.name.set(stockTypeName["lang"], stockTypeName["value"]);
@@ -33,8 +36,9 @@ const updateStockType = async (req, res) => {
 
     return res
       .status(200)
-      .json({ stockType, message: language[lang].response[201] });
+      .json({ message: language[lang].response[201], stockType });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: language[lang].response[500] });
   }
 };

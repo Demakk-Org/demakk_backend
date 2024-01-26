@@ -1,6 +1,8 @@
 import Jwt from "jsonwebtoken";
 import User from "../../models/userSchema.js";
 import language from "../../../language.js";
+import { ObjectId } from "bson";
+import Address from "../../models/addressSchema.js";
 
 const updateAddress = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
@@ -8,20 +10,19 @@ const updateAddress = async (req, res) => {
 
   const { uid } = Jwt.decode(token, "your_secret_key");
 
-  console.log(typeof addressId, typeof type);
-
   if (!lang || !(lang in language)) {
     lang = "en";
   }
 
-  if (
-    typeof addressId != "string" ||
-    typeof type != "string" ||
-    !addressId ||
-    !type
-  ) {
+  if (!ObjectId.isValid(addressId)) {
     return res.status(400).json({
-      message: language[lang].error[400],
+      message: language[lang].response[407],
+    });
+  }
+
+  if (type != "billingAddress" && type != "shippingAddress") {
+    return res.status(400).json({
+      message: language[lang].response[400],
     });
   }
 
@@ -31,15 +32,30 @@ const updateAddress = async (req, res) => {
   } else if (type == "billingAddress") {
     query = { billingAddress: addressId };
   }
+
+  const address = await Address.findById(addressId);
+
+  if (!address) {
+    return res.status(404).json({
+      message: language[lang].response[407],
+    });
+  }
+
   console.log(query);
 
   try {
     const user = await User.findByIdAndUpdate(uid, query, {
       returnDocument: "after",
+    })
+      .populate(type, "-updatedAt -createdAt -uid")
+      .select(type);
+    res.status(200).json({
+      message: language[lang].response[203],
+      data: user,
     });
-    res.json(user);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].error[500] });
+    console.log(error.message);
+    return res.status(500).json({ message: language[lang].response[500] });
   }
 };
 
