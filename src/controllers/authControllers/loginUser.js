@@ -33,7 +33,9 @@ async function loginUser(req, res) {
           uid: user._id,
           email: user.email,
           name: user.firstName,
+          phoneNumber: user.phoneNumber,
           iat: Date.now(),
+          lang,
         },
         "your_secret_key",
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }

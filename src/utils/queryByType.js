@@ -8,6 +8,7 @@ const QueryByType = (account, lang) => {
       status: 200,
       type: "phoneNumber",
       searchQuery: { phoneNumber: account },
+      account,
     };
   } else if (
     account.match(
@@ -18,6 +19,7 @@ const QueryByType = (account, lang) => {
       status: 200,
       type: "email",
       searchQuery: { email: account },
+      account,
     };
   } else {
     return {

@@ -1,17 +1,33 @@
+import { config } from "dotenv";
 import OTP from "../../models/otpSchema.js";
 import User from "../../models/userSchema.js";
+import { ObjectId } from "bson";
+import language from "../../../language.js";
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const veriftyOTP = async (req, res) => {
-  const { otpID, otpValue } = req.body;
+  let { otpID, otpValue, lang } = req.body;
+
+  if (!lang || !(lang in language)) {
+    lang = LANG;
+  }
+
+  if (!otpID || !ObjectId.isValid(otpID)) {
+    return res.status(400).json({ message: language[lang].response[407] });
+  }
 
   const otp = await OTP.findById(otpID);
 
   if (!otp) {
-    res.status(404).json({ message: "OTP not found" });
+    return res.status(404).json({ message: language[lang].response[400] });
+  }
+
+  if (new Date(Date.now() - otp.expiresIn) > otp.createdAt) {
+    return res.status(406).json({ message: language[lang].response[406] });
   }
 
   if (otp.otp != otpValue) {
-    res.status(404).json({ message: "Invalid OTP" });
+    return res.status(404).json({ message: language[lang].response[409] });
   } else {
     if (otp.type == "email") {
       const user = await User.findOneAndUpdate(
@@ -22,18 +38,28 @@ const veriftyOTP = async (req, res) => {
         {
           returnDocument: "after",
         }
-      );
+      ).select("email emailVerified");
 
-      res.status(200).json({ message: "Account Verified", user });
+      otp.status = "complete";
+      otp.save();
+
+      return res
+        .status(200)
+        .json({ message: "Your Account is Verified", user });
     } else if (otp.type == "phoneNumber") {
       const user = await User.findOneAndUpdate(
         { phoneNumber: otp.account },
         {
           phoneNumberVerified: true,
         }
-      );
+      ).select("phone phoneNumberVerified");
 
-      res.status(200).json({ message: "Account Verified", user });
+      otp.status = "complete";
+      otp.save();
+
+      return res
+        .status(200)
+        .json({ message: "Your Account is Verified", user });
     }
   }
 };

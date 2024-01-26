@@ -8,7 +8,7 @@ const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 const UserAuthentication = (req, res, next) => {
   const token = req.headers?.authorization?.split(" ")[1];
   const bearer = req.headers?.authorization?.split(" ")[0];
-
+  console.log(Date.now());
   if (!token || bearer !== "Bearer") {
     console.error("Authentication failed: No token provided");
     return res.status(401).json({ message: language[LANG].response[401] });
