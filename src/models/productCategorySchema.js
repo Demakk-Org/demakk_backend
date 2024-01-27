@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import StockItem from "./stockItemSchema.js";
+import { StockItem } from "./stockItemSchema.js";
 
 const { Schema } = mongoose;
 
@@ -41,4 +41,4 @@ const ProductCategory = mongoose.model(
   ProductCategorySchema
 );
 
-export default ProductCategory;
+export { ProductCategory };

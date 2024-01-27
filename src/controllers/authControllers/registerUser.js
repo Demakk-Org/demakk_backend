@@ -8,8 +8,12 @@ import dotenv from "dotenv";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
+const camelize = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
 async function registerUser(req, res) {
-  let { account, firstName, lastName, password, confirmPassword, lang } =
+  let { account, firstName, lastName, password, confirmPassword, role, lang } =
     req.body;
 
   if (!lang || !(lang in language)) {
@@ -30,11 +34,11 @@ async function registerUser(req, res) {
     return res.status(400).json({ message: queryAndType.message });
   }
 
-  const user = await User.find(queryAndType.searchQuery);
+  const user = await User.findOne(queryAndType.searchQuery);
 
   console.log(user, queryAndType.type, account);
 
-  if (user.length != 0) {
+  if (!user) {
     return res.status(400).json({ message: language[lang].response[405] });
   }
 
@@ -49,8 +53,8 @@ async function registerUser(req, res) {
   }
 
   var query = {
-    firstName,
-    lastName,
+    firstName: camelize(firstName),
+    lastName: camelize(lastName),
     password: await bcrypt.hash(password, 10),
     role: "65a6ee8675aa7a6c6924c260",
     cart: cart._id,
@@ -74,7 +78,7 @@ async function registerUser(req, res) {
           id: user._id,
           name: user.firstName,
           iat: Date.now(),
-          lang
+          lang,
         },
         "your_secret_key",
 

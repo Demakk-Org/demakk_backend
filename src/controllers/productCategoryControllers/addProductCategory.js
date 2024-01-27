@@ -1,4 +1,4 @@
-import ProductCategory from "../../models/productCategorySchema.js";
+import { ProductCategory } from "../../models/productCategorySchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
 

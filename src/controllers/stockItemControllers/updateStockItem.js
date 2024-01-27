@@ -1,4 +1,4 @@
-import StockItem from "../../models/stockItemSchema.js";
+import { StockItem } from "../../models/stockItemSchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
 

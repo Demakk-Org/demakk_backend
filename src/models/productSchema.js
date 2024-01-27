@@ -17,6 +17,7 @@ const ProductSchema = Schema(
     productCategory: {
       type: mongoose.Types.ObjectId,
       required: true,
+      ref: "ProductCategory",
     },
     createdAt: {
       type: Date,
@@ -33,4 +34,4 @@ const ProductSchema = Schema(
 
 const Product = mongoose.model("Product", ProductSchema);
 
-export default Product;
+export { Product };
