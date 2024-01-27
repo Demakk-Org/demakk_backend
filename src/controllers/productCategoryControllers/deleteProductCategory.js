@@ -1,6 +1,7 @@
-import ProductCategory from "../../models/productCategorySchema.js";
+import { ProductCategory } from "../../models/productCategorySchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
+import { ObjectId } from "bson";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -11,10 +12,17 @@ const deleteProductCategory = async (req, res) => {
     lang = LANG;
   }
 
-  if (!productCategoryId || typeof productCategoryId !== "string") {
+  if (!productCategoryId) {
     return res.status(400).json({
       message: language[lang].response[400],
     });
+  }
+
+  if (
+    typeof productCategoryId !== "string" ||
+    !ObjectId.isValid(productCategoryId)
+  ) {
+    return res.status(400).json({ message: language[lang].response[430] });
   }
 
   try {
@@ -23,11 +31,10 @@ const deleteProductCategory = async (req, res) => {
     );
 
     if (!productCategory) {
-      return res.status(404).json({ message: language[lang].response[404] });
+      return res.status(404).json({ message: language[lang].response[431] });
     }
     return res.status(200).json({
-      productCategory,
-      message: language[lang].response[200],
+      message: language[lang].response[204],
     });
   } catch (error) {
     return res.status(500).json({ message: language[lang].response[500] });

@@ -1,4 +1,4 @@
-import Product from "../../models/productSchema.js";
+import { Product } from "../../models/productSchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
 

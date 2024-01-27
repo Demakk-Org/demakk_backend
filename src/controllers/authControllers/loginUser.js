@@ -8,7 +8,7 @@ import { config } from "dotenv";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 async function loginUser(req, res) {
-  console.log(req.body);
+
   let { account, password, lang } = req.body;
 
   if (!lang || !(lang in language)) {
@@ -40,7 +40,7 @@ async function loginUser(req, res) {
         "your_secret_key",
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
-      return res.json({ token, message: language[lang].response[205] });
+      return res.json({ message: language[lang].response[205], token });
     } else {
       return res.status(401).json({ message: language[lang].response[402] });
     }

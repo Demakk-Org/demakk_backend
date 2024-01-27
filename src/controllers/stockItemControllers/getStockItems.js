@@ -1,17 +1,18 @@
 import { config } from "dotenv";
 import language from "../../../language.js";
-import { StockType } from "../../models/stockTypeSchema.js";
+import { StockItem } from "../../models/stockItemSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
-const getStockTypes = (req, res) => {
+const getStockItems = (req, res) => {
   let { lang } = req.body;
 
   if (!lang || !(lang in language)) {
     lang = LANG;
   }
 
-  StockType.find({})
+  StockItem.find({})
+    .populate("stockType", "name")
     .then((data) => {
       res.status(200).json({ data });
     })
@@ -23,4 +24,4 @@ const getStockTypes = (req, res) => {
     });
 };
 
-export { getStockTypes };
+export { getStockItems };
