@@ -10,6 +10,7 @@ export const AddressSchema = new Schema(
       required: true,
     },
     country: String,
+    region: String,
     city: String,
     subCity: String,
     woreda: String,

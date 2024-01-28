@@ -4,11 +4,12 @@ import { config } from "dotenv";
 import { decode } from "jsonwebtoken";
 import { ObjectId } from "bson";
 import Address from "../../models/addressSchema.js";
+import QueryByType from "../../utils/queryByType.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateUser = async (req, res) => {
-  const token = req.headers?.authorization?.split(" ")[1];
+  const token = req.headers.authorization?.split(" ")[1];
   const tokenValues = decode(token, "your_secret_key");
   const { uid } = tokenValues;
 
@@ -21,8 +22,6 @@ const updateUser = async (req, res) => {
     shippingAddress,
     billingAddress,
   } = req.body;
-
-  const query = {};
 
   if (!lang || !(lang in language)) {
     lang = LANG;
@@ -40,17 +39,25 @@ const updateUser = async (req, res) => {
   }
 
   if (
-    (shippingAddress && !ObjectId.isValid(shippingAddress)) ||
-    (billingAddress && !ObjectId.isValid(billingAddress))
+    (firstName && typeof firstName !== "string") ||
+    (lastName && typeof lastName !== "string")
   ) {
     return res.status(400).json({ message: language[lang].response[407] });
   }
 
-  Array.from(Object.keys(req.body)).forEach((item) => {
-    if (item) {
-      query[item] = req.body[item];
-    }
-  });
+  if (
+    (email && QueryByType(email, lang).status == 400) ||
+    (phoneNumber && QueryByType(phoneNumber, lang).status == 400)
+  ) {
+    return res.status(400).json({ message: language[lang].response[403] });
+  }
+
+  if (
+    (shippingAddress && !ObjectId.isValid(shippingAddress)) ||
+    (billingAddress && !ObjectId.isValid(billingAddress))
+  ) {
+    return res.status(400).json({ message: language[lang].response[434] });
+  }
 
   if (shippingAddress) {
     const address = await Address.findById(shippingAddress);
@@ -58,6 +65,10 @@ const updateUser = async (req, res) => {
       return res.status(404).json({
         message: language[lang].response[408],
       });
+    }
+
+    if (address.uid.toString() !== uid) {
+      return res.status(403).json({ message: language[lang].response[401] });
     }
   }
 
@@ -68,14 +79,35 @@ const updateUser = async (req, res) => {
         message: language[lang].response[408],
       });
     }
+
+    if (address.uid.toString() !== uid) {
+      return res.status(403).json({ message: language[lang].response[401] });
+    }
   }
 
   try {
-    const user = await User.findByIdAndUpdate(uid, query, {
-      returnDocument: "after",
-    })
-      .select(Array.from(Object.keys(query)).join(" "))
-      .populate("shippingAddress billingAddress", "city subCity");
+    const user = await User.findById(uid).populate(
+      "shippingAddress billingAddress",
+      "country region city subCity"
+    );
+
+    if (firstName && firstName !== user.firstName) user.firstName = firstName;
+    if (lastName && lastName !== user.lastName) user.lastName = lastName;
+    if (email && email !== user.email) {
+      user.email = email;
+      user.emailVerified = false;
+      emailVerified = false;
+    }
+    if (phoneNumber && phoneNumber !== user.phoneNumber) {
+      user.phoneNumber = phoneNumber;
+      user.phoneNumberVerified = false;
+    }
+    if (shippingAddress && shippingAddress !== user.shippingAddress)
+      user.shippingAddress = shippingAddress;
+    if (billingAddress && billingAddress !== user.billingAddress)
+      user.billingAddress = billingAddress;
+
+    await user.save();
 
     return res
       .status(200)
