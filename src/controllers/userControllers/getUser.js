@@ -5,16 +5,22 @@ import language from "../../../language.js";
 async function getUser(req, res) {
   let { lang } = req.body;
   const token = req.headers.authorization.split(" ")[1];
-  const { id } = Jwt.decode(token, "your_secret_key");
+  const { uid } = Jwt.decode(token, "your_secret_key");
+  const taken = Jwt.decode(token, "your_secret_key");
+  console.log(taken);
+
+  console.log(uid);
 
   if (!lang || !(lang in language)) {
     lang = "en";
   }
 
   try {
-    const user = await User.findById(id).select(
-      "email phoneNumber firstName lastName role shippingAddress billingAddress cart"
-    );
+    const user = await User.findById(uid)
+      .select(
+        "email phoneNumber firstName lastName role shippingAddress billingAddress cart"
+      )
+      .populate("role shippingAddress billingAddress cart");
     console.log(user);
     return res.json(user);
   } catch (error) {

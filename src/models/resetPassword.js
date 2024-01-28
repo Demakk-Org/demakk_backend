@@ -10,6 +10,7 @@ const reserPasswordSchema = new Schema({
   requestedAt: {
     type: Date,
     default: Date.now(),
+    immutable: true,
   },
   status: {
     type: String,

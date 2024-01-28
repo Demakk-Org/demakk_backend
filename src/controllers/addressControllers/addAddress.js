@@ -9,7 +9,6 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addAddress = async (req, res) => {
   let {
-    type,
     lang,
     country,
     city,
@@ -28,15 +27,19 @@ const addAddress = async (req, res) => {
   }
 
   if (!ObjectId.isValid(uid)) {
-    return res.status(400).json({ message: language[lang].response[407] });
+    return res.status(400).json({ message: language[lang].response[418] });
   }
 
-  if (!type || type !== ("shippingAddress" && "billingAddress")) {
+  if (!country || !city || !subCity) {
     return res.status(400).json({ message: language[lang].response[400] });
   }
 
   try {
     User.findById(uid).then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: language[lang].response[416] });
+      }
+
       try {
         Address.create({
           uid: user._id,
@@ -47,16 +50,10 @@ const addAddress = async (req, res) => {
           uniqueIdentifier,
           streetAddress,
           postalCode,
-        }).then(async (data) => {
-          if (type == "shippingAddress") {
-            user.shippingAddress = data._id;
-          } else if (type == "billingAddress") {
-            user.billingAddress = data._id;
-          }
-          user.save();
+        }).then((data) => {
           return res
             .status(200)
-            .json({ message: language[lang].response[201], data });
+            .json({ message: language[lang].response[208], data });
         });
       } catch (error) {
         console.log(error.message);
@@ -69,4 +66,4 @@ const addAddress = async (req, res) => {
   }
 };
 
-export default addAddress;
+export { addAddress };

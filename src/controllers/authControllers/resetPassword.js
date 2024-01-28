@@ -40,6 +40,8 @@ const resetPassword = async (req, res) => {
   const now = new Date(Date.now() - reset.expiresIn);
   const time = reset.requestedAt;
 
+  console.log(now, time);
+
   if (now > time) {
     return res.status(400).json({ message: language[lang].response[406] });
   }

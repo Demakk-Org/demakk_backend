@@ -18,8 +18,10 @@ const updateStockType = async (req, res) => {
   }
 
   if (
-    !(stockTypeName instanceof Object) &&
-    stockTypeName.constructor === Object
+    (!(stockTypeName instanceof Object) &&
+      stockTypeName.constructor === Object) ||
+    stockTypeName.lang == undefined ||
+    stockTypeName.value == undefined
   ) {
     return res.status(400).json({ message: language[lang].response[423] });
   }
@@ -36,7 +38,7 @@ const updateStockType = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: language[lang].response[201], stockType });
+      .json({ message: language[lang].response[203], stockType });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: language[lang].response[500] });

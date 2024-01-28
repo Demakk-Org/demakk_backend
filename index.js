@@ -10,6 +10,7 @@ import { stockTypeRoute } from "./src/routes/stockTypeRoute.js";
 import { stockItemRoute } from "./src/routes/stockItemRoute.js";
 import { productCategoryRoute } from "./src/routes/ProductCategoryRoute.js";
 import { productRoute } from "./src/routes/ProductRoute.js";
+import { addressRoute } from "./src/routes/addressRoute.js";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
 const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;
@@ -36,6 +37,7 @@ app.use("/api/v1/stockItem", stockItemRoute);
 app.use("/api/v1/stockType", stockTypeRoute);
 app.use("/api/v1/productCategory", productCategoryRoute);
 app.use("/api/v1/product", productRoute);
+app.use("/api/v1/address", addressRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello, this is demakk your most trusted ecommerce site");

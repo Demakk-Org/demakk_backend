@@ -38,7 +38,7 @@ async function registerUser(req, res) {
 
   console.log(user, queryAndType.type, account);
 
-  if (!user) {
+  if (user) {
     return res.status(400).json({ message: language[lang].response[405] });
   }
 
