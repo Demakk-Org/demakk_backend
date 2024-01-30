@@ -19,7 +19,8 @@ const addStockType = async (req, res) => {
 
   if (
     !stockTypeName instanceof Object &&
-    stockTypeName.constructor === Object
+    stockTypeName.constructor === Object &&
+    (!stockTypeName.lang || !stockTypeName.value)
   ) {
     return res.status(400).json({ message: language[lang].response[423] });
   }

@@ -30,9 +30,7 @@ const deleteStockType = async (req, res) => {
       return res.status(404).json({ message: language[lang].response[424] });
     }
 
-    return res
-      .status(200)
-      .json({ stockType, message: language[lang].response[204] });
+    return res.status(200).json({ message: language[lang].response[204] });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: language[lang].response[500] });

@@ -1,57 +1,86 @@
 import { config } from "dotenv";
-import { Product } from "../../models/productSchema.js";
 import language from "../../../language.js";
+import { ObjectId } from "bson";
+import { Product } from "../../models/productSchema.js";
 
-const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
-const getProducts = async (req, res) => {
-  let { page, limit, lang, sort } = req.body;
+const getProduct = (req, res) => {
+  let productId = req.params.id;
+  let { lang } = req.body;
 
   if (!lang || !(lang in language)) {
     lang = LANG;
   }
 
-  if (sort === undefined) sort = SORT;
-
-  if (page === undefined) page = PAGE;
-  if (limit === undefined) limit = LIMIT;
-
-  let query = {};
-
-  Array.from(Object.keys(req.body)).forEach((item) => {
-    if (
-      item != null &&
-      item != "page" &&
-      item != "limit" &&
-      item != "lang" &&
-      item != "sort"
-    ) {
-      query[item] = req.body[item];
-    }
-  });
-
-  console.log(query);
-
-  const count = await Product.countDocuments(query);
-
-  try {
-    Product.find(query)
-      .limit(limit)
-      .skip((page - 1) * limit)
-      .sort(sort)
-      .populate("productCategory")
-      .then((products) => {
-        return res.status(200).json({
-          page: page.toString(),
-          pages: Math.ceil(count / limit).toString(),
-          limit: limit.toString(),
-          count: count.toString(),
-          users: products,
-        });
-      });
-  } catch (err) {
-    return res.status(500).json({ error: language[lang].response[500] });
+  if (!productId) {
+    return res.status(400).json({ message: language[lang].response[400] });
   }
+
+  if (!ObjectId.isValid(productId)) {
+    return res.status(400).json({ message: language[lang].response[432] });
+  }
+
+  Product.findById(productId)
+    .populate({
+      path: "productCategory",
+      populate: {
+        path: "stockItem",
+        populate: "stockType",
+      },
+    })
+    .then((product) => {
+      console.log(product);
+      if (!product) {
+        return res.status(404).json({ message: language[lang].response[433] });
+      }
+
+      let data = {
+        id: product._id,
+        name: product.name.get(lang)
+          ? product.name.get(lang)
+          : product.name.get(LANG)
+          ? product.name.get(LANG)
+          : product.name.get("en"),
+        description: product.description.get(lang)
+          ? product.description.get(lang)
+          : product.description.get(LANG)
+          ? product.description.get(LANG)
+          : product.description.get("en"),
+        productCategory: {
+          id: product.productCategory?._id,
+          name: product.productCategory?.name.get(lang)
+            ? product.productCategory?.name.get(lang)
+            : product.productCategory?.name.get(LANG)
+            ? product.productCategory?.name.get(LANG)
+            : product.productCategory?.name.get("en"),
+          additionalPrice: product.productCategory.additionalPrice,
+          additionalCost: product.productCategory.additionalCost,
+          stockItem: {
+            id: product.productCategory.stockItem._id,
+            name: product.productCategory.stockItem.name.get(lang)
+              ? product.productCategory.stockItem.name.get(lang)
+              : product.productCategory.stockItem.name.get(LANG)
+              ? product.productCategory.stockItem.name.get(LANG)
+              : product.productCategory.stockItem.name.get("en"),
+            stockType: {
+              id: product.productCategory.stockItem.stockType._id,
+              name: product.productCategory.stockItem.stockType.name.get(lang)
+                ? product.productCategory.stockItem.stockType.name.get(lang)
+                : product.productCategory.stockItem.stockType.name.get(LANG)
+                ? product.productCategory.stockItem.stockType.name.get(LANG)
+                : product.productCategory.stockItem.stockType.name.get("en"),
+            },
+          },
+        },
+      };
+      console.log(product);
+      return res.status(200).json({ data });
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).json({ message: language[lang].response[500] });
+    });
 };
 
-export { getProducts };
+export { getProduct };

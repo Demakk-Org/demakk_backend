@@ -1,6 +1,7 @@
 import { StockType } from "../../models/stockTypeSchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
+import { isValidObjectId } from "mongoose";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -17,11 +18,15 @@ const updateStockType = async (req, res) => {
     });
   }
 
+  if (!isValidObjectId(id)) {
+    return res.status(400).json({ message: language[lang].response[425] });
+  }
+
   if (
     (!(stockTypeName instanceof Object) &&
       stockTypeName.constructor === Object) ||
-    stockTypeName.lang == undefined ||
-    stockTypeName.value == undefined
+    !stockTypeName.lang ||
+    !stockTypeName.value
   ) {
     return res.status(400).json({ message: language[lang].response[423] });
   }

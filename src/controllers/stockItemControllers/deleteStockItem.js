@@ -17,10 +17,6 @@ const deleteStockItem = async (req, res) => {
     });
   }
 
-  if (typeof stockItemId !== "string") {
-    return res.status(400).json({ message: language[lang].response[428] });
-  }
-
   if (!ObjectId.isValid(stockItemId)) {
     return res.status(400).json({ message: language[lang].response[428] });
   }

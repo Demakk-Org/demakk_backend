@@ -13,7 +13,22 @@ const getStockTypes = (req, res) => {
 
   StockType.find({})
     .then((data) => {
-      res.status(200).json({ data });
+      let stockTypeList = [];
+      console.log(data);
+      data.forEach((stockType) => {
+        console.log(stockType.name.get(lang));
+        stockTypeList.push({
+          id: stockType._id,
+          name: stockType.name.get(lang)
+            ? stockType.name.get(lang)
+            : stockType.name.get(LANG)
+            ? stockType.name.get(LANG)
+            : stockType.name.get("en"),
+        });
+      });
+      res.status(200).json({
+        data: stockTypeList,
+      });
     })
     .catch((err) => {
       console.log(err);

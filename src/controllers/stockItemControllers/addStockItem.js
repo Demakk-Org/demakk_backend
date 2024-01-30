@@ -1,6 +1,7 @@
 import { StockItem } from "../../models/stockItemSchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
+import { isValidObjectId } from "mongoose";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -11,17 +12,24 @@ const addStockItem = async (req, res) => {
     lang = LANG;
   }
 
-  if (
-    !stockTypeId ||
-    !name ||
-    !price ||
-    !costToProduce ||
-    typeof stockTypeId !== "string" ||
-    !(name instanceof Object && name.constructor === Object) ||
-    typeof price !== "number" ||
-    typeof costToProduce !== "number"
-  ) {
+  if (!stockTypeId || !name || !price || !costToProduce) {
     return res.status(400).json({ message: language[lang].response[400] });
+  }
+
+  if (!isValidObjectId(stockTypeId)) {
+    return res.status(400).json({ message: language[lang].response[425] });
+  }
+
+  if (
+    !name instanceof Object &&
+    name.constructor === Object &&
+    (!name.lang || !name.value)
+  ) {
+    return res.status(400).json({ message: language[lang].response[438] });
+  }
+
+  if (typeof price !== "number" || typeof costToProduce !== "number") {
+    return res.status(400).json({ message: language[lang].response[439] });
   }
 
   try {

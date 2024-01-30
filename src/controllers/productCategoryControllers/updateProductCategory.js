@@ -1,6 +1,7 @@
 import { ProductCategory } from "../../models/productCategorySchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
+import { ObjectId } from "bson";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -22,8 +23,11 @@ const updateProductCategory = async (req, res) => {
     return res.status(400).json({ message: language[lang].response[400] });
   }
 
+  if (!ObjectId.isValid(productCategoryId)) {
+    return res.status(400).json({ message: language[lang].response[437] });
+  }
+
   if (
-    typeof productCategoryId !== "string" ||
     (stockItemId && typeof stockItemId !== "string") ||
     (additionalPrice && typeof additionalPrice !== "number") ||
     (additionalCost && typeof additionalCost !== "number") ||
@@ -46,8 +50,8 @@ const updateProductCategory = async (req, res) => {
     await productCategory.save();
 
     return res.status(201).json({
+      message: language[lang].response[203],
       productCategory,
-      message: language[lang].response[201],
     });
   } catch (error) {
     return res.status(500).json({ message: language[lang].response[500] });
