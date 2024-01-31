@@ -11,6 +11,7 @@ const deleteStockItem = async (req, res) => {
   if (!lang || !(lang in language)) {
     lang = LANG;
   }
+
   if (!stockItemId) {
     return res.status(400).json({
       message: language[lang].response[400],

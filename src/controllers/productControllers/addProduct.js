@@ -1,6 +1,7 @@
 import { Product } from "../../models/productSchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
+import { isValidObjectId } from "mongoose";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -15,14 +16,24 @@ const addProduct = async (req, res) => {
     return res.status(400).json({ message: language[lang].response[400] });
   }
 
+  if (!isValidObjectId(productCategoryId)) {
+    return res.status(400).json({ message: language[lang].response[437] });
+  }
+
+  if (
+    !(name instanceof Object && name.constructor === Object) ||
+    !name.lang ||
+    !name.value
+  ) {
+    return res.status(400).json({ message: language[lang].response[440] });
+  }
+
   if (
     !(description instanceof Object && description.constructor === Object) ||
-    !(name instanceof Object && name.constructor === Object) ||
-    typeof productCategoryId !== "string"
+    !description.lang ||
+    !description.value
   ) {
-    return res.status(400).json({
-      message: language[lang].response[400],
-    });
+    return res.status(400).json({ message: language[lang].response[442] });
   }
 
   try {
@@ -34,7 +45,7 @@ const addProduct = async (req, res) => {
 
     return res
       .status(201)
-      .json({ product, message: language[lang].response[201] });
+      .json({ message: language[lang].response[201], product });
   } catch (error) {
     console.log(error.message);
     return res.status(500).json({ message: language[lang].response[500] });

@@ -12,8 +12,8 @@ const getProductCategories = async (req, res) => {
   }
 
   if (sort === undefined) sort = SORT;
-  if (page === undefined) page = PAGE;
-  if (limit === undefined) limit = LIMIT;
+  if (page === undefined || typeof page !== "number") page = PAGE;
+  if (limit === undefined || typeof limit !== "number") limit = LIMIT;
 
   let query = {};
 

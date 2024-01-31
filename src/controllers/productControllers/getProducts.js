@@ -12,8 +12,8 @@ const getProducts = async (req, res) => {
   }
 
   if (sort === undefined) sort = SORT;
-  if (page === undefined) page = PAGE;
-  if (limit === undefined) limit = LIMIT;
+  if (page === undefined || typeof page !== "number") page = PAGE;
+  if (limit === undefined || typeof limit !== "number") limit = LIMIT;
 
   let query = {};
 
@@ -63,23 +63,23 @@ const getProducts = async (req, res) => {
               : product.description.get(LANG)
               ? product.description.get(LANG)
               : product.description.get("en"),
-            productCategory: {
-              id: product.productCategory?._id,
-              name: product.productCategory?.name.get(lang)
-                ? product.productCategory?.name.get(lang)
-                : product.productCategory?.name.get(LANG)
-                ? product.productCategory?.name.get(LANG)
-                : product.productCategory?.name.get("en"),
+            productCategory: product.productCategory && {
+              id: product.productCategory._id,
+              name: product.productCategory.name.get(lang)
+                ? product.productCategory.name.get(lang)
+                : product.productCategory.name.get(LANG)
+                ? product.productCategory.name.get(LANG)
+                : product.productCategory.name.get("en"),
               additionalPrice: product.productCategory.additionalPrice,
               additionalCost: product.productCategory.additionalCost,
-              stockItem: {
+              stockItem: product.productCategory.stockItem && {
                 id: product.productCategory.stockItem._id,
                 name: product.productCategory.stockItem.name.get(lang)
                   ? product.productCategory.stockItem.name.get(lang)
                   : product.productCategory.stockItem.name.get(LANG)
                   ? product.productCategory.stockItem.name.get(LANG)
                   : product.productCategory.stockItem.name.get("en"),
-                stockType: {
+                stockType: product.productCategory.stockItem.stockType && {
                   id: product.productCategory.stockItem.stockType._id,
                   name: product.productCategory.stockItem.stockType.name.get(
                     lang

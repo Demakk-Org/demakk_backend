@@ -11,13 +11,23 @@ const addProductCategory = async (req, res) => {
     lang = LANG;
   }
 
+  if (!stockItemId || !name || !additionalPrice || !additionalCost) {
+    return res.status(400).json({ message: language[lang].response[400] });
+  }
+
+  if (!isValidObjectId(stockItemId)) {
+    return res.status(400).json({ message: language[lang].response[428] });
+  }
+
   if (
-    !stockItemId ||
-    !name ||
-    !additionalPrice ||
-    !additionalCost ||
-    typeof stockItemId !== "string" ||
     !(name instanceof Object && name.constructor === Object) ||
+    !name.lang ||
+    !name.value
+  ) {
+    return res.status(400).json({ message: language[lang].response[440] });
+  }
+
+  if (
     typeof additionalPrice !== "number" ||
     typeof additionalCost !== "number"
   ) {
@@ -33,8 +43,8 @@ const addProductCategory = async (req, res) => {
     });
 
     return res.status(201).json({
-      productCategory,
       message: language[lang].response[201],
+      productCategory,
     });
   } catch (error) {
     return res.status(500).json({ message: language[lang].response[500] });

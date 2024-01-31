@@ -16,12 +16,12 @@ const updateStockItem = async (req, res) => {
     return res.status(400).json({ message: language[lang].response[400] });
   }
 
-  if (!stockTypeId && !name && !price && !costToProduce) {
-    return res.status(400).json({ message: language[lang].response[400] });
-  }
-
   if (!isValidObjectId(stockItemId)) {
     return res.status(400).json({ message: language[lang].response[428] });
+  }
+
+  if (!stockTypeId && !name && !price && !costToProduce) {
+    return res.status(400).json({ message: language[lang].response[400] });
   }
 
   if (stockTypeId && !isValidObjectId(stockTypeId)) {
@@ -37,7 +37,10 @@ const updateStockItem = async (req, res) => {
     return res.status(400).json({ message: language[lang].response[438] });
   }
 
-  if (typeof price !== "number" || typeof costToProduce !== "number") {
+  if (
+    (price && typeof price !== "number") ||
+    (costToProduce && typeof costToProduce !== "number")
+  ) {
     return res.status(400).json({ message: language[lang].response[439] });
   }
 

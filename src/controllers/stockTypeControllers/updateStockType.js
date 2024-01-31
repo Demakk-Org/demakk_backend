@@ -43,7 +43,7 @@ const updateStockType = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: language[lang].response[203], stockType });
+      .json({ message: language[lang].response[203], data: stockType });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: language[lang].response[500] });

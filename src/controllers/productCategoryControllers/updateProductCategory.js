@@ -1,7 +1,7 @@
 import { ProductCategory } from "../../models/productCategorySchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
-import { ObjectId } from "bson";
+import { isValidObjectId } from "mongoose";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -23,24 +23,38 @@ const updateProductCategory = async (req, res) => {
     return res.status(400).json({ message: language[lang].response[400] });
   }
 
-  if (!ObjectId.isValid(productCategoryId)) {
+  if (!isValidObjectId(productCategoryId)) {
     return res.status(400).json({ message: language[lang].response[437] });
   }
 
-  if (
-    (stockItemId && typeof stockItemId !== "string") ||
-    (additionalPrice && typeof additionalPrice !== "number") ||
-    (additionalCost && typeof additionalCost !== "number") ||
-    (name && !(name instanceof Object && name.constructor === Object)) ||
-    (!stockItemId && !name && !additionalPrice && !additionalCost)
-  ) {
+  if (!stockItemId && !name && !additionalPrice && !additionalCost) {
     return res.status(400).json({ message: language[lang].response[400] });
+  }
+
+  if (stockItemId && !isValidObjectId(stockItemId)) {
+    return res.status(400).json({ message: language[lang].response[428] });
+  }
+
+  if (
+    name &&
+    (!(name instanceof Object && name.constructor === Object) ||
+      !name.lang ||
+      !name.value)
+  ) {
+    return res.status(400).json({ message: language[lang].response[440] });
+  }
+
+  if (
+    (additionalPrice && typeof additionalPrice !== "number") ||
+    (additionalCost && typeof additionalCost !== "number")
+  ) {
+    return res.status(400).json({ message: language[lang].response[439] });
   }
 
   try {
     const productCategory = await ProductCategory.findById(productCategoryId);
     if (!productCategory) {
-      return res.status(404).json({ message: language[lang].response[404] });
+      return res.status(404).json({ message: language[lang].response[431] });
     }
 
     if (stockItemId) productCategory.stockItem = stockItemId;

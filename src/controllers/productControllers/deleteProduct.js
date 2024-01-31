@@ -18,7 +18,7 @@ const deleteProduct = async (req, res) => {
     });
   }
 
-  if (typeof productId !== "string" && !ObjectId.isValid(productId)) {
+  if (!ObjectId.isValid(productId)) {
     return res.status(400).json({
       message: language[lang].response[432],
     });

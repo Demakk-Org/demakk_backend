@@ -18,7 +18,7 @@ const addStockType = async (req, res) => {
   }
 
   if (
-    !stockTypeName instanceof Object &&
+    !(stockTypeName instanceof Object) &&
     stockTypeName.constructor === Object &&
     (!stockTypeName.lang || !stockTypeName.value)
   ) {
@@ -29,7 +29,7 @@ const addStockType = async (req, res) => {
     const stockType = await StockType.create({ name: stockTypeName });
     return res
       .status(201)
-      .json({ message: language[lang].response[201], stockType });
+      .json({ message: language[lang].response[201], data: stockType });
   } catch (error) {
     return res.status(500).json({ message: language[lang].response[200] });
   }

@@ -18,10 +18,7 @@ const deleteProductCategory = async (req, res) => {
     });
   }
 
-  if (
-    typeof productCategoryId !== "string" ||
-    !ObjectId.isValid(productCategoryId)
-  ) {
+  if (!ObjectId.isValid(productCategoryId)) {
     return res.status(400).json({ message: language[lang].response[430] });
   }
 

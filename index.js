@@ -30,14 +30,14 @@ mongoose
   });
 
 app.use("/api/v1/user", userRoute);
-app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/admin", adminRoute);
-app.use("/api/v1/stockItem", stockItemRoute);
+app.use("/api/v1/cart", cartRoute);
+app.use("/api/v1/address", addressRoute);
 app.use("/api/v1/stockType", stockTypeRoute);
+app.use("/api/v1/stockItem", stockItemRoute);
 app.use("/api/v1/productCategory", productCategoryRoute);
 app.use("/api/v1/product", productRoute);
-app.use("/api/v1/address", addressRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello, this is demakk your most trusted ecommerce site");
