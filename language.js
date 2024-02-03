@@ -56,6 +56,7 @@ export default {
       443: "Invalid price value!",
       444: "Invalid cost value!",
       445: "Invalid additional price value!",
+      446: "Invalid search input value!",
       500: "Internal Server Error, please try again!",
       501: "Not Implemented: it is under development",
     },
