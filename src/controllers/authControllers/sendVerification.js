@@ -5,6 +5,7 @@ import language from "../../../language.js";
 import { config } from "dotenv";
 import { decode } from "jsonwebtoken";
 import User from "../../models/userSchema.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -14,11 +15,11 @@ const sendVerification = async (req, res) => {
   const { lang, uid } = decode(token, "your-secret-key");
 
   if (!type) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (type !== "email" && type !== "phoneNumber") {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (!lang || !(lang in language)) {
@@ -28,22 +29,23 @@ const sendVerification = async (req, res) => {
   const user = await User.findById(uid)
     .select("email phoneNumber emailVerified")
     .catch((err) => {
-      return res.status(500).json({ message: language[lang].response[500] });
+      return ErrorHandler(res, 500, lang);
     });
 
   if (type == "email" && user.emailVerified) {
-    return res.status(400).json({ message: language[lang].response[410] });
+    return ErrorHandler(res, 410, lang);
   }
 
   if (type == "phoneNumber" && user.phoneNumberVerified) {
-    return res.status(400).json({ message: language[lang].response[411] });
+    return ErrorHandler(res, 411, lang);
   }
 
   const otp = await OTP.updateMany(
     { account: type == "email" ? user.email : user.phoneNumber },
     { status: "complete" }
   ).catch((err) => {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(err.message);
+    return ErrorHandler(res, 500, lang);
   });
 
   var message;
@@ -53,7 +55,7 @@ const sendVerification = async (req, res) => {
   if (type == "phoneNumber") {
     //add phone number send verification
     //write the function here
-    return res.status(500).json({ message: language[lang].response[501] });
+    return ErrorHandler(res, 501, lang);
   }
 
   if (type == "email") {
@@ -79,22 +81,20 @@ const sendVerification = async (req, res) => {
           type: type,
           otp: otpKey,
           account: user.email,
-          expiresIn: 1000 * 60 * 5, //10 minutes
-        }).then((data) => {
-          res.json({
-            message: language[lang].response[207],
-            data: {
-              id: data._id,
-              type: data.type,
-              account: data.account,
-              expiresIn: data.expiresIn,
-            },
-          });
+          expiresIn: 1000 * 60 * 5, //5 minutes
+        }).then((response) => {
+          const data = {
+            id: response._id,
+            type: response.type,
+            account: response.account,
+            expiresIn: response.expiresIn,
+          };
+          return ErrorHandler(res, 207, lang, data);
         });
       });
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: language[lang].response[500] });
+      console.log(error.message);
+      return ErrorHandler(res, 500, lang);
     } finally {
       transporter.close();
     }

@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { Product } from "../../models/productSchema.js";
 import language from "../../../language.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
@@ -41,16 +42,13 @@ const getProducts = async (req, res) => {
       .populate({
         path: "productCategory",
         populate: {
-          path: "productItem",
-          populate: {
-            path: "stockItem",
-            populate: "stockType",
-          },
+          path: "stockItem",
+          populate: "stockType",
         },
       })
-      .then((data) => {
+      .then((response) => {
         let products = [];
-        data.forEach((product) => {
+        response.forEach((product) => {
           let productItem = {
             id: product._id,
             name: product.name.get(lang)
@@ -71,7 +69,7 @@ const getProducts = async (req, res) => {
                 ? product.productCategory.name.get(LANG)
                 : product.productCategory.name.get("en"),
               additionalPrice: product.productCategory.additionalPrice,
-              additionalCost: product.productCategory.additionalCost,
+              // additionalCost: product.productCategory.additionalCost,
               stockItem: product.productCategory.stockItem && {
                 id: product.productCategory.stockItem._id,
                 name: product.productCategory.stockItem.name.get(lang)
@@ -91,21 +89,27 @@ const getProducts = async (req, res) => {
                         "en"
                       ),
                 },
+                price: product.productCategory.stockItem.price,
+                // costToProduce: product.productCategory.stockItem.costToProduce,
               },
             },
           };
           products.push(productItem);
         });
-        return res.status(200).json({
+
+        const data = {
           page: page.toString(),
           pages: Math.ceil(count / limit).toString(),
           limit: limit.toString(),
           count: count.toString(),
           data: products,
-        });
+        };
+
+        return ErrorHandler(res, 200, lang, data);
       });
   } catch (err) {
-    return res.status(500).json({ error: language[lang].response[500] });
+    console.log(err.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

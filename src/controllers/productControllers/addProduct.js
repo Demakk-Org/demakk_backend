@@ -1,9 +1,10 @@
 import { Product } from "../../models/productSchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addProduct = async (req, res) => {
   let { name, description, productCategoryId, lang } = req.body;
@@ -13,11 +14,11 @@ const addProduct = async (req, res) => {
   }
 
   if (!name || !description || !productCategoryId) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (!isValidObjectId(productCategoryId)) {
-    return res.status(400).json({ message: language[lang].response[437] });
+    return ErrorHandler(res, 437, lang);
   }
 
   if (
@@ -25,7 +26,7 @@ const addProduct = async (req, res) => {
     !name.lang ||
     !name.value
   ) {
-    return res.status(400).json({ message: language[lang].response[440] });
+    return ErrorHandler(res, 440, lang);
   }
 
   if (
@@ -33,22 +34,20 @@ const addProduct = async (req, res) => {
     !description.lang ||
     !description.value
   ) {
-    return res.status(400).json({ message: language[lang].response[442] });
+    return ErrorHandler(res, 442, lang);
   }
 
   try {
     const product = await Product.create({
-      name,
+      name: { [name.lang]: name.value },
+      description: { [description.lang]: description.value },
       productCategory: productCategoryId,
-      description,
     });
 
-    return res
-      .status(201)
-      .json({ message: language[lang].response[201], product });
+    return ErrorHandler(res, 200, lang, product);
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ message: language[lang].response[500] });
+    return ErrorHandler(res, 500, lang);
   }
 };
 

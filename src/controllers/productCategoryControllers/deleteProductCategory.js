@@ -1,9 +1,10 @@
 import { ProductCategory } from "../../models/productCategorySchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
-import { ObjectId } from "bson";
+import { config } from "dotenv";
+import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const deleteProductCategory = async (req, res) => {
   let { productCategoryId, lang } = req.body;
@@ -13,13 +14,11 @@ const deleteProductCategory = async (req, res) => {
   }
 
   if (!productCategoryId) {
-    return res.status(400).json({
-      message: language[lang].response[400],
-    });
+    return ErrorHandler(res, 400, lang)
   }
 
-  if (!ObjectId.isValid(productCategoryId)) {
-    return res.status(400).json({ message: language[lang].response[430] });
+  if (!isValidObjectId(productCategoryId)) {
+    return ErrorHandler(res, 430, lang);
   }
 
   try {
@@ -28,13 +27,12 @@ const deleteProductCategory = async (req, res) => {
     );
 
     if (!productCategory) {
-      return res.status(404).json({ message: language[lang].response[431] });
+      return ErrorHandler(res, 431, lang);
     }
-    return res.status(200).json({
-      message: language[lang].response[204],
-    });
+    return ErrorHandler(res, 204, lang);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

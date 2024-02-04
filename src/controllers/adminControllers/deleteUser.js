@@ -2,7 +2,8 @@ import { config } from "dotenv";
 import language from "../../../language.js";
 import Cart from "../../models/cartSchema.js";
 import User from "../../models/userSchema.js";
-import { ObjectId } from "bson";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -14,56 +15,43 @@ const deleteUser = (req, res) => {
   }
 
   if (!uid) {
-    return res.status(400).json({
-      message: language[lang].response[415],
-    });
+    return ErrorHandler(res, 415, lang);
   }
 
-  if (!ObjectId.isValid(uid)) {
-    return res.status(400).json({
-      message: language[lang].response[418],
-    });
+  if (!isValidObjectId(uid)) {
+    return ErrorHandler(res, 418, lang);
   }
 
   User.findById(uid, "cart")
     .then((user) => {
       if (!user) {
-        return res.status(404).json({
-          message: language[lang].response[416],
-        });
+        return ErrorHandler(res, 416, lang);
       }
 
       Cart.findByIdAndDelete(user.cart)
         .then((cart) => {
           if (!cart) {
-            res.status(404).json({
-              message: language[lang].response[417],
-            });
+            return ErrorHandler(res, 417, lang);
           }
         })
         .catch((error) => {
           console.log(error);
-          return res.status(500).json({
-            message: language[lang].response[500],
-          });
+          return ErrorHandler(res, 500, lang);
         });
     })
     .catch((error) => {
       console.log(error);
-      return res.status(500).json({
-        message: language[lang].response[500],
-      });
+      return ErrorHandler(res, 500, lang);
     })
     .finally(async () => {
       try {
         const user = await User.findByIdAndDelete(uid);
         if (user) {
-          return res.status(200).json({
-            message: language[lang].response[204],
-          });
+          return ErrorHandler(res, 204, lang);
         }
       } catch (error) {
-        return res.status(500).json({ message: language[lang].response[500] });
+        console.log(error);
+        return ErrorHandler(res, 500, lang);
       }
     });
 };

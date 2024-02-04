@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import language from "../../../language.js";
 import { StockType } from "../../models/stockTypeSchema.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -26,15 +27,12 @@ const getStockTypes = (req, res) => {
             : stockType.name.get("en"),
         });
       });
-      res.status(200).json({
-        data: stockTypeList,
-      });
+
+      return ErrorHandler(res, 200, lang, {data:stockTypeList});
     })
     .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: language[lang].response[500],
-      });
+      console.log(err.message);
+      return ErrorHandler(res, 500, lang);
     });
 };
 

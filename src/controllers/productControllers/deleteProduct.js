@@ -1,9 +1,10 @@
 import { Product } from "../../models/productSchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
-import { ObjectId } from "bson";
+import { config } from "dotenv";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const deleteProduct = async (req, res) => {
   let { productId, lang } = req.body;
@@ -13,25 +14,22 @@ const deleteProduct = async (req, res) => {
   }
 
   if (!productId) {
-    return res.status(400).json({
-      message: language[lang].response[400],
-    });
+    return ErrorHandler(res, 400, lang);
   }
 
-  if (!ObjectId.isValid(productId)) {
-    return res.status(400).json({
-      message: language[lang].response[432],
-    });
+  if (!isValidObjectId(productId)) {
+    return ErrorHandler(res, 432, lang);
   }
 
   try {
     const product = await Product.findByIdAndDelete(productId);
     if (!product) {
-      return res.status(404).json({ message: language[lang].response[433] });
+      return ErrorHandler(res, 433, lang);
     }
-    return res.status(200).json({ message: language[lang].response[204] });
+    return ErrorHandler(res, 204, lang);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

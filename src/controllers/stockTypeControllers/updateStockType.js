@@ -2,6 +2,7 @@ import { StockType } from "../../models/stockTypeSchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
 import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -13,13 +14,11 @@ const updateStockType = async (req, res) => {
   }
 
   if (!stockTypeName || !id) {
-    return res.status(400).json({
-      message: language[lang].response[400],
-    });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (!isValidObjectId(id)) {
-    return res.status(400).json({ message: language[lang].response[425] });
+    return ErrorHandler(res, 425, lang);
   }
 
   if (
@@ -28,25 +27,23 @@ const updateStockType = async (req, res) => {
     !stockTypeName.lang ||
     !stockTypeName.value
   ) {
-    return res.status(400).json({ message: language[lang].response[423] });
+    return ErrorHandler(res, 423, lang);
   }
 
   try {
     const stockType = await StockType.findById(id);
 
     if (!stockType) {
-      return res.status(404).json({ message: language[lang].response[424] });
+      return ErrorHandler(res, 424, lang);
     }
 
     stockType.name.set(stockTypeName["lang"], stockTypeName["value"]);
     await stockType.save();
 
-    return res
-      .status(200)
-      .json({ message: language[lang].response[203], data: stockType });
+    return ErrorHandler(res, 203, lang, stockType);
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

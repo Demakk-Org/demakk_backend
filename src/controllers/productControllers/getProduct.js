@@ -1,7 +1,8 @@
 import { config } from "dotenv";
 import language from "../../../language.js";
-import { ObjectId } from "bson";
 import { Product } from "../../models/productSchema.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -14,11 +15,11 @@ const getProduct = (req, res) => {
   }
 
   if (!productId) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
-  if (!ObjectId.isValid(productId)) {
-    return res.status(400).json({ message: language[lang].response[432] });
+  if (!isValidObjectId(productId)) {
+    return ErrorHandler(res, 432, lang);
   }
 
   Product.findById(productId)
@@ -30,9 +31,9 @@ const getProduct = (req, res) => {
       },
     })
     .then((product) => {
-      console.log(product);
+      console.log(product, "------->");
       if (!product) {
-        return res.status(404).json({ message: language[lang].response[433] });
+        return ErrorHandler(res, 433, lang);
       }
 
       let data = {
@@ -55,7 +56,7 @@ const getProduct = (req, res) => {
             ? product.productCategory.name.get(LANG)
             : product.productCategory.name.get("en"),
           additionalPrice: product.productCategory.additionalPrice,
-          additionalCost: product.productCategory.additionalCost,
+          // additionalCost: product.productCategory.additionalCost,
           stockItem: product.productCategory.stockItem && {
             id: product.productCategory.stockItem._id,
             name: product.productCategory.stockItem.name.get(lang)
@@ -71,15 +72,16 @@ const getProduct = (req, res) => {
                 ? product.productCategory.stockItem.stockType.name.get(LANG)
                 : product.productCategory.stockItem.stockType.name.get("en"),
             },
+            price: product.productCategory.stockItem.price,
+            // costToProduce: product.productCategory.stockItem.costToProduce,
           },
         },
       };
-      console.log(product);
-      return res.status(200).json({ data });
+      return ErrorHandler(res, 200, lang, data);
     })
     .catch((error) => {
-      console.log(error);
-      return res.status(500).json({ message: language[lang].response[500] });
+      console.log(error.message);
+      return ErrorHandler(res, 500, lang);
     });
 };
 

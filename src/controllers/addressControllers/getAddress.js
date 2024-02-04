@@ -2,6 +2,7 @@ import { config } from "dotenv";
 import language from "../../../language.js";
 import Address from "../../models/addressSchema.js";
 import { decode } from "jsonwebtoken";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
@@ -16,7 +17,6 @@ const getAddresses = async (req, res) => {
   }
 
   if (sort === undefined) sort = SORT;
-
   if (page === undefined) page = PAGE;
   if (limit === undefined) limit = LIMIT;
 
@@ -44,7 +44,7 @@ const getAddresses = async (req, res) => {
     Address.find(query)
       .limit(limit)
       .skip((page - 1) * limit)
-      .sort(sort)
+      // .sort(sort)
       .then((addresses) => {
         return res.status(200).json({
           page: page.toString(),
@@ -55,7 +55,7 @@ const getAddresses = async (req, res) => {
         });
       });
   } catch (err) {
-    return res.status(500).json({ error: language[lang].response[500] });
+    return ErrorHandler(res, 500, lang);
   }
 };
 

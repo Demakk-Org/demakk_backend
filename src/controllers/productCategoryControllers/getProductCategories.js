@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import language from "../../../language.js";
 import { ProductCategory } from "../../models/productCategorySchema.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const { LANG, SORT, LIMIT, PAGE } = config(process.cwd, ".env").parsed;
 
@@ -73,19 +74,19 @@ const getProductCategories = async (req, res) => {
 
         productCategoryList.push(productCategoryItem);
       });
-      return res.status(200).json({
+
+      const productCategories = {
         page: page.toString(),
         pages: Math.ceil(count / limit).toString(),
         limit: limit.toString(),
         count: count.toString(),
         data: productCategoryList,
-      });
+      };
+      return ErrorHandler(res, 200, lang, productCategories);
     })
     .catch((err) => {
-      console.log(err, lang);
-      return res.status(500).json({
-        message: language[lang].response[500],
-      });
+      console.log(err.message);
+      return ErrorHandler(err, 500, lang);
     });
 };
 

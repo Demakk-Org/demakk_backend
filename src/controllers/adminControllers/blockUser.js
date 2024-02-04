@@ -1,7 +1,8 @@
 import { config } from "dotenv";
 import language from "../../../language.js";
 import User from "../../models/userSchema.js";
-import { ObjectId } from "bson";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -13,39 +14,37 @@ const blockUser = (req, res) => {
   }
 
   if (!uid || block == null) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
-  if (!ObjectId.isValid(uid)) {
-    return res.status(400).json({ message: language[lang].response[418] });
+  if (!isValidObjectId(uid)) {
+    return ErrorHandler(res, 418, lang);
   }
 
   User.findById(uid)
     .select("blocked")
     .then(async (user) => {
       if (!user) {
-        return res.status(404).json({ message: language[lang].response[416] });
+        return ErrorHandler(res, 416, lang);
       }
 
       if (block && user.blocked) {
-        return res.status(400).json({ message: language[lang].response[421] });
+        return ErrorHandler(res, 421, lang);
       }
 
       if (!block && !user.blocked) {
-        return res.status(400).json({ message: language[lang].response[422] });
+        return ErrorHandler(res, 422, lang);
       }
 
       try {
         user.blocked = block;
         await user.save();
-        return res.status(200).json({
-          message: block
-            ? language[lang].response[419]
-            : language[lang].response[420],
-        });
+        return block
+          ? ErrorHandler(res, 419, lang)
+          : ErrorHandler(res, 420, lang);
       } catch (err) {
         console.log(err);
-        return res.status(500).json({ message: language[lang].response[500] });
+        return ErrorHandler(res, 500, lang);
       }
     });
 };

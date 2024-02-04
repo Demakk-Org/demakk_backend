@@ -4,26 +4,30 @@ import Jwt from "jsonwebtoken";
 import queryByType from "../../utils/queryByType.js";
 import language from "../../../language.js";
 import { config } from "dotenv";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 async function loginUser(req, res) {
-
   let { account, password, lang } = req.body;
 
   if (!lang || !(lang in language)) {
     lang = LANG;
   }
 
-  const queryAndType = queryByType(account);
+  if (!account || !password) {
+    return ErrorHandler(res, 400, lang);
+  }
 
-  if (queryAndType.status == 400) {
-    return res.status(400).json({ message: queryAndType.message });
+  const queryAndType = queryByType(account, lang);
+
+  if (queryAndType.status == 403) {
+    return ErrorHandler(res, queryAndType.status, lang);
   }
 
   try {
     const user = await User.findOne(queryAndType.searchQuery).select(
-      "_id email firstName password"
+      "_id email firstName password lang"
     );
 
     if (user && (await bcrypt.compare(password, user.password))) {
@@ -35,17 +39,17 @@ async function loginUser(req, res) {
           name: user.firstName,
           phoneNumber: user.phoneNumber,
           iat: Date.now(),
-          lang,
+          lang: user.lang ? user.lang : lang,
         },
         "your_secret_key",
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
-      return res.json({ message: language[lang].response[205], token });
+      return ErrorHandler(res, 205, lang, token);
     } else {
-      return res.status(401).json({ message: language[lang].response[402] });
+      return ErrorHandler(res, 447, lang);
     }
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    return ErrorHandler(res, 500, lang);
   }
 }
 

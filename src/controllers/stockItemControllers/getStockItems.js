@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import language from "../../../language.js";
 import { StockItem } from "../../models/stockItemSchema.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -14,6 +15,7 @@ const getStockItems = (req, res) => {
   StockItem.find({})
     .populate("stockType", "name")
     .then((data) => {
+      console.log(data);
       let stockItemList = [];
       data.forEach((stockItem) => {
         stockItemList.push({
@@ -23,7 +25,7 @@ const getStockItems = (req, res) => {
             : stockItem.name.get(LANG)
             ? stockItem.name.get(LANG)
             : stockItem.name.get("en"),
-          stockType: {
+          stockType: stockItem.stockType && {
             id: stockItem.stockType._id,
             name: stockItem.stockType.name.get(lang)
               ? stockItem.stockType.name.get(lang)
@@ -33,13 +35,11 @@ const getStockItems = (req, res) => {
           },
         });
       });
-      return res.status(200).json({ data: stockItemList });
+      return ErrorHandler(res, 200, lang, stockItemList);
     })
     .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: language[lang].response[500],
-      });
+      console.log(err.message);
+      return ErrorHandler(res, 500, lang);
     });
 };
 

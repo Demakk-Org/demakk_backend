@@ -1,7 +1,8 @@
 import { config } from "dotenv";
 import User from "../../models/userSchema.js";
 import language from "../../../language.js";
-import { ObjectId } from "bson";
+import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
@@ -13,15 +14,14 @@ const getUsers = async (req, res) => {
   }
 
   if (sort === undefined) sort = SORT;
-
   if (page === undefined) page = PAGE;
   if (limit === undefined) limit = LIMIT;
 
   let query = {};
 
   Array.from(Object.keys(req.body)).forEach((item) => {
-    if (item == "role" && !ObjectId.isValid(req.body[item])) {
-      return res.status(400).json({ message: language[lang].response[426] });
+    if (item == "role" && !isValidObjectId(req.body[item])) {
+      return ErrorHandler(res, 426, lang);
     } else if (
       item != null &&
       item != "page" &&
@@ -35,9 +35,9 @@ const getUsers = async (req, res) => {
 
   console.log(query);
 
-  const count = await User.countDocuments(query);
-
   try {
+    const count = await User.countDocuments(query);
+
     User.find(query)
       .limit(limit)
       .skip((page - 1) * limit)
@@ -58,7 +58,8 @@ const getUsers = async (req, res) => {
         });
       });
   } catch (err) {
-    return res.status(500).json({ error: language[lang].response[500] });
+    console.log(err.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

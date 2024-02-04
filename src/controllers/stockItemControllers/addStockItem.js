@@ -2,6 +2,7 @@ import { StockItem } from "../../models/stockItemSchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
 import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -13,38 +14,37 @@ const addStockItem = async (req, res) => {
   }
 
   if (!stockTypeId || !name || !price || !costToProduce) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (!isValidObjectId(stockTypeId)) {
-    return res.status(400).json({ message: language[lang].response[425] });
+    return ErrorHandler(res, 425, lang);
   }
 
   if (
-    !name instanceof Object &&
-    name.constructor === Object &&
-    (!name.lang || !name.value)
+    !(name instanceof Object) ||
+    // name.constructor === Object &&
+    !name.lang ||
+    !name.value
   ) {
-    return res.status(400).json({ message: language[lang].response[438] });
+    return ErrorHandler(res, 438, lang);
   }
 
   if (typeof price !== "number" || typeof costToProduce !== "number") {
-    return res.status(400).json({ message: language[lang].response[439] });
+    return ErrorHandler(res, 439, lang);
   }
 
   try {
     const stockItem = await StockItem.create({
       stockType: stockTypeId,
-      name,
+      name: { [name.lang]: name.value },
       price,
       costToProduce,
     });
 
-    return res
-      .status(201)
-      .json({ message: language[lang].response[201], stockItem });
+    return ErrorHandler(res, 201, lang, stockItem);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    return ErrorHandler(res, 500, lang);
   }
 };
 

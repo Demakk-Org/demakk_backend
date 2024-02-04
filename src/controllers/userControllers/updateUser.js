@@ -2,9 +2,10 @@ import User from "../../models/userSchema.js";
 import language from "../../../language.js";
 import { config } from "dotenv";
 import { decode } from "jsonwebtoken";
-import { ObjectId } from "bson";
 import Address from "../../models/addressSchema.js";
 import QueryByType from "../../utils/queryByType.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -35,61 +36,54 @@ const updateUser = async (req, res) => {
     !shippingAddress &&
     !billingAddress
   ) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (
     (firstName && typeof firstName !== "string") ||
     (lastName && typeof lastName !== "string")
   ) {
-    return res.status(400).json({ message: language[lang].response[407] });
+    return ErrorHandler(res, 407, lang);
   }
 
   if (
-    (email && QueryByType(email, lang).status == 400) ||
-    (phoneNumber && QueryByType(phoneNumber, lang).status == 400)
+    (email && QueryByType(email, lang).status == 403) ||
+    (phoneNumber && QueryByType(phoneNumber, lang).status == 403)
   ) {
-    return res.status(400).json({ message: language[lang].response[403] });
+    return ErrorHandler(res, 403, lang);
   }
 
   if (
-    (shippingAddress && !ObjectId.isValid(shippingAddress)) ||
-    (billingAddress && !ObjectId.isValid(billingAddress))
+    (shippingAddress && !isValidObjectId(shippingAddress)) ||
+    (billingAddress && !isValidObjectId(billingAddress))
   ) {
-    return res.status(400).json({ message: language[lang].response[434] });
+    return ErrorHandler(res, 434, lang);
   }
 
   if (shippingAddress) {
     const address = await Address.findById(shippingAddress);
     if (!address) {
-      return res.status(404).json({
-        message: language[lang].response[408],
-      });
+      return ErrorHandler(res, 408, lang);
     }
 
     if (address.uid.toString() !== uid) {
-      return res.status(403).json({ message: language[lang].response[401] });
+      return ErrorHandler(res, 401, lang);
     }
   }
 
   if (billingAddress) {
     const address = await Address.findById(billingAddress);
     if (!address) {
-      return res.status(404).json({
-        message: language[lang].response[408],
-      });
+      return ErrorHandler(res, 408, lang);
     }
 
     if (address.uid.toString() !== uid) {
-      return res.status(403).json({ message: language[lang].response[401] });
+      return ErrorHandler(res, 401, lang);
     }
   }
 
   try {
-    const user = await User.findById(uid).populate(
-      "shippingAddress billingAddress",
-      "country region city subCity"
-    );
+    const user = await User.findById(uid);
 
     if (firstName && firstName !== user.firstName) user.firstName = firstName;
     if (lastName && lastName !== user.lastName) user.lastName = lastName;
@@ -109,11 +103,21 @@ const updateUser = async (req, res) => {
 
     await user.save();
 
-    return res
-      .status(200)
-      .json({ message: language[lang].response[203], user });
+    const data = {
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      phoneNumber: user.phoneNumber,
+      phoneNumberVerified: user.phoneNumberVerified,
+      shippingAddress: user.shippingAddress,
+      billingAddress: user.billingAddress,
+    };
+
+    return ErrorHandler(res, 203, lang, data);
   } catch (err) {
-    return res.status(500).json({ message: language[lang].error[500] });
+    return ErrorHandler(res, 500, lang);
   }
 };
 

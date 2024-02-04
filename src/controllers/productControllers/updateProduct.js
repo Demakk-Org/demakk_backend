@@ -1,9 +1,10 @@
 import { Product } from "../../models/productSchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateProduct = async (req, res) => {
   let { productId, name, description, productCategoryId, lang } = req.body;
@@ -13,19 +14,19 @@ const updateProduct = async (req, res) => {
   }
 
   if (!productId) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (!name && !description && !productCategoryId) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (!isValidObjectId(productId)) {
-    return res.status(400).json({ message: language[lang].response[432] });
+    return ErrorHandler(res, 432, lang);
   }
 
   if (!isValidObjectId(productCategoryId)) {
-    return res.status(400).json({ message: language[lang].response[430] });
+    return ErrorHandler(res, 430, lang);
   }
 
   if (
@@ -33,7 +34,7 @@ const updateProduct = async (req, res) => {
     !name.lang ||
     !name.value
   ) {
-    return res.status(400).json({ message: language[lang].response[441] });
+    return ErrorHandler(res, 441, lang);
   }
 
   if (
@@ -42,14 +43,14 @@ const updateProduct = async (req, res) => {
     !description.lang ||
     !description.value
   ) {
-    return res.status(400).json({ message: language[lang].response[442] });
+    return ErrorHandler(res, 442, lang);
   }
 
   try {
     const product = await Product.findById(productId);
 
     if (!product) {
-      return res.status(404).json({ message: language[lang].response[404] });
+      return ErrorHandler(res, 404, lang);
     }
 
     if (productCategoryId) product.productCategory = productCategoryId;
@@ -58,11 +59,10 @@ const updateProduct = async (req, res) => {
       product.description.set(description["lang"], description["value"]);
 
     await product.save();
-    return res
-      .status(201)
-      .json({ message: language[lang].response[201], product });
+    return ErrorHandler(res, 201, lang, product);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

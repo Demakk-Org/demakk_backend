@@ -5,6 +5,7 @@ import queryByType from "../../utils/queryByType.js";
 import User from "../../models/userSchema.js";
 import language from "../../../language.js";
 import dotenv from "dotenv";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -15,19 +16,21 @@ const requestResetPassword = async (req, res) => {
     lang = LANG;
   }
 
+  if (!account) {
+    return ErrorHandler(res, 400, lang);
+  }
+
   const query = queryByType(account);
 
-  if (query.status == "400") {
-    return res.status(400).json({
-      message: language[lang].response[403],
-    });
+  if (query.status == 403) {
+    return ErrorHandler(res, 403, lang);
   }
 
   const user = await User.findOne(query.searchQuery, "firstName");
   console.log(user);
 
   if (!user) {
-    return res.status(400).json({ message: language[lang].response[404] });
+    return ErrorHandler(res, 404, lang);
   }
 
   ResetPassword.updateMany({ uid: user._id }, { status: "complete" }).then(
@@ -56,17 +59,17 @@ const requestResetPassword = async (req, res) => {
         try {
           transporter.sendMail(message).then(async (response) => {
             console.log("Reset message is sent!");
-            res.status(200).json({ message: language[lang].response[202] });
+            return ErrorHandler(res, 202, lang);
           });
         } catch (error) {
           console.log(error);
-          res.status(500).json({ message: language[lang].response[500] });
+          return ErrorHandler(res, 500, lang);
         } finally {
           transporter.close();
         }
       } else if (query.type == "phoneNumber") {
         // function to send link to the phone
-        return res.status(500).json({ message: language[lang].response[501] });
+        return ErrorHandler(res, 501, lang);
       }
     }
   );

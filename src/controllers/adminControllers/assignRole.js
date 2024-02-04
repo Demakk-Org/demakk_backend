@@ -1,29 +1,30 @@
 import { config } from "dotenv";
 import language from "../../../language.js";
 import Role from "../../models/roleSchema.js";
-import { ObjectId } from "bson";
 import User from "../../models/userSchema.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const assignRole = (req, res) => {
   let { lang, role, uid } = req.body;
 
-  if (!lang || !Object.keys(lang) != lang) {
+  if (!lang || !(lang in language)) {
     lang = LANG;
   }
 
   if (!role || !uid) {
-    return res.status(404).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
-  if (!ObjectId.isValid(uid)) {
-    return res.status(404).json({ message: language[lang].response[418] });
+  if (!isValidObjectId(uid)) {
+    return ErrorHandler(res, 418, lang);
   }
 
   Role.findOne({ name: role }).then((data) => {
     if (!role) {
-      return res.status(404).json({ message: language[lang].response[436] });
+      return ErrorHandler(res, 436, lang);
     }
 
     console.log(data);
@@ -33,14 +34,15 @@ const assignRole = (req, res) => {
         uid,
         { role: data._id },
         { returnDocument: "after" }
-      ).then((user) => {
-        return res
-          .status(200)
-          .json({ message: language[lang].response[203], user });
-      });
+      )
+        .populate("role")
+        .select("role")
+        .then((user) => {
+          return ErrorHandler(res, 203, lang, user);
+        });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ message: language[lang].response[500] });
+      return ErrorHandler(res, 500, lang);
     }
   });
 };

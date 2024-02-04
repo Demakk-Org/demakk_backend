@@ -1,7 +1,8 @@
 import { config } from "dotenv";
 import language from "../../../language.js";
 import { ProductCategory } from "../../models/productCategorySchema.js";
-import { ObjectId } from "bson";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -14,13 +15,11 @@ const getProductCategory = (req, res) => {
   }
 
   if (!productCategoryId) {
-    return res.status(400).json({
-      message: language[lang].response[400],
-    });
+    return ErrorHandler(res, 400, lang);
   }
 
-  if (!ObjectId.isValid(productCategoryId)) {
-    return res.status(404).json({ message: language[lang].response[430] });
+  if (!isValidObjectId(productCategoryId)) {
+    return ErrorHandler(res, 430, lang);
   }
 
   ProductCategory.findById(productCategoryId)
@@ -56,13 +55,11 @@ const getProductCategory = (req, res) => {
           },
         },
       };
-      return res.status(200).json({ data: productCategory });
+      return ErrorHandler(res, 200, lang, productCategory);
     })
     .catch((err) => {
-      console.log(err);
-      return res.status(500).json({
-        message: language[lang].response[500],
-      });
+      console.log(err.message);
+      return ErrorHandler(res, 500, lang);
     });
 };
 

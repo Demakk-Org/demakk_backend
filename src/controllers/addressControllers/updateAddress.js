@@ -2,7 +2,8 @@ import language from "../../../language.js";
 import dotenv from "dotenv";
 import Address from "../../models/addressSchema.js";
 import { decode } from "jsonwebtoken";
-import { ObjectId } from "bson";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -28,11 +29,11 @@ const updateAddress = async (req, res) => {
   }
 
   if (!addressId) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
-  if (!ObjectId.isValid(addressId)) {
-    return res.status(400).json({ message: language[lang].response[434] });
+  if (!isValidObjectId(addressId)) {
+    return ErrorHandler(res, 434, lang);
   }
 
   if (
@@ -45,7 +46,7 @@ const updateAddress = async (req, res) => {
     !streetAddress &&
     !postalCode
   ) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (
@@ -58,17 +59,17 @@ const updateAddress = async (req, res) => {
     (streetAddress && typeof streetAddress !== "string") ||
     (postalCode && typeof postalCode !== "string")
   ) {
-    return res.status(400).json({ message: language[lang].response[407] });
+    return ErrorHandler(res, 407, lang);
   }
 
   try {
     const address = await Address.findById(addressId);
     if (!address) {
-      return res.status(404).json({ message: language[lang].response[435] });
+      return ErrorHandler(res, 435, lang);
     }
 
     if (address.uid.toString() !== uid) {
-      return res.status(403).json({ message: language[lang].response[401] });
+      return ErrorHandler(res, 401, lang);
     }
 
     if (country) address.country = country;
@@ -81,12 +82,10 @@ const updateAddress = async (req, res) => {
     if (postalCode) address.postalCode = postalCode;
     await address.save();
 
-    return res.status(201).json({
-      message: language[lang].response[203],
-      address,
-    });
+    return ErrorHandler(res, 203, lang, address);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

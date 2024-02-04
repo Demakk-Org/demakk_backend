@@ -1,9 +1,10 @@
 import { ProductCategory } from "../../models/productCategorySchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateProductCategory = async (req, res) => {
   let {
@@ -20,19 +21,19 @@ const updateProductCategory = async (req, res) => {
   }
 
   if (!productCategoryId) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (!isValidObjectId(productCategoryId)) {
-    return res.status(400).json({ message: language[lang].response[437] });
+    return ErrorHandler(res, 437, lang);
   }
 
   if (!stockItemId && !name && !additionalPrice && !additionalCost) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (stockItemId && !isValidObjectId(stockItemId)) {
-    return res.status(400).json({ message: language[lang].response[428] });
+    return ErrorHandler(res, 428, lang);
   }
 
   if (
@@ -41,20 +42,20 @@ const updateProductCategory = async (req, res) => {
       !name.lang ||
       !name.value)
   ) {
-    return res.status(400).json({ message: language[lang].response[440] });
+    return ErrorHandler(res, 440, lang);
   }
 
   if (
     (additionalPrice && typeof additionalPrice !== "number") ||
     (additionalCost && typeof additionalCost !== "number")
   ) {
-    return res.status(400).json({ message: language[lang].response[439] });
+    return ErrorHandler(res, 439, lang);
   }
 
   try {
     const productCategory = await ProductCategory.findById(productCategoryId);
     if (!productCategory) {
-      return res.status(404).json({ message: language[lang].response[431] });
+      return ErrorHandler(res, 431, lang);
     }
 
     if (stockItemId) productCategory.stockItem = stockItemId;
@@ -63,12 +64,10 @@ const updateProductCategory = async (req, res) => {
     if (additionalCost) productCategory.additionalCost = additionalCost;
     await productCategory.save();
 
-    return res.status(201).json({
-      message: language[lang].response[203],
-      productCategory,
-    });
+    return ErrorHandler(res, 203, lang, productCategory);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
 import language from "../../../language.js";
 import dotenv from "dotenv";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -21,17 +22,17 @@ async function registerUser(req, res) {
   }
 
   if (!account || !firstName || !lastName || !password || !confirmPassword) {
-    return res.status(400).send({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: language[lang].response[402] });
+    return ErrorHandler(res, 402, lang);
   }
 
   var queryAndType = QueryByType(account, lang);
 
-  if (queryAndType.status == 400) {
-    return res.status(400).json({ message: queryAndType.message });
+  if (queryAndType.status == 403) {
+    return ErrorHandler(res, queryAndType.status, lang);
   }
 
   const user = await User.findOne(queryAndType.searchQuery);
@@ -39,7 +40,7 @@ async function registerUser(req, res) {
   console.log(user, queryAndType.type, account);
 
   if (user) {
-    return res.status(400).json({ message: language[lang].response[405] });
+    return ErrorHandler(res, 405, lang);
   }
 
   var cart;
@@ -49,7 +50,7 @@ async function registerUser(req, res) {
     console.log(cart);
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: language[lang].response[500] });
+    return ErrorHandler(res, 500, lang);
   }
 
   var query = {
@@ -75,7 +76,7 @@ async function registerUser(req, res) {
       const token = Jwt.sign(
         {
           from: "Demakk Printing Enterprise",
-          id: user._id,
+          uid: user._id,
           name: user.firstName,
           iat: Date.now(),
           lang,
@@ -84,13 +85,10 @@ async function registerUser(req, res) {
 
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
-      return res.json({
-        message: language[lang].response[201],
-        token,
-      });
+      return ErrorHandler(res, 201, lang, token);
     } catch (e) {
       console.log(e);
-      return res.status(500).json({ message: language[lang].response[500] });
+      return ErrorHandler(res, 500, lang);
     }
   }
 }

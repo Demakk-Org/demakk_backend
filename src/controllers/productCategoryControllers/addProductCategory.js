@@ -1,8 +1,10 @@
 import { ProductCategory } from "../../models/productCategorySchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
+import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addProductCategory = async (req, res) => {
   let { stockItemId, name, additionalPrice, additionalCost, lang } = req.body;
@@ -12,11 +14,11 @@ const addProductCategory = async (req, res) => {
   }
 
   if (!stockItemId || !name || !additionalPrice || !additionalCost) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (!isValidObjectId(stockItemId)) {
-    return res.status(400).json({ message: language[lang].response[428] });
+    return ErrorHandler(res, 428, lang);
   }
 
   if (
@@ -24,29 +26,27 @@ const addProductCategory = async (req, res) => {
     !name.lang ||
     !name.value
   ) {
-    return res.status(400).json({ message: language[lang].response[440] });
+    return ErrorHandler(res, 440, lang);
   }
 
   if (
     typeof additionalPrice !== "number" ||
     typeof additionalCost !== "number"
   ) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   try {
     const productCategory = await ProductCategory.create({
       stockItem: stockItemId,
-      name,
+      name: { [name.lang]: name.value },
       additionalPrice,
       additionalCost,
     });
 
-    return res.status(201).json({
-      message: language[lang].response[201],
-      productCategory,
-    });
+    return ErrorHandler(res, 201, lang, productCategory);
   } catch (error) {
+    console.log(error.message);
     return res.status(500).json({ message: language[lang].response[500] });
   }
 };

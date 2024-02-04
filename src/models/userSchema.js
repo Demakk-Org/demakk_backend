@@ -7,7 +7,7 @@ export const UserSchema = new Schema(
   {
     email: {
       type: String,
-      unique: true,
+      // unique: true,
       lowercase: true,
       default: "",
     },
@@ -18,7 +18,7 @@ export const UserSchema = new Schema(
     phoneNumber: {
       type: String,
       default: "",
-      unique: true,
+      // unique: true,
     },
     phoneNumberVerified: {
       type: Boolean,

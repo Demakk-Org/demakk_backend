@@ -1,6 +1,7 @@
 import { StockType } from "../../models/stockTypeSchema.js";
 import dotenv from "dotenv";
 import language from "../../../language.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -12,26 +13,26 @@ const addStockType = async (req, res) => {
   }
 
   if (!stockTypeName) {
-    return res.status(400).json({
-      message: language[lang].response[400],
-    });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (
-    !(stockTypeName instanceof Object) &&
-    stockTypeName.constructor === Object &&
-    (!stockTypeName.lang || !stockTypeName.value)
+    !(stockTypeName instanceof Object) ||
+    // stockTypeName.constructor === Object &&
+    !stockTypeName.lang ||
+    !stockTypeName.value
   ) {
-    return res.status(400).json({ message: language[lang].response[423] });
+    return ErrorHandler(res, 423, lang);
   }
 
   try {
-    const stockType = await StockType.create({ name: stockTypeName });
-    return res
-      .status(201)
-      .json({ message: language[lang].response[201], data: stockType });
+    const stockType = await StockType.create({
+      name: { [stockTypeName["lang"]]: stockTypeName["value"] },
+    });
+    return ErrorHandler(res, 201, lang, { data: stockType });
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[200] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

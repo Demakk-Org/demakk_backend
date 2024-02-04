@@ -2,8 +2,9 @@ import Address from "../../models/addressSchema.js";
 import User from "../../models/userSchema.js";
 import language from "../../../language.js";
 import { config } from "dotenv";
-import { ObjectId } from "bson";
 import { decode } from "jsonwebtoken";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -11,6 +12,7 @@ const addAddress = async (req, res) => {
   let {
     lang,
     country,
+    region,
     city,
     subCity,
     woreda,
@@ -26,24 +28,38 @@ const addAddress = async (req, res) => {
     lang = LANG;
   }
 
-  if (!ObjectId.isValid(uid)) {
-    return res.status(400).json({ message: language[lang].response[418] });
+  if (!isValidObjectId(uid)) {
+    return ErrorHandler(res, 418, lang);
   }
 
-  if (!country || !city || !subCity) {
-    return res.status(400).json({ message: language[lang].response[400] });
+  if (!country || !region || !city || !subCity) {
+    return ErrorHandler(res, 400, lang);
+  }
+
+  if (
+    (country && typeof country !== "string") ||
+    (region && typeof region !== "string") ||
+    (city && typeof city !== "string") ||
+    (subCity && typeof subCity !== "string") ||
+    (woreda && typeof woreda !== "string") ||
+    (uniqueIdentifier && typeof uniqueIdentifier !== "string") ||
+    (streetAddress && typeof streetAddress !== "string") ||
+    (postalCode && typeof postalCode !== "string")
+  ) {
+    return ErrorHandler(res, 407, lang);
   }
 
   try {
     User.findById(uid).then((user) => {
       if (!user) {
-        return res.status(404).json({ message: language[lang].response[416] });
+        return ErrorHandler(res, 416, lang);
       }
 
       try {
         Address.create({
           uid: user._id,
           country,
+          region,
           city,
           subCity,
           woreda,
@@ -51,18 +67,16 @@ const addAddress = async (req, res) => {
           streetAddress,
           postalCode,
         }).then((data) => {
-          return res
-            .status(200)
-            .json({ message: language[lang].response[208], data });
+          return ErrorHandler(res, 208, lang, data);
         });
       } catch (error) {
         console.log(error.message);
-        return res.status(500).json({ message: language[lang].response[500] });
+        return ErrorHandler(res, 500, lang);
       }
     });
   } catch (error) {
     console.log(error.message);
-    return res.status(404).json({ message: language[lang].response[500] });
+    return ErrorHandler(res, 500, lang);
   }
 };
 

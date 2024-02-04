@@ -1,7 +1,8 @@
 import language from "../../../language.js";
 import dotenv from "dotenv";
-import { ObjectId } from "bson";
 import Address from "../../models/addressSchema.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
@@ -11,26 +12,26 @@ const deleteAddress = async (req, res) => {
   if (!lang || !(lang in language)) {
     lang = LANG;
   }
+
   if (!addressId) {
-    return res.status(400).json({
-      message: language[lang].response[400],
-    });
+    return ErrorHandler(res, 400, lang);
   }
 
-  if (!ObjectId.isValid(addressId)) {
-    return res.status(400).json({ message: language[lang].response[434] });
+  if (!isValidObjectId(addressId)) {
+    return ErrorHandler(res, 434, lang);
   }
 
   try {
     const address = await Address.findByIdAndDelete(addressId);
 
     if (!address) {
-      return res.status(404).json({ message: language[lang].response[435] });
+      return ErrorHandler(res, 435, lang);
     }
 
-    return res.status(200).json({ message: language[lang].response[204] });
+    return ErrorHandler(res, 204, lang);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

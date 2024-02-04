@@ -3,38 +3,39 @@ import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import language from "../../../language.js";
 import dotenv from "dotenv";
-import { ObjectId } from "bson";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
 const resetPassword = async (req, res) => {
-  let { id, newPassword, password, lang } = req.body;
+  let { id, password, confirmPassword, lang } = req.body;
 
   if (!lang || !(lang in language)) {
     lang = LANG;
   }
 
-  if (!id || !newPassword || !password) {
-    return res.status(400).json({ message: language[lang].response[400] });
+  if (!id || !password || !confirmPassword) {
+    return ErrorHandler(res, 400, lang);
   }
 
-  if (!ObjectId.isValid(id)) {
-    return res.status(400).json({ message: language[lang].response[407] });
+  if (!isValidObjectId(id)) {
+    return ErrorHandler(res, 407, lang);
   }
 
-  if (newPassword !== password) {
-    return res.status(400).json({ message: language[lang].response[402] });
+  if (password !== confirmPassword) {
+    return ErrorHandler(res, 402, lang);
   }
   console.log(id);
   const reset = await ResetPassword.findById(id);
   console.log(reset);
 
   if (!reset) {
-    return res.status(400).json({ message: language[lang].response[404] });
+    return ErrorHandler(res, 404, lang);
   }
 
   if (reset.status == "complete") {
-    return res.status(400).json({ message: language[lang].response[406] });
+    return ErrorHandler(res, 406, lang);
   }
 
   const now = new Date(Date.now() - reset.expiresIn);
@@ -43,12 +44,10 @@ const resetPassword = async (req, res) => {
   console.log(now, time);
 
   if (now > time) {
-    return res.status(400).json({ message: language[lang].response[406] });
+    return ErrorHandler(res, 406, lang);
   }
 
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-  console.log("why here");
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
     User.findByIdAndUpdate(
@@ -62,7 +61,7 @@ const resetPassword = async (req, res) => {
     )
       .then((user) => {
         console.log(user);
-        return res.status(200).json({ message: language[lang].response[203] });
+        return ErrorHandler(res, 203, lang);
       })
       .finally(() => {
         reset.status = "complete";
@@ -70,7 +69,7 @@ const resetPassword = async (req, res) => {
       });
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ message: language[lang].response[500] });
+    return ErrorHandler(res, 500, lang);
   }
 };
 

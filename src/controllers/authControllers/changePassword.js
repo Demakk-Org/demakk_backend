@@ -3,7 +3,8 @@ import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
 import language from "../../../language.js";
 import { config } from "dotenv";
-import { ObjectId } from "bson";
+import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -18,32 +19,32 @@ const changePassword = async (req, res) => {
     lang = LANG;
   }
 
-  if (!ObjectId.isValid(uid)) {
-    return res.status(400).json({ message: language[lang].response[407] });
+  if (!isValidObjectId(uid)) {
+    return ErrorHandler(res, 407, lang);
   }
 
   if (!password || !confirmPassword) {
-    return res.status(400).json({ message: language[lang].reseponse[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (password != confirmPassword) {
-    return res.status(400).json({ message: language[lang].response[402] });
+    return ErrorHandler(res, 402, lang);
   }
 
   try {
     const user = await User.findById(uid).select("password");
 
     if (!user) {
-      return res.status(404).json({ message: language[lang].response[404] });
+      return ErrorHandler(res, 404, lang);
     }
 
     user.password = await bcrypt.hash(password, 10);
     await user.save();
 
-    return res.status(200).json({ message: language[lang].response[203] });
+    return ErrorHandler(res, 203, lang);
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ message: language[lang].response[500] });
+    return ErrorHandler(res, 500, lang);
   }
 };
 

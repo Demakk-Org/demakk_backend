@@ -27,7 +27,7 @@ const AdminAuthentication = (req, res, next) => {
   User.findById(uid, "role")
     .populate("role")
     .then((user) => {
-      console.log(user);
+      console.log(uid, user);
       if (user.role.name === "admin") {
         return next();
       } else {

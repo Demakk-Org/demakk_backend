@@ -1,9 +1,10 @@
 import { StockItem } from "../../models/stockItemSchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
-import { ObjectId } from "bson";
+import { config } from "dotenv";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isValidObjectId } from "mongoose";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const deleteStockItem = async (req, res) => {
   let { stockItemId, lang } = req.body;
@@ -13,25 +14,24 @@ const deleteStockItem = async (req, res) => {
   }
 
   if (!stockItemId) {
-    return res.status(400).json({
-      message: language[lang].response[400],
-    });
+    return ErrorHandler(res, 400, lang);
   }
 
-  if (!ObjectId.isValid(stockItemId)) {
-    return res.status(400).json({ message: language[lang].response[428] });
+  if (!isValidObjectId(stockItemId)) {
+    return ErrorHandler(res, 428, lang);
   }
 
   try {
     const stockItem = await StockItem.findByIdAndDelete(stockItemId);
 
     if (!stockItem) {
-      return res.status(404).json({ message: language[lang].response[429] });
+      return ErrorHandler(res, 427, lang);
     }
 
-    return res.status(200).json({ message: language[lang].response[204] });
+    return ErrorHandler(res, 204, lang);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

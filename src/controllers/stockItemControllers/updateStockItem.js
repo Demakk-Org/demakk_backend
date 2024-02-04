@@ -1,9 +1,10 @@
 import { StockItem } from "../../models/stockItemSchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateStockItem = async (req, res) => {
   let { stockItemId, stockTypeId, name, price, costToProduce, lang } = req.body;
@@ -13,42 +14,42 @@ const updateStockItem = async (req, res) => {
   }
 
   if (!stockItemId) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (!isValidObjectId(stockItemId)) {
-    return res.status(400).json({ message: language[lang].response[428] });
+    return ErrorHandler(res, 428, lang);
   }
 
   if (!stockTypeId && !name && !price && !costToProduce) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 400, lang);
   }
 
   if (stockTypeId && !isValidObjectId(stockTypeId)) {
-    return res.status(400).json({ message: language[lang].response[425] });
+    return ErrorHandler(res, 425, lang);
   }
 
   if (
-    name &&
-    !name instanceof Object &&
-    name.constructor === Object &&
-    (!name.lang || !name.value)
+    (name && !(name instanceof Object)) ||
+    // name.constructor === Object &&
+    !name.lang ||
+    !name.value
   ) {
-    return res.status(400).json({ message: language[lang].response[438] });
+    return ErrorHandler(res, 438, lang);
   }
 
   if (
     (price && typeof price !== "number") ||
     (costToProduce && typeof costToProduce !== "number")
   ) {
-    return res.status(400).json({ message: language[lang].response[439] });
+    return ErrorHandler(res, 439, lang);
   }
 
   try {
     const stockItem = await StockItem.findById(stockItemId);
 
     if (!stockItem) {
-      return res.status(404).json({ message: language[lang].response[427] });
+      return ErrorHandler(res, 427, lang);
     }
 
     if (stockTypeId) stockItem.stockType = stockTypeId;
@@ -57,11 +58,10 @@ const updateStockItem = async (req, res) => {
     if (costToProduce) stockItem.costToProduce = costToProduce;
     await stockItem.save();
 
-    return res
-      .status(201)
-      .json({ message: language[lang].response[203], stockItem });
+    return ErrorHandler(res, 203, lang, stockItem);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 
