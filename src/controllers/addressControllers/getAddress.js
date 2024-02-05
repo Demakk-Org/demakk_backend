@@ -46,13 +46,14 @@ const getAddresses = async (req, res) => {
       .skip((page - 1) * limit)
       // .sort(sort)
       .then((addresses) => {
-        return res.status(200).json({
+        let data = {
           page: page.toString(),
           pages: Math.ceil(count / limit).toString(),
           limit: limit.toString(),
           count: count.toString(),
           users: addresses,
-        });
+        };
+        return ErrorHandler(res, 200, lang, data);
       });
   } catch (err) {
     return ErrorHandler(res, 500, lang);

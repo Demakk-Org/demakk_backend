@@ -49,6 +49,7 @@ async function loginUser(req, res) {
       return ErrorHandler(res, 447, lang);
     }
   } catch (error) {
+    console.log(error.message);
     return ErrorHandler(res, 500, lang);
   }
 }

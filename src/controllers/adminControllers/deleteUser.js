@@ -50,10 +50,10 @@ const deleteUser = (req, res) => {
           return ErrorHandler(res, 204, lang);
         }
       } catch (error) {
-        console.log(error);
+        console.log(error.message);
         return ErrorHandler(res, 500, lang);
       }
     });
 };
 
-export default deleteUser;
+export { deleteUser };

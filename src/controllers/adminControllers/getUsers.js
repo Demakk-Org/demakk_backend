@@ -72,4 +72,4 @@ const getUsers = async (req, res) => {
   }
 };
 
-export default getUsers;
+export { getUsers };

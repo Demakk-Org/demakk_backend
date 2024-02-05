@@ -86,8 +86,8 @@ async function registerUser(req, res) {
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
       return ErrorHandler(res, 201, lang, token);
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log(err.message);
       return ErrorHandler(res, 500, lang);
     }
   }

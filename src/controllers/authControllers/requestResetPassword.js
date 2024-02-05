@@ -62,7 +62,7 @@ const requestResetPassword = async (req, res) => {
             return ErrorHandler(res, 202, lang);
           });
         } catch (error) {
-          console.log(error);
+          console.log(error.message);
           return ErrorHandler(res, 500, lang);
         } finally {
           transporter.close();

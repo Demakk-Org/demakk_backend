@@ -41,7 +41,7 @@ const assignRole = (req, res) => {
           return ErrorHandler(res, 203, lang, user);
         });
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       return ErrorHandler(res, 500, lang);
     }
   });

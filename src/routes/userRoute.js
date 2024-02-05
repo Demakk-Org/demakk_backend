@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import UserAuthentication from "../middlewares/UserAuthentication.js";
 
 import getUser from "../controllers/userControllers/getUser.js";

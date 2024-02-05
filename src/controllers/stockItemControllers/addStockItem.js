@@ -43,6 +43,7 @@ const addStockItem = async (req, res) => {
 
     return ErrorHandler(res, 201, lang, stockItem);
   } catch (error) {
+    console.log(error.message);
     return ErrorHandler(res, 500, lang);
   }
 };

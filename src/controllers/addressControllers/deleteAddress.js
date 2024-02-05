@@ -1,10 +1,10 @@
 import language from "../../../language.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import Address from "../../models/addressSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const deleteAddress = async (req, res) => {
   let { addressId, lang } = req.body;

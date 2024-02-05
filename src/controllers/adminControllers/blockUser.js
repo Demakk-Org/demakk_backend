@@ -43,10 +43,10 @@ const blockUser = (req, res) => {
           ? ErrorHandler(res, 419, lang)
           : ErrorHandler(res, 420, lang);
       } catch (err) {
-        console.log(err);
+        console.log(err.message);
         return ErrorHandler(res, 500, lang);
       }
     });
 };
 
-export default blockUser;
+export { blockUser };
