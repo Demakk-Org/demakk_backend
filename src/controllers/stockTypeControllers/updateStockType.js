@@ -1,29 +1,30 @@
 import { StockType } from "../../models/stockTypeSchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateStockType = async (req, res) => {
-  let { stockTypeName, id, lang } = req.body;
+  let { stockTypeName, stockTypeId, lang } = req.body;
 
   if (!lang || !(lang in language)) {
     lang = LANG;
   }
 
-  if (!stockTypeName || !id) {
+  if (!stockTypeName || !stockTypeId) {
     return ErrorHandler(res, 400, lang);
   }
 
-  if (!isValidObjectId(id)) {
+  if (!isValidObjectId(stockTypeId)) {
     return ErrorHandler(res, 425, lang);
   }
 
   if (
-    (!(stockTypeName instanceof Object) &&
-      stockTypeName.constructor === Object) ||
+    !(
+      stockTypeName instanceof Object && stockTypeName.constructor === Object
+    ) ||
     !stockTypeName.lang ||
     !stockTypeName.value
   ) {
@@ -31,7 +32,7 @@ const updateStockType = async (req, res) => {
   }
 
   try {
-    const stockType = await StockType.findById(id);
+    const stockType = await StockType.findById(stockTypeId);
 
     if (!stockType) {
       return ErrorHandler(res, 424, lang);

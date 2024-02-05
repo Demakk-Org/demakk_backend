@@ -1,9 +1,9 @@
 import { StockType } from "../../models/stockTypeSchema.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import language from "../../../language.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addStockType = async (req, res) => {
   let { stockTypeName, lang } = req.body;
@@ -17,8 +17,9 @@ const addStockType = async (req, res) => {
   }
 
   if (
-    !(stockTypeName instanceof Object) ||
-    // stockTypeName.constructor === Object &&
+    !(
+      stockTypeName instanceof Object && stockTypeName.constructor === Object
+    ) ||
     !stockTypeName.lang ||
     !stockTypeName.value
   ) {

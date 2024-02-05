@@ -1,27 +1,27 @@
 import { StockType } from "../../models/stockTypeSchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const deleteStockType = async (req, res) => {
-  let { id, lang } = req.body;
+  let { stockTypeId, lang } = req.body;
 
   if (!lang || !(lang in language)) {
     lang = LANG;
   }
-  if (!id) {
+  if (!stockTypeId) {
     return ErrorHandler(res, 400, lang);
   }
 
-  if (!isValidObjectId(id)) {
+  if (!isValidObjectId(stockTypeId)) {
     return ErrorHandler(res, 425, lang);
   }
 
   try {
-    const stockType = await StockType.findByIdAndDelete(id);
+    const stockType = await StockType.findByIdAndDelete(stockTypeId);
 
     if (!stockType) {
       return ErrorHandler(res, 424, lang);

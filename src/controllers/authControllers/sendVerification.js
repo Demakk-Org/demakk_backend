@@ -6,8 +6,9 @@ import { config } from "dotenv";
 import { decode } from "jsonwebtoken";
 import User from "../../models/userSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import axios from "axios";
 
-const LANG = config(process.cwd, ".env").parsed.LANG;
+const {LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID} = config(process.cwd, ".env").parsed;
 
 const sendVerification = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
@@ -27,7 +28,7 @@ const sendVerification = async (req, res) => {
   }
 
   const user = await User.findById(uid)
-    .select("email phoneNumber emailVerified")
+    .select("email phoneNumber emailVerified phoneNumberVerified")
     .catch((err) => {
       return ErrorHandler(res, 500, lang);
     });
@@ -55,6 +56,29 @@ const sendVerification = async (req, res) => {
   if (type == "phoneNumber") {
     //add phone number send verification
     //write the function here
+    var FormData = require("form-data");
+    var data = new FormData();
+    data.append("token", GEEZ_SMS_TOKEN);
+    data.append("shortcode_id", SHORTCODE_ID);
+    data.append("phone", user.phoneNumber);
+
+    var config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "https://api.geezsms.com/api/v1/sms/otp",
+      headers: {
+        ...data.getHeaders(),
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     return ErrorHandler(res, 501, lang);
   }
 

@@ -1,10 +1,10 @@
 import { StockItem } from "../../models/stockItemSchema.js";
 import language from "../../../language.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addStockItem = async (req, res) => {
   let { stockTypeId, name, price, costToProduce, lang } = req.body;
@@ -22,8 +22,7 @@ const addStockItem = async (req, res) => {
   }
 
   if (
-    !(name instanceof Object) ||
-    // name.constructor === Object &&
+    !(name instanceof Object && name.constructor === Object) ||
     !name.lang ||
     !name.value
   ) {
@@ -31,7 +30,7 @@ const addStockItem = async (req, res) => {
   }
 
   if (typeof price !== "number" || typeof costToProduce !== "number") {
-    return ErrorHandler(res, 439, lang);
+    return ErrorHandler(res, 443, lang);
   }
 
   try {

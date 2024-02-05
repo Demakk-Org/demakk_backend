@@ -30,8 +30,7 @@ const updateStockItem = async (req, res) => {
   }
 
   if (
-    (name && !(name instanceof Object)) ||
-    // name.constructor === Object &&
+    (name && !(name instanceof Object && name.constructor === Object)) ||
     !name.lang ||
     !name.value
   ) {
@@ -42,7 +41,7 @@ const updateStockItem = async (req, res) => {
     (price && typeof price !== "number") ||
     (costToProduce && typeof costToProduce !== "number")
   ) {
-    return ErrorHandler(res, 439, lang);
+    return ErrorHandler(res, 443, lang);
   }
 
   try {

@@ -49,7 +49,7 @@ const updateProductCategory = async (req, res) => {
     (additionalPrice && typeof additionalPrice !== "number") ||
     (additionalCost && typeof additionalCost !== "number")
   ) {
-    return ErrorHandler(res, 439, lang);
+    return ErrorHandler(res, 443, lang);
   }
 
   try {

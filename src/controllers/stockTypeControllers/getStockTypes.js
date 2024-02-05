@@ -28,7 +28,7 @@ const getStockTypes = (req, res) => {
         });
       });
 
-      return ErrorHandler(res, 200, lang, {data:stockTypeList});
+      return ErrorHandler(res, 200, lang, stockTypeList);
     })
     .catch((err) => {
       console.log(err.message);

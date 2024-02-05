@@ -19,7 +19,7 @@ const getStockItem = (req, res) => {
   }
 
   if (!isValidObjectId(stockItemId)) {
-    return res.status(400).json({ message: language[lang].response[428] });
+    return ErrorHandler(res, 428, lang);
   }
 
   StockItem.findById(stockItemId)

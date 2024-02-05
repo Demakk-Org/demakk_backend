@@ -33,7 +33,7 @@ const addProductCategory = async (req, res) => {
     typeof additionalPrice !== "number" ||
     typeof additionalCost !== "number"
   ) {
-    return ErrorHandler(res, 400, lang);
+    return ErrorHandler(res, 443, lang);
   }
 
   try {
