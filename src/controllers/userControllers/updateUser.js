@@ -117,6 +117,7 @@ const updateUser = async (req, res) => {
 
     return ErrorHandler(res, 203, lang, data);
   } catch (err) {
+    console.error(err.message);
     return ErrorHandler(res, 500, lang);
   }
 };
