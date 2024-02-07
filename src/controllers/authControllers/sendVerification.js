@@ -1,19 +1,27 @@
 import nodemailer from "nodemailer";
 import emailText from "../../utils/emailText.js";
 import OTP from "../../models/otpSchema.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { config } from "dotenv";
 import { decode } from "jsonwebtoken";
 import User from "../../models/userSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import axios from "axios";
+import { phoneNumberText } from "../../utils/phoneNumberText.js";
 
-const {LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID} = config(process.cwd, ".env").parsed;
+const { LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID, GEEZ_SMS_URL } = config(
+  process.cwd,
+  ".env"
+).parsed;
 
 const sendVerification = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const { type } = req.body;
   const { lang, uid } = decode(token, "your-secret-key");
+
+  if (!lang || !(lang in response)) {
+    lang = LANG;
+  }
 
   if (!type) {
     return ErrorHandler(res, 400, lang);
@@ -23,13 +31,10 @@ const sendVerification = async (req, res) => {
     return ErrorHandler(res, 400, lang);
   }
 
-  if (!lang || !(lang in language)) {
-    lang = LANG;
-  }
-
   const user = await User.findById(uid)
     .select("email phoneNumber emailVerified phoneNumberVerified")
     .catch((err) => {
+      console.log(err.message);
       return ErrorHandler(res, 500, lang);
     });
 
@@ -55,34 +60,55 @@ const sendVerification = async (req, res) => {
 
   if (type == "phoneNumber") {
     //add phone number send verification
-    //write the function here
-    var FormData = require("form-data");
+    if (!user.phoneNumber) {
+      return ErrorHandler(res, 453, lang);
+    }
     var data = new FormData();
     data.append("token", GEEZ_SMS_TOKEN);
-    data.append("shortcode_id", SHORTCODE_ID);
+    // data.append("shortcode_id", SHORTCODE_ID);
+    data.append("msg", phoneNumberText(otpKey, lang));
     data.append("phone", user.phoneNumber);
 
     var config = {
       method: "post",
-      maxBodyLength: Infinity,
-      url: "https://api.geezsms.com/api/v1/sms/otp",
-      headers: {
-        ...data.getHeaders(),
-      },
+      url: GEEZ_SMS_URL,
       data: data,
     };
 
-    axios(config)
-      .then(function (response) {
-        console.log(JSON.stringify(response.data));
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    return ErrorHandler(res, 501, lang);
+    try {
+      axios(config)
+        .then(async (response) => {
+          console.log(JSON.stringify(response.data));
+          await OTP.create({
+            type: type,
+            otp: otpKey,
+            account: user.phoneNumber,
+            expiresIn: 1000 * 60 * 5, //5 minutes
+          }).then((response) => {
+            const data = {
+              id: response._id,
+              type: response.type,
+              account: response.account,
+              expiresIn: response.expiresIn,
+            };
+            return ErrorHandler(res, 213, lang, data);
+          });
+        })
+        .catch((err) => {
+          console.log(JSON.stringify(err));
+          return res.status(400).json({ message: err });
+        });
+    } catch (err) {
+      console.log(err.message);
+      return ErrorHandler(res, 501, lang);
+    }
   }
 
   if (type == "email") {
+    if (!user.email) {
+      return ErrorHandler(res, 454, lang);
+    }
+
     message = {
       from: "Demakk: ",
       to: user.email,

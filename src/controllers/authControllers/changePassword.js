@@ -1,7 +1,7 @@
 import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
@@ -15,7 +15,7 @@ const changePassword = async (req, res) => {
 
   let { password, confirmPassword, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

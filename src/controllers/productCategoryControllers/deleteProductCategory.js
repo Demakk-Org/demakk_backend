@@ -1,5 +1,5 @@
 import { ProductCategory } from "../../models/productCategorySchema.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
@@ -9,12 +9,12 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const deleteProductCategory = async (req, res) => {
   let { productCategoryId, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
   if (!productCategoryId) {
-    return ErrorHandler(res, 400, lang)
+    return ErrorHandler(res, 400, lang);
   }
 
   if (!isValidObjectId(productCategoryId)) {

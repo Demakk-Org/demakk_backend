@@ -1,4 +1,4 @@
-import language from "../../../language.js";
+import response from "../../../response.js";
 import dotenv from "dotenv";
 import Address from "../../models/addressSchema.js";
 import { decode } from "jsonwebtoken";
@@ -24,7 +24,7 @@ const updateAddress = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const { uid } = decode(token, "your_secret_key");
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

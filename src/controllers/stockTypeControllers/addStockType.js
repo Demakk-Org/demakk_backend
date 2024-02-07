@@ -1,6 +1,6 @@
 import { StockType } from "../../models/stockTypeSchema.js";
 import { config } from "dotenv";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
@@ -8,7 +8,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const addStockType = async (req, res) => {
   let { stockTypeName, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

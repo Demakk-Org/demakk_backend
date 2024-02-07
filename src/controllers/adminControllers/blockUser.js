@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import User from "../../models/userSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
@@ -9,8 +9,12 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const blockUser = (req, res) => {
   let { uid, block, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
+  }
+
+  if (req?.language) {
+    lang = req.language;
   }
 
   if (!uid || block == null) {

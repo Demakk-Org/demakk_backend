@@ -1,7 +1,7 @@
 import ResetPassword from "../../models/resetPassword.js";
 import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import dotenv from "dotenv";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
@@ -11,7 +11,7 @@ const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 const resetPassword = async (req, res) => {
   let { id, password, confirmPassword, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

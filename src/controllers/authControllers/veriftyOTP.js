@@ -1,15 +1,16 @@
 import { config } from "dotenv";
 import OTP from "../../models/otpSchema.js";
 import User from "../../models/userSchema.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const veriftyOTP = async (req, res) => {
   let { otpID, otpValue, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
@@ -62,6 +63,9 @@ const veriftyOTP = async (req, res) => {
         { phoneNumber: otp.account },
         {
           phoneNumberVerified: true,
+        },
+        {
+          returnDocument: "after",
         }
       ).select("phone phoneNumberVerified");
 

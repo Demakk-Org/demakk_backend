@@ -1,5 +1,5 @@
 import { StockType } from "../../models/stockTypeSchema.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { config } from "dotenv";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
@@ -9,7 +9,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const deleteStockType = async (req, res) => {
   let { stockTypeId, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
   if (!stockTypeId) {

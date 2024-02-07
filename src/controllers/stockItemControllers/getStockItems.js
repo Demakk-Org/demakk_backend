@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { StockItem } from "../../models/stockItemSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 
@@ -8,7 +8,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const getStockItems = (req, res) => {
   let { lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

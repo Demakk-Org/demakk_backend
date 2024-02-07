@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import Address from "../../models/addressSchema.js";
 import { decode } from "jsonwebtoken";
 import { ErrorHandler } from "../../utils/errorHandler.js";
@@ -12,7 +12,7 @@ const getAddresses = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const { uid } = decode(token, "your_secret_key");
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

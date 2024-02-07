@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { ProductCategory } from "../../models/productCategorySchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 
@@ -8,7 +8,7 @@ const { LANG, SORT, LIMIT, PAGE } = config(process.cwd, ".env").parsed;
 const getProductCategories = async (req, res) => {
   let { lang, page, limit, sort } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

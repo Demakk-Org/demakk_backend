@@ -2,7 +2,7 @@ import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
 import queryByType from "../../utils/queryByType.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { config } from "dotenv";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 
@@ -11,7 +11,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 async function loginUser(req, res) {
   let { account, password, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
@@ -35,9 +35,8 @@ async function loginUser(req, res) {
         {
           from: "Demakk Printing Enterprise",
           uid: user._id,
-          email: user.email,
           name: user.firstName,
-          phoneNumber: user.phoneNumber,
+          ...queryAndType.searchQuery,
           iat: Date.now(),
           lang: user.lang ? user.lang : lang,
         },

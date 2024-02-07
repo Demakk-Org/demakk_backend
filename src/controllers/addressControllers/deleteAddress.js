@@ -1,4 +1,4 @@
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { config } from "dotenv";
 import Address from "../../models/addressSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
@@ -9,7 +9,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const deleteAddress = async (req, res) => {
   let { addressId, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

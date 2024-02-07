@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import User from "../../models/userSchema.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import Role from "../../models/roleSchema.js";
 
@@ -9,8 +9,12 @@ const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 const getUsers = async (req, res) => {
   let { page, limit, lang, sort } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
+  }
+
+  if(req?.language){
+    lang = req.language;
   }
 
   if (sort === undefined) sort = SORT;

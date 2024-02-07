@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import language from "../../../language.js";
+import language from "../../../response.js";
 import { Product } from "../../models/productSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
@@ -48,6 +48,7 @@ const getProduct = (req, res) => {
           : product.description.get(LANG)
           ? product.description.get(LANG)
           : product.description.get("en"),
+        tags: product.tags,
         productCategory: product.productCategory && {
           id: product.productCategory._id,
           name: product.productCategory.name.get(lang)

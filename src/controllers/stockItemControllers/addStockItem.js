@@ -1,5 +1,5 @@
 import { StockItem } from "../../models/stockItemSchema.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
@@ -9,7 +9,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const addStockItem = async (req, res) => {
   let { stockTypeId, name, price, costToProduce, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

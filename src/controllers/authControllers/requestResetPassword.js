@@ -3,7 +3,7 @@ import resetPasswordText from "../../utils/resetPasswordText.js";
 import ResetPassword from "../../models/resetPassword.js";
 import queryByType from "../../utils/queryByType.js";
 import User from "../../models/userSchema.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import dotenv from "dotenv";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 
@@ -12,7 +12,7 @@ const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 const requestResetPassword = async (req, res) => {
   let { account, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

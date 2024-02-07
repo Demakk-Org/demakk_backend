@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import Role from "../../models/roleSchema.js";
 import User from "../../models/userSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
@@ -10,8 +10,12 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const assignRole = (req, res) => {
   let { lang, role, uid } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
+  }
+
+  if (req?.language) {
+    lang = req.language;
   }
 
   if (!role || !uid) {

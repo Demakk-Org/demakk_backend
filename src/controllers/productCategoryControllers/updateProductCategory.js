@@ -1,5 +1,5 @@
 import { ProductCategory } from "../../models/productCategorySchema.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
@@ -16,7 +16,7 @@ const updateProductCategory = async (req, res) => {
     lang,
   } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 

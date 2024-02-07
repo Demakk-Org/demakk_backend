@@ -1,5 +1,5 @@
 import { ProductCategory } from "../../models/productCategorySchema.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
@@ -9,7 +9,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const addProductCategory = async (req, res) => {
   let { stockItemId, name, additionalPrice, additionalCost, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
@@ -47,7 +47,7 @@ const addProductCategory = async (req, res) => {
     return ErrorHandler(res, 201, lang, productCategory);
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ message: language[lang].response[500] });
+    return ErrorHandler(res, 500, lang);
   }
 };
 

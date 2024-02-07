@@ -1,5 +1,5 @@
 import User from "../../models/userSchema.js";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import { config } from "dotenv";
 import { decode } from "jsonwebtoken";
 import Address from "../../models/addressSchema.js";
@@ -16,6 +16,7 @@ const updateUser = async (req, res) => {
 
   let {
     lang,
+    language,
     firstName,
     lastName,
     email,
@@ -24,11 +25,16 @@ const updateUser = async (req, res) => {
     billingAddress,
   } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req?.language;
+  }
+
   if (
+    !language &&
     !firstName &&
     !lastName &&
     !email &&
@@ -37,6 +43,14 @@ const updateUser = async (req, res) => {
     !billingAddress
   ) {
     return ErrorHandler(res, 400, lang);
+  }
+
+  if (language && (typeof language !== "string" || language.length !== 2)) {
+    return ErrorHandler(res, 455, lang);
+  }
+
+  if (language && !(language in response)) {
+    return ErrorHandler(res, 456, lang);
   }
 
   if (
@@ -85,6 +99,7 @@ const updateUser = async (req, res) => {
   try {
     const user = await User.findById(uid);
 
+    if (language && language !== user.lang) user.lang = language;
     if (firstName && firstName !== user.firstName) user.firstName = firstName;
     if (lastName && lastName !== user.lastName) user.lastName = lastName;
     if (email && email !== user.email) {
@@ -113,6 +128,7 @@ const updateUser = async (req, res) => {
       phoneNumberVerified: user.phoneNumberVerified,
       shippingAddress: user.shippingAddress,
       billingAddress: user.billingAddress,
+      lang: user.lang,
     };
 
     return ErrorHandler(res, 203, lang, data);

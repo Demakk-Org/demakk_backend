@@ -19,6 +19,12 @@ const ProductSchema = Schema(
       required: true,
       ref: "ProductCategory",
     },
+    tags: [
+      {
+        type: String,
+        lowercase: true,
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now,

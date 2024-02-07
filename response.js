@@ -14,6 +14,7 @@ export default {
       210: "Your phone number is verified",
       211: "User is blocked",
       212: "User is unblocked",
+      213: "OTP has been sent to your phone number",
 
       400: "Missing required fields",
       401: "Unauthorized",
@@ -68,8 +69,15 @@ export default {
       450: "Authentication failed: Invalid token",
       451: "Authentication failed: Token has expired",
       452: "Authentication failed: User not admin",
+      453: "Phone number is not registered in your account",
+      454: "Email address is not registered in your account",
+      455: "Language is type of two character string",
+      456: "Language is not found",
       500: "Internal Server Error, please try again!",
       501: "Not Implemented: it is under development",
+    },
+    message: {
+      text: "Demakk: Your verification code is: ",
     },
   },
   am: {
@@ -87,6 +95,7 @@ export default {
       210: "ስልክ ቁጥርህ ተረጋግጧል",
       211: "ተጠቃሚ ታግዷል",
       212: "ተጠቃሚው እገዳው ተነስቷል",
+      213: "OTP ወደ ስልክ ቁጥርዎ ተልኳል",
 
       400: "አስፈላጊ መረጃ ይጎድላል",
       401: "ያልተፈቀደ",
@@ -141,8 +150,15 @@ export default {
       450: "ማረጋገጥ አልተሳካም፡ ልክ ያልሆነ ማስመሰያ!",
       451: "ማረጋገጥ አልተሳካም፡ ማስመሰያ ጊዜው አልፎበታል!",
       452: "ማረጋገጥ አልተሳካም፡ ተጠቃሚ አስተዳዳሪ አይደለም!",
+      453: "ስልክ ቁጥር በመለያዎ ውስጥ አልተመዘገበም",
+      454: "ኢሜል በመለያዎ ውስጥ አልተመዘገበም",
+      455: "ቋንቋ የሁለት ፊደል ሕብረቁምፊ ዓይነት ነው",
+      456: "ቋንቋ አልተገኘም",
       500: "የመረብ ብልሽት ተከስቷል፡ እባክዎን ትንሽ ቆይተው እንደገና ይሞክሩ!",
       501: "አልተተገበረም።: ልማት ላይ ነው።",
+    },
+    message: {
+      text: "ደማቅ፡ ይህ የእርሶ የማረጋገጫ ኮድ ነው: ",
     },
   },
   or: {

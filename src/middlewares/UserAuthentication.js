@@ -1,8 +1,9 @@
 import { decode } from "jsonwebtoken";
-import language from "../../language.js";
+import response from "../../response.js";
 import { config } from "dotenv";
 import { ErrorHandler } from "../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import User from "../models/userSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -11,7 +12,7 @@ const UserAuthentication = (req, res, next) => {
   const token = req.headers?.authorization?.split(" ")[1];
   const bearer = req.headers?.authorization?.split(" ")[0];
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
@@ -21,7 +22,7 @@ const UserAuthentication = (req, res, next) => {
   }
 
   const tokenValues = decode(token, "your_secret_key");
-  console.log(tokenValues);
+  console.log(tokenValues, "values");
 
   if (!tokenValues) {
     console.error("Authentication failed: Invalid token");
@@ -43,7 +44,17 @@ const UserAuthentication = (req, res, next) => {
     return ErrorHandler(res, 451, lang);
   }
 
-  next();
+  try {
+    User.findById(uid)
+      .select("lang")
+      .then((user) => {
+        req.language = user.lang;
+        next();
+      });
+  } catch (error) {
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
+  }
 };
 
 export default UserAuthentication;

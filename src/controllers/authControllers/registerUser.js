@@ -3,7 +3,7 @@ import Cart from "../../models/cartSchema.js";
 import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
-import language from "../../../language.js";
+import response from "../../../response.js";
 import dotenv from "dotenv";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 
@@ -17,7 +17,7 @@ async function registerUser(req, res) {
   let { account, firstName, lastName, password, confirmPassword, role, lang } =
     req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
@@ -78,6 +78,7 @@ async function registerUser(req, res) {
           from: "Demakk Printing Enterprise",
           uid: user._id,
           name: user.firstName,
+          ...queryAndType.searchQuery,
           iat: Date.now(),
           lang,
         },
