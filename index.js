@@ -42,7 +42,7 @@ app.use("/api/v1/stockItem", stockItemRoute);
 app.use("/api/v1/productCategory", productCategoryRoute);
 app.use("/api/v1/product", productRoute);
 
-app.get("/", async (req, res) => {
+app.get("/addProducts", async (req, res) => {
   function createRandomProduct() {
     return {
       name: { en: faker.commerce.productName() },
@@ -61,8 +61,10 @@ app.get("/", async (req, res) => {
   Product.create(Products).then((products) => {
     return res.json(products);
   });
+});
 
-  // res.send("Hello, this is demakk your most trusted ecommerce site");
+app.get("/", (req, res) => {
+  res.send("Hello, this is demakk your most trusted ecommerce site");
 });
 
 app.listen(PORT, () => {
