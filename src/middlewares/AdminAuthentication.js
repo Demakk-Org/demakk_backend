@@ -31,7 +31,7 @@ const AdminAuthentication = (req, res, next) => {
 
   try {
     User.findById(uid, "role")
-      .populate("role lang")
+      .populate("-password")
       .then((user) => {
         if (!user) {
           return ErrorHandler(res, 416, lang);
@@ -41,6 +41,7 @@ const AdminAuthentication = (req, res, next) => {
         if (user.role.name === "admin") {
           req.language = user.lang;
           req.uid = uid;
+          req.user = user;
           return next();
         } else {
           return ErrorHandler(res, 452, lang);

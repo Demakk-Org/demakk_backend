@@ -13,6 +13,8 @@ import { productRoute } from "./src/routes/ProductRoute.js";
 import { addressRoute } from "./src/routes/addressRoute.js";
 import { faker } from "@faker-js/faker";
 import { Product } from "./src/models/productSchema.js";
+import { orderItemRoute } from "./src/routes/orderItemRoute.js";
+import { orderRoute } from "./src/routes/orderRoute.js";
 // import bcrypt from "bcryptjs";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
@@ -41,6 +43,8 @@ app.use("/api/v1/stockType", stockTypeRoute);
 app.use("/api/v1/stockItem", stockItemRoute);
 app.use("/api/v1/productCategory", productCategoryRoute);
 app.use("/api/v1/product", productRoute);
+app.use("/api/v1/orderItem", orderItemRoute);
+app.use("/api/v1/order", orderRoute);
 
 app.get("/addProducts", async (req, res) => {
   function createRandomProduct() {

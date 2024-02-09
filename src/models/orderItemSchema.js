@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Coupon from "./couponSchema.js";
 
 const { Schema } = mongoose;
 
@@ -16,7 +17,10 @@ export const orderItemSchema = new Schema({
     type: Number,
     required: true,
   },
-  couponCode: String,
+  couponCode: {
+    type: mongoose.Types.ObjectId,
+    ref: "Coupon",
+  },
   createdAt: {
     type: Date,
     default: Date.now,

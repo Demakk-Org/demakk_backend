@@ -19,6 +19,7 @@ const OrderSchema = new Schema(
     orderDate: {
       type: Date,
       required: true,
+      default: Date.now,
     },
     deliveryDate: Date,
     orderStatus: {

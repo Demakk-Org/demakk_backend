@@ -46,9 +46,10 @@ const UserAuthentication = (req, res, next) => {
 
   try {
     User.findById(uid)
-      .select("lang")
+      .select("-password")
       .then((user) => {
         req.language = user.lang;
+        req.user = user;
         req.uid = uid;
         next();
       });
