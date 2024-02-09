@@ -17,10 +17,14 @@ const { LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID, GEEZ_SMS_URL } = config(
 const sendVerification = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const { type } = req.body;
-  const { lang, uid } = decode(token, "your-secret-key");
+  let { lang, uid } = decode(token, "your-secret-key");
 
   if (!lang || !(lang in response)) {
     lang = LANG;
+  }
+
+  if (req?.language) {
+    lang = req.language;
   }
 
   if (!type) {
@@ -96,11 +100,11 @@ const sendVerification = async (req, res) => {
         })
         .catch((err) => {
           console.log(JSON.stringify(err));
-          return res.status(400).json({ message: err });
+          return ErrorHandler(res, 457, lang);
         });
     } catch (err) {
       console.log(err.message);
-      return ErrorHandler(res, 501, lang);
+      return ErrorHandler(res, 500, lang);
     }
   }
 

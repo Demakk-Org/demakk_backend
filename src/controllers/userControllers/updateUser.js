@@ -61,8 +61,12 @@ const updateUser = async (req, res) => {
   }
 
   if (
-    (email && QueryByType(email, lang).status == 403) ||
-    (phoneNumber && QueryByType(phoneNumber, lang).status == 403)
+    (email &&
+      (QueryByType(email, lang).status == 403 ||
+        QueryByType(email, lang).type !== "email")) ||
+    (phoneNumber &&
+      (QueryByType(phoneNumber, lang).status == 403 ||
+        QueryByType(phoneNumber, lang).type !== "phoneNumber"))
   ) {
     return ErrorHandler(res, 403, lang);
   }
@@ -102,19 +106,30 @@ const updateUser = async (req, res) => {
     if (language && language !== user.lang) user.lang = language;
     if (firstName && firstName !== user.firstName) user.firstName = firstName;
     if (lastName && lastName !== user.lastName) user.lastName = lastName;
-    if (email && email !== user.email) {
-      user.email = email;
-      user.emailVerified = false;
-      emailVerified = false;
-    }
-    if (phoneNumber && phoneNumber !== user.phoneNumber) {
-      user.phoneNumber = phoneNumber;
-      user.phoneNumberVerified = false;
-    }
     if (shippingAddress && shippingAddress !== user.shippingAddress)
       user.shippingAddress = shippingAddress;
     if (billingAddress && billingAddress !== user.billingAddress)
       user.billingAddress = billingAddress;
+    if (email && email !== user.email) {
+      const userEmail = await User.findOne({ email });
+
+      if (userEmail) {
+        return ErrorHandler(res, 458, lang);
+      }
+
+      user.email = email;
+      user.emailVerified = false;
+    }
+    if (phoneNumber && phoneNumber !== user.phoneNumber) {
+      const userPhoneNumber = await User.findOne({ phoneNumber });
+
+      if (userPhoneNumber) {
+        return ErrorHandler(res, 459, lang);
+      }
+
+      user.phoneNumber = phoneNumber;
+      user.phoneNumberVerified = false;
+    }
 
     await user.save();
 

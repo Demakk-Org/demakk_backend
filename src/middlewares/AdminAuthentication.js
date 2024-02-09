@@ -7,7 +7,7 @@ import response from "../../response.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const AdminAuthentication = (req, res, next) => {
-  let lang = req.body.lang;
+  let { lang } = req.body;
   const token = req.headers?.authorization?.split(" ")[1];
 
   if (!lang || !(lang in response)) {
@@ -33,6 +33,9 @@ const AdminAuthentication = (req, res, next) => {
     User.findById(uid, "role")
       .populate("role lang")
       .then((user) => {
+        if (!user) {
+          return ErrorHandler(res, 416, lang);
+        }
         console.log(uid, user);
         req.language = user.lang;
         if (user.role.name === "admin") {

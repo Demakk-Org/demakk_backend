@@ -4,10 +4,14 @@ import ResetPassword from "../../models/resetPassword.js";
 import queryByType from "../../utils/queryByType.js";
 import User from "../../models/userSchema.js";
 import response from "../../../response.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import axios from "axios";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const { LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID, GEEZ_SMS_URL } = config(
+  process.cwd,
+  ".env"
+).parsed;
 
 const requestResetPassword = async (req, res) => {
   let { account, lang } = req.body;
@@ -26,15 +30,15 @@ const requestResetPassword = async (req, res) => {
     return ErrorHandler(res, 403, lang);
   }
 
-  const user = await User.findOne(query.searchQuery, "firstName");
+  const user = await User.findOne(query.searchQuery, "firstName phoneNumber");
   console.log(user);
 
   if (!user) {
     return ErrorHandler(res, 404, lang);
   }
 
-  ResetPassword.updateMany({ uid: user._id }, { status: "complete" }).then(
-    async () => {
+  ResetPassword.updateMany({ uid: user._id }, { status: "complete" })
+    .then(async () => {
       const reset = await ResetPassword.create({
         uid: user._id,
         expiresIn: 1000 * 60 * 10,
@@ -45,7 +49,7 @@ const requestResetPassword = async (req, res) => {
           from: "Demakk: ",
           to: query.searchQuery.email,
           subject: "Password Reset Request for Demakk",
-          html: resetPasswordText(user.firstName, reset._id),
+          html: resetPasswordText(user.firstName, reset._id, "email", lang),
         };
 
         var transporter = nodemailer.createTransport({
@@ -68,11 +72,43 @@ const requestResetPassword = async (req, res) => {
           transporter.close();
         }
       } else if (query.type == "phoneNumber") {
+        if (!user.phoneNumber) {
+          return ErrorHandler(res, 453, lang);
+        }
         // function to send link to the phone
-        return ErrorHandler(res, 501, lang);
+        var data = new FormData();
+        data.append("token", GEEZ_SMS_TOKEN);
+        // data.append("shortcode_id", SHORTCODE_ID);
+        data.append(
+          "msg",
+          resetPasswordText(user.firstName, reset._id, "phoneNumber", lang)
+        );
+        data.append("phone", user.phoneNumber);
+
+        var config = {
+          method: "post",
+          url: GEEZ_SMS_URL,
+          data: data,
+        };
+        console.log(
+          resetPasswordText(user.firstName, reset._id, "phoneNumber", lang)
+        );
+        try {
+          axios(config).then(async (resp) => {
+            console.log(JSON.stringify(resp.data));
+            console.log("Reset message is sent!");
+            return ErrorHandler(res, 202, lang);
+          });
+        } catch (error) {
+          console.log(JSON.stringify(err));
+          return ErrorHandler(res, 457, lang);
+        }
       }
-    }
-  );
+    })
+    .catch((err) => {
+      console.log(err.message);
+      return ErrorHandler(res, 500, lang);
+    });
 };
 
 export default requestResetPassword;

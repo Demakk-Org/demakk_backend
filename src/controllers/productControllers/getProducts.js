@@ -47,6 +47,7 @@ const getProducts = async (req, res) => {
         },
       })
       .then((response) => {
+        console.log(response);
         let products = [];
         response.forEach((product) => {
           let productItem = {
