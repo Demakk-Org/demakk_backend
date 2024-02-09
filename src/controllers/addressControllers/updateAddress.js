@@ -28,6 +28,10 @@ const updateAddress = async (req, res) => {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req?.language;
+  }
+
   if (!addressId) {
     return ErrorHandler(res, 400, lang);
   }
@@ -64,6 +68,7 @@ const updateAddress = async (req, res) => {
 
   try {
     const address = await Address.findById(addressId);
+
     if (!address) {
       return ErrorHandler(res, 435, lang);
     }

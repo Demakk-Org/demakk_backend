@@ -13,6 +13,10 @@ const deleteAddress = async (req, res) => {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req.language;
+  }
+
   if (!addressId) {
     return ErrorHandler(res, 400, lang);
   }
@@ -26,6 +30,10 @@ const deleteAddress = async (req, res) => {
 
     if (!address) {
       return ErrorHandler(res, 435, lang);
+    }
+
+    if (address.uid !== req.uid) {
+      return ErrorHandler(res, 463, lang);
     }
 
     return ErrorHandler(res, 204, lang);

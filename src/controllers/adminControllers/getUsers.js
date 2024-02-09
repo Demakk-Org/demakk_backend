@@ -13,7 +13,7 @@ const getUsers = async (req, res) => {
     lang = LANG;
   }
 
-  if(req?.language){
+  if (req?.language) {
     lang = req.language;
   }
 
@@ -70,8 +70,8 @@ const getUsers = async (req, res) => {
           return ErrorHandler(res, 200, lang, data);
         });
     });
-  } catch (err) {
-    console.log(err.message);
+  } catch (error) {
+    console.log(error.message);
     return ErrorHandler(res, 500, lang);
   }
 };

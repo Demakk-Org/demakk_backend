@@ -25,32 +25,32 @@ const blockUser = (req, res) => {
     return ErrorHandler(res, 418, lang);
   }
 
-  User.findById(uid)
-    .select("blocked")
-    .then(async (user) => {
-      if (!user) {
-        return ErrorHandler(res, 416, lang);
-      }
+  try {
+    User.findById(uid)
+      .select("blocked")
+      .then(async (user) => {
+        if (!user) {
+          return ErrorHandler(res, 416, lang);
+        }
 
-      if (block && user.blocked) {
-        return ErrorHandler(res, 421, lang);
-      }
+        if (block && user.blocked) {
+          return ErrorHandler(res, 421, lang);
+        }
 
-      if (!block && !user.blocked) {
-        return ErrorHandler(res, 422, lang);
-      }
+        if (!block && !user.blocked) {
+          return ErrorHandler(res, 422, lang);
+        }
 
-      try {
         user.blocked = block;
         await user.save();
         return block
           ? ErrorHandler(res, 419, lang)
           : ErrorHandler(res, 420, lang);
-      } catch (err) {
-        console.log(err.message);
-        return ErrorHandler(res, 500, lang);
-      }
-    });
+      });
+  } catch (error) {
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
+  }
 };
 
 export { blockUser };

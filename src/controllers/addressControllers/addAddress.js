@@ -28,11 +28,15 @@ const addAddress = async (req, res) => {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req.language;
+  }
+
   if (!isValidObjectId(uid)) {
     return ErrorHandler(res, 418, lang);
   }
 
-  if (!country || !region || !city || !subCity) {
+  if (!country || !region || !city) {
     return ErrorHandler(res, 400, lang);
   }
 
@@ -55,24 +59,24 @@ const addAddress = async (req, res) => {
         return ErrorHandler(res, 416, lang);
       }
 
-      try {
-        Address.create({
-          uid: user._id,
-          country,
-          region,
-          city,
-          subCity,
-          woreda,
-          uniqueIdentifier,
-          streetAddress,
-          postalCode,
-        }).then((data) => {
-          return ErrorHandler(res, 208, lang, data);
-        });
-      } catch (error) {
-        console.log(error.message);
-        return ErrorHandler(res, 500, lang);
-      }
+      // try {
+      Address.create({
+        uid: user._id,
+        country,
+        region,
+        city,
+        subCity,
+        woreda,
+        uniqueIdentifier,
+        streetAddress,
+        postalCode,
+      }).then((data) => {
+        return ErrorHandler(res, 208, lang, data);
+      });
+      // } catch (error) {
+      //   console.log(error.message);
+      //   return ErrorHandler(res, 500, lang);
+      // }
     });
   } catch (error) {
     console.log(error.message);

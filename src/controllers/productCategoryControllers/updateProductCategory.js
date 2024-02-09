@@ -20,6 +20,10 @@ const updateProductCategory = async (req, res) => {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req.language;
+  }
+
   if (!productCategoryId) {
     return ErrorHandler(res, 400, lang);
   }

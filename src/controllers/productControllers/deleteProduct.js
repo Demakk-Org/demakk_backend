@@ -13,6 +13,10 @@ const deleteProduct = async (req, res) => {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req.language;
+  }
+
   if (!productId) {
     return ErrorHandler(res, 400, lang);
   }

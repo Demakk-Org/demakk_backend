@@ -7,7 +7,7 @@ import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
-const assignRole = (req, res) => {
+const assignRole = async (req, res) => {
   let { lang, role, uid } = req.body;
 
   if (!lang || !(lang in response)) {
@@ -26,29 +26,28 @@ const assignRole = (req, res) => {
     return ErrorHandler(res, 418, lang);
   }
 
-  Role.findOne({ name: role }).then((data) => {
+  try {
+    const role = await Role.findOne({ name: role });
+
     if (!role) {
       return ErrorHandler(res, 436, lang);
     }
 
-    console.log(data);
+    console.log(role);
 
-    try {
-      User.findByIdAndUpdate(
-        uid,
-        { role: data._id },
-        { returnDocument: "after" }
-      )
-        .populate("role")
-        .select("role")
-        .then((user) => {
-          return ErrorHandler(res, 203, lang, user);
-        });
-    } catch (error) {
-      console.log(error.message);
-      return ErrorHandler(res, 500, lang);
-    }
-  });
+    const user = await User.findByIdAndUpdate(
+      uid,
+      { role: data._id },
+      { returnDocument: "after" }
+    )
+      .populate("role")
+      .select("role");
+
+    return ErrorHandler(res, 203, lang, user);
+  } catch (error) {
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
+  }
 };
 
 export { assignRole };

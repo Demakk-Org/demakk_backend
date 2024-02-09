@@ -21,21 +21,20 @@ export const addRole = async (req, res) => {
   }
 
   if (typeof name !== "string") {
-    return ErrorHandler(res, 400, 462);
+    return ErrorHandler(res, 462, lang);
   }
 
   const role = await Role.findOne({ name });
 
   if (role) {
     return ErrorHandler(res, 461, lang); // the role already exists
-  }
-
-  if (!role) {
+  } else {
     try {
       Role.create({ name }).then((data) => {
         return ErrorHandler(res, 201, lang, data);
       });
-    } catch (err) {
+    } catch (error) {
+      console.log(error.message);
       return ErrorHandler(res, 500, lang);
     }
   }

@@ -12,6 +12,11 @@ const deleteStockType = async (req, res) => {
   if (!lang || !(lang in response)) {
     lang = LANG;
   }
+
+  if (req?.language) {
+    lang = req.language;
+  }
+
   if (!stockTypeId) {
     return ErrorHandler(res, 400, lang);
   }

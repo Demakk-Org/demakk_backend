@@ -9,17 +9,17 @@ import { ErrorHandler } from "../../utils/errorHandler.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const changePassword = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-
-  const { uid } = Jwt.decode(token, "your_secret_key");
-
   let { password, confirmPassword, lang } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
-  if (!isValidObjectId(uid)) {
+  if (req?.language) {
+    lang = req.language;
+  }
+
+  if (!isValidObjectId(req.uid)) {
     return ErrorHandler(res, 407, lang);
   }
 
@@ -32,7 +32,7 @@ const changePassword = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(uid).select("password");
+    const user = await User.findById(req.uid).select("password");
 
     if (!user) {
       return ErrorHandler(res, 404, lang);

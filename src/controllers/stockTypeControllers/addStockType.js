@@ -12,6 +12,10 @@ const addStockType = async (req, res) => {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req.language;
+  }
+
   if (!stockTypeName) {
     return ErrorHandler(res, 400, lang);
   }

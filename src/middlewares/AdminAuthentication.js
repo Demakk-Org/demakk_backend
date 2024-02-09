@@ -39,6 +39,8 @@ const AdminAuthentication = (req, res, next) => {
         console.log(uid, user);
         req.language = user.lang;
         if (user.role.name === "admin") {
+          req.language = user.lang;
+          req.uid = uid;
           return next();
         } else {
           return ErrorHandler(res, 452, lang);

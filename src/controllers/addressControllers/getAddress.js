@@ -16,9 +16,13 @@ const getAddresses = async (req, res) => {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req.language;
+  }
+
   if (sort === undefined) sort = SORT;
-  if (page === undefined) page = PAGE;
-  if (limit === undefined) limit = LIMIT;
+  if (page === undefined || typeof page !== "number") page = PAGE;
+  if (limit === undefined || typeof limit !== "number") limit = LIMIT;
 
   let query = {};
 
@@ -55,7 +59,8 @@ const getAddresses = async (req, res) => {
         };
         return ErrorHandler(res, 200, lang, data);
       });
-  } catch (err) {
+  } catch (error) {
+    console.log(error.message);
     return ErrorHandler(res, 500, lang);
   }
 };

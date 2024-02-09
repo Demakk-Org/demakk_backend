@@ -13,6 +13,10 @@ const addProduct = async (req, res) => {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req.language;
+  }
+
   if (!name || !description || !productCategoryId) {
     return ErrorHandler(res, 400, lang);
   }

@@ -49,6 +49,7 @@ const UserAuthentication = (req, res, next) => {
       .select("lang")
       .then((user) => {
         req.language = user.lang;
+        req.uid = uid;
         next();
       });
   } catch (error) {

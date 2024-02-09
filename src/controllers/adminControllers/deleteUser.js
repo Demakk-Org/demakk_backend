@@ -26,38 +26,39 @@ const deleteUser = (req, res) => {
     return ErrorHandler(res, 418, lang);
   }
 
-  User.findById(uid, "cart")
-    .then((user) => {
-      if (!user) {
-        return ErrorHandler(res, 416, lang);
-      }
-
-      Cart.findByIdAndDelete(user.cart)
-        .then((cart) => {
-          if (!cart) {
-            return ErrorHandler(res, 417, lang);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          return ErrorHandler(res, 500, lang);
-        });
-    })
-    .catch((error) => {
-      console.log(error);
-      return ErrorHandler(res, 500, lang);
-    })
-    .finally(async () => {
-      try {
-        const user = await User.findByIdAndDelete(uid);
-        if (user) {
-          return ErrorHandler(res, 204, lang);
+  try {
+    User.findById(uid, "cart")
+      .then((user) => {
+        if (!user) {
+          return ErrorHandler(res, 416, lang);
         }
-      } catch (error) {
-        console.log(error.message);
-        return ErrorHandler(res, 500, lang);
-      }
-    });
+
+        Cart.findByIdAndDelete(user.cart)
+          .then((cart) => {
+            if (!cart) {
+              return ErrorHandler(res, 417, lang);
+            }
+          })
+          .catch((error) => {
+            console.log(error.message);
+            return ErrorHandler(res, 500, lang);
+          });
+      })
+      .finally(async () => {
+        try {
+          const user = await User.findByIdAndDelete(uid);
+          if (user) {
+            return ErrorHandler(res, 204, lang);
+          }
+        } catch (error) {
+          console.log(error.message);
+          return ErrorHandler(res, 500, lang);
+        }
+      });
+  } catch (error) {
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
+  }
 };
 
 export { deleteUser };

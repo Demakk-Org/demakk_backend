@@ -13,6 +13,10 @@ const updateStockItem = async (req, res) => {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req.language;
+  }
+
   if (!stockItemId) {
     return ErrorHandler(res, 400, lang);
   }

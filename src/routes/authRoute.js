@@ -13,11 +13,11 @@ import changePassword from "../controllers/authControllers/changePassword.js";
 const authRoute = Router();
 
 authRoute.post("/sendVerification", UserAuthentication, sendVerification);
+authRoute.post("/changePassword", UserAuthentication, changePassword);
 authRoute.post("/verifyOTP", veriftyOTP);
 authRoute.post("/", registerUser);
 authRoute.post("/login", loginUser);
 authRoute.post("/requestResetPassword", requestResetPassword);
 authRoute.post("/resetPassword", resetPassword);
-authRoute.post("/changePassword", UserAuthentication, changePassword);
 
 export default authRoute;

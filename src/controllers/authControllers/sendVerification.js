@@ -3,7 +3,6 @@ import emailText from "../../utils/emailText.js";
 import OTP from "../../models/otpSchema.js";
 import response from "../../../response.js";
 import { config } from "dotenv";
-import { decode } from "jsonwebtoken";
 import User from "../../models/userSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import axios from "axios";
@@ -15,9 +14,7 @@ const { LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID, GEEZ_SMS_URL } = config(
 ).parsed;
 
 const sendVerification = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const { type } = req.body;
-  let { lang, uid } = decode(token, "your-secret-key");
+  let { type, lang } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -35,10 +32,10 @@ const sendVerification = async (req, res) => {
     return ErrorHandler(res, 400, lang);
   }
 
-  const user = await User.findById(uid)
+  const user = await User.findById(req.uid)
     .select("email phoneNumber emailVerified phoneNumberVerified")
-    .catch((err) => {
-      console.log(err.message);
+    .catch((error) => {
+      console.log(error.message);
       return ErrorHandler(res, 500, lang);
     });
 
@@ -53,8 +50,8 @@ const sendVerification = async (req, res) => {
   const otp = await OTP.updateMany(
     { account: type == "email" ? user.email : user.phoneNumber },
     { status: "complete" }
-  ).catch((err) => {
-    console.log(err.message);
+  ).catch((error) => {
+    console.log(error.message);
     return ErrorHandler(res, 500, lang);
   });
 
