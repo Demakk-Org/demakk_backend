@@ -1,4 +1,7 @@
+import { config } from "dotenv";
 import response from "../../response.js";
+
+const DEMAKK_URL = config(process.cwd, ".env").parsed.DEMAKK_URL;
 
 const resetPasswordText = (name, id, type, lang) => {
   if (type === "phoneNumber") {
@@ -13,7 +16,7 @@ const resetPasswordText = (name, id, type, lang) => {
       </div>
       <p style="font-size:1.25em">${response[lang].message.greetings}, ${name}</p>
       <p>${response[lang].message.body}</p>
-      <a href='https://demakk.com/user/resetPassword/${id}' style="background: #00466a;margin: 0 auto;width: max-content;padding: 5px 10px;font-size:1rem;color: #fff;border-radius: 4px;cursor:pointer;text-decoration:none">${response[lang].message.button}</a>
+      <a href='${DEMAKK_URL}/user/resetPassword/${id}' style="background: #00466a;margin: 0 auto;width: max-content;padding: 5px 10px;font-size:1rem;color: #fff;border-radius: 4px;cursor:pointer;text-decoration:none">${response[lang].message.button}</a>
       <p style="font-size:0.9em;">${response[lang].message.regards},<br />${response[lang].message.name}</p>
       <hr style="border:none;border-top:1px solid #eee" />
       <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">

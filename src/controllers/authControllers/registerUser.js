@@ -59,6 +59,7 @@ async function registerUser(req, res) {
     password: await bcrypt.hash(password, 10),
     role: "65a6ee8675aa7a6c6924c260",
     cart: cart._id,
+    lang,
   };
 
   if (queryAndType.type == "email") {
@@ -72,6 +73,8 @@ async function registerUser(req, res) {
   if (cart) {
     try {
       const user = await User.create(query);
+      cart.user = user._id;
+      cart.save();
 
       const token = Jwt.sign(
         {

@@ -15,6 +15,7 @@ import { faker } from "@faker-js/faker";
 import { Product } from "./src/models/productSchema.js";
 import { orderItemRoute } from "./src/routes/orderItemRoute.js";
 import { orderRoute } from "./src/routes/orderRoute.js";
+import { searchRoute } from "./src/routes/searchRoute.js";
 // import bcrypt from "bcryptjs";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
@@ -45,6 +46,7 @@ app.use("/api/v1/productCategory", productCategoryRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/orderItem", orderItemRoute);
 app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/search", searchRoute);
 
 app.get("/addProducts", async (req, res) => {
   function createRandomProduct() {
@@ -53,11 +55,12 @@ app.get("/addProducts", async (req, res) => {
       description: { en: faker.commerce.productDescription() },
       productCategory: new mongoose.Types.ObjectId(),
       tags: faker.helpers.multiple(faker.commerce.productMaterial),
+      price: faker.commerce.price({ min: 100, max: 10000 }),
     };
   }
 
   const Products = faker.helpers.multiple(createRandomProduct, {
-    count: 5,
+    count: 20,
   });
 
   console.log(Products);

@@ -8,6 +8,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const deleteAddress = async (req, res) => {
   let { addressId, lang } = req.body;
+  let uid = req.uid;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -32,7 +33,7 @@ const deleteAddress = async (req, res) => {
       return ErrorHandler(res, 435, lang);
     }
 
-    if (address.uid !== req.uid) {
+    if (address.uid !== uid) {
       return ErrorHandler(res, 463, lang);
     }
 

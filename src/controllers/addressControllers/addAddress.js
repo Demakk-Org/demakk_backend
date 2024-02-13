@@ -21,8 +21,7 @@ const addAddress = async (req, res) => {
     postalCode,
   } = req.body;
 
-  const token = req.headers.authorization.split(" ")[1];
-  const { uid } = decode(token, "your_secret_key");
+  const uid = req.uid;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -59,7 +58,6 @@ const addAddress = async (req, res) => {
         return ErrorHandler(res, 416, lang);
       }
 
-      // try {
       Address.create({
         uid: user._id,
         country,
@@ -73,10 +71,6 @@ const addAddress = async (req, res) => {
       }).then((data) => {
         return ErrorHandler(res, 208, lang, data);
       });
-      // } catch (error) {
-      //   console.log(error.message);
-      //   return ErrorHandler(res, 500, lang);
-      // }
     });
   } catch (error) {
     console.log(error.message);

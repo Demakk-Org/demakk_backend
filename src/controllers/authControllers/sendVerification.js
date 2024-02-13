@@ -95,8 +95,8 @@ const sendVerification = async (req, res) => {
             return ErrorHandler(res, 213, lang, data);
           });
         })
-        .catch((err) => {
-          console.log(JSON.stringify(err));
+        .catch((error) => {
+          console.log(JSON.stringify(error));
           return ErrorHandler(res, 457, lang);
         });
     } catch (err) {

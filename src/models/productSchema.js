@@ -25,14 +25,11 @@ const ProductSchema = Schema(
         lowercase: true,
       },
     ],
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      immutable: true,
-    },
+    price: Number,
   },
   {
     timestamps: {
+      createdAt: "createdAt",
       updatedAt: "updatedAt",
     },
   }

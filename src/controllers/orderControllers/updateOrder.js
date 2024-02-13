@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import Order from "../../models/orderSchema.js";
 import OrderStatus from "../../models/orderStatusSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 import response from "../../../response.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;

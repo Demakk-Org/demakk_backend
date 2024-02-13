@@ -105,8 +105,8 @@ const requestResetPassword = async (req, res) => {
         }
       }
     })
-    .catch((err) => {
-      console.log(err.message);
+    .catch((error) => {
+      console.log(error.message);
       return ErrorHandler(res, 500, lang);
     });
 };

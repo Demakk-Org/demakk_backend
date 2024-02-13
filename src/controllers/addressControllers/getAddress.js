@@ -42,9 +42,9 @@ const getAddresses = async (req, res) => {
 
   console.log(query);
 
-  const count = await Address.countDocuments(query);
-
   try {
+    const count = await Address.countDocuments(query);
+
     Address.find(query)
       .limit(limit)
       .skip((page - 1) * limit)

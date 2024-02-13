@@ -2,11 +2,11 @@ import ResetPassword from "../../models/resetPassword.js";
 import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import response from "../../../response.js";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const resetPassword = async (req, res) => {
   let { id, password, confirmPassword, lang } = req.body;

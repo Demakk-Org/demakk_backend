@@ -32,9 +32,9 @@ const getProducts = async (req, res) => {
 
   console.log(query);
 
-  const count = await Product.countDocuments(query);
-
   try {
+    const count = await Product.countDocuments(query);
+
     Product.find(query)
       .limit(limit)
       .skip((page - 1) * limit)

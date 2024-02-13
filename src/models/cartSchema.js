@@ -5,6 +5,9 @@ const { Schema } = mongoose;
 
 const CartSchema = new Schema(
   {
+    user: {
+      type: mongoose.Types.ObjectId,
+    },
     orderItems: [
       {
         type: mongoose.Types.ObjectId,

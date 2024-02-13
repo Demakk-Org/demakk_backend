@@ -1,12 +1,12 @@
 import { config } from "dotenv";
-import { Product } from "../../models/productSchema.js";
 import response from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import { Product } from "../../models/productSchema.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 const searchProducts = async (req, res) => {
-  let { page, limit, lang, sort, text } = req.body;
+  let { page, limit, lang, sort, text, price } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -24,7 +24,35 @@ const searchProducts = async (req, res) => {
     return ErrorHandler(res, 446, lang);
   }
 
-  const count = await Product.aggregate([
+  if (
+    price &&
+    (!(price instanceof Object && price.constructor === Object) ||
+      !price.gte ||
+      !price.lt)
+  ) {
+    return ErrorHandler(res, 443, lang);
+  }
+
+  let match = {};
+
+  if (price) {
+    match["$match"] = {
+      $and: [
+        {
+          price: {
+            $lt: price.lt,
+          },
+        },
+        {
+          price: {
+            $gte: price.gte,
+          },
+        },
+      ],
+    };
+  }
+
+  let pipeline = [
     {
       $search: {
         index: "product-index",
@@ -38,93 +66,84 @@ const searchProducts = async (req, res) => {
       },
     },
     {
-      $count: "count",
+      $lookup: {
+        from: "productcategories",
+        localField: "productCategory",
+        foreignField: "_id",
+        as: "productCategory",
+      },
     },
-  ]);
-  console.log(count);
+    {
+      $addFields: {
+        productCategory: {
+          $first: "$productCategory",
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "stockitems",
+        localField: "productCategory.stockItem",
+        foreignField: "_id",
+        as: "productCategory.stockItem",
+      },
+    },
+    {
+      $addFields: {
+        "productCategory.stockItem": {
+          $first: "$productCategory.stockItem",
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "stocktypes",
+        localField: "productCategory.stockItem.stockType",
+        foreignField: "_id",
+        as: "productCategory.stockItem.stockType",
+      },
+    },
+    {
+      $addFields: {
+        "productCategory.stockItem.stockType": {
+          $first: "$productCategory.stockItem.stockType",
+        },
+      },
+    },
+    {
+      $skip: (page - 1) * limit,
+    },
+    {
+      $limit: limit * 1,
+    },
+    {
+      $project: {
+        _id: 0,
+        name: 1,
+        description: 1,
+        tags: 1,
+        productCategory: 1,
+        price: 1,
+        score: { $meta: "searchScore" },
+      },
+    },
+  ];
+
+  if (price) {
+    pipeline.splice(1, 0, { ...match });
+  }
+
+  let countPipeline = pipeline.slice(0, price ? 2 : 1);
+  countPipeline.push({ $count: "count" });
 
   try {
-    const searchList = await Product.aggregate([
-      {
-        $search: {
-          index: "product-index",
-          text: {
-            query: text,
-            path: {
-              wildcard: "*",
-            },
-            fuzzy: {},
-          },
-        },
-      },
-      {
-        $lookup: {
-          from: "productcategories",
-          localField: "productCategory",
-          foreignField: "_id",
-          as: "productCategory",
-        },
-      },
-      {
-        $addFields: {
-          productCategory: {
-            $first: "$productCategory",
-          },
-        },
-      },
-      {
-        $lookup: {
-          from: "stockitems",
-          localField: "productCategory.stockItem",
-          foreignField: "_id",
-          as: "productCategory.stockItem",
-        },
-      },
-      {
-        $addFields: {
-          "productCategory.stockItem": {
-            $first: "$productCategory.stockItem",
-          },
-        },
-      },
-      {
-        $lookup: {
-          from: "stocktypes",
-          localField: "productCategory.stockItem.stockType",
-          foreignField: "_id",
-          as: "productCategory.stockItem.stockType",
-        },
-      },
-      {
-        $addFields: {
-          "productCategory.stockItem.stockType": {
-            $first: "$productCategory.stockItem.stockType",
-          },
-        },
-      },
-      {
-        $skip: (page - 1) * limit,
-      },
-      {
-        $limit: limit * 1,
-      },
-      {
-        $project: {
-          _id: 0,
-          name: 1,
-          description: 1,
-          tags: 1,
-          productCategory: 1,
-          // score: { $meta: "searchScore" },
-        },
-      },
-    ]);
-
-    // console.log(searchList, count, "here");
+    const count = await Product.aggregate(countPipeline);
+    console.log(count, countPipeline);
+    const searchList = await Product.aggregate(pipeline);
+    console.log(searchList);
 
     let products = [];
     searchList.forEach((product) => {
-      console.log(product, product.productCategory?._id);
       let productItem = {
         id: product._id,
         name: product.name[lang]
@@ -138,6 +157,7 @@ const searchProducts = async (req, res) => {
           ? product.description[LANG]
           : product.description["en"],
         tags: product.tags,
+        price: product.price,
         productCategory: product.productCategory?._id && {
           id: product.productCategory._id,
           name: product.productCategory.name[lang]

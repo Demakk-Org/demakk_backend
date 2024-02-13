@@ -21,8 +21,7 @@ const updateAddress = async (req, res) => {
     lang,
   } = req.body;
 
-  const token = req.headers.authorization.split(" ")[1];
-  const { uid } = decode(token, "your_secret_key");
+  const uid = req.uid;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
