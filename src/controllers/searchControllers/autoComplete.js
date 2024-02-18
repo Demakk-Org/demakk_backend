@@ -28,10 +28,11 @@ export const autoComplete = async (req, res) => {
     const products = await Product.aggregate([
       {
         $search: {
-          index: "default",
+          index: "autocomplete",
           autocomplete: {
             query: text,
             path: "name.en",
+            tokenOrder: "sequential",
           },
         },
       },

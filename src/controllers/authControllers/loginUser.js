@@ -15,6 +15,10 @@ async function loginUser(req, res) {
     lang = LANG;
   }
 
+  if (req?.language) {
+    lang = req.language;
+  }
+
   if (!account || !password) {
     return ErrorHandler(res, 400, lang);
   }

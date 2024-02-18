@@ -2,14 +2,20 @@ import { config } from "dotenv";
 import { Product } from "../../models/productSchema.js";
 import language from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import Jwt from "jsonwebtoken";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 const getProducts = async (req, res) => {
   let { page, limit, lang, sort } = req.body;
+  const token = req.headers?.authorization?.split(" ")[1];
 
   if (!lang || !(lang in language)) {
     lang = LANG;
+  }
+  console.log(token);
+  if (token) {
+    lang = Jwt.decode(token, "your_secret_key")?.lang;
   }
 
   if (sort === undefined) sort = SORT;

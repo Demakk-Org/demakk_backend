@@ -1,16 +1,12 @@
 import { config } from "dotenv";
 import response from "../../../response.js";
 import Address from "../../models/addressSchema.js";
-import { decode } from "jsonwebtoken";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 const getAddresses = async (req, res) => {
   let { page, limit, lang, sort } = req.body;
-
-  const token = req.headers.authorization.split(" ")[1];
-  const { uid } = decode(token, "your_secret_key");
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -38,7 +34,7 @@ const getAddresses = async (req, res) => {
     }
   });
 
-  query.uid = uid;
+  query.uid = req.uid;
 
   console.log(query);
 

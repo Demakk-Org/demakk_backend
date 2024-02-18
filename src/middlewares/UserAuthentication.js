@@ -47,10 +47,12 @@ const UserAuthentication = (req, res, next) => {
   try {
     User.findById(uid)
       .select("-password")
+      .populate("role")
       .then((user) => {
         req.language = user.lang;
         req.user = user;
         req.uid = uid;
+        req.role = user.role.name;
         next();
       });
   } catch (error) {

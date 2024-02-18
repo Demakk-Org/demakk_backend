@@ -35,6 +35,15 @@ const searchProducts = async (req, res) => {
 
   let match = {};
 
+  const regex = /[^(A-Z0-9\s\.)]+/gi;
+  const regex1 = /[A-Z0-9]+/gi;
+
+  const text1 = text.match(regex1)?.join(" ");
+  const text2 = text.match(regex);
+
+  console.log(text1);
+  console.log(text2);
+
   if (price) {
     match["$match"] = {
       $and: [
@@ -52,16 +61,80 @@ const searchProducts = async (req, res) => {
     };
   }
 
+  let shouldList = [];
+
+  if (text1) {
+    shouldList.push(
+      {
+        text: {
+          query: text1,
+          path: "name.en",
+          fuzzy: {
+            prefixLength: 0,
+          },
+          score: {
+            boost: {
+              value: 3,
+            },
+          },
+        },
+      },
+      {
+        text: {
+          query: text1,
+          path: "description.en",
+          fuzzy: {
+            prefixLength: 2,
+          },
+          score: {
+            boost: {
+              value: 1,
+            },
+          },
+        },
+      },
+      {
+        text: {
+          query: text1,
+          path: "tags",
+          fuzzy: {
+            prefixLength: 2,
+          },
+          score: {
+            boost: {
+              value: 5,
+            },
+          },
+        },
+      }
+    );
+  }
+
+  if (text2) {
+    text2.forEach((amh) => {
+      shouldList.push({
+        text: {
+          query: amh,
+          path: "name.en",
+          synonyms: "mySynonyms",
+          score: {
+            boost: {
+              value: 5,
+            },
+          },
+        },
+      });
+    });
+  }
+
+  console.log(shouldList);
+
   let pipeline = [
     {
       $search: {
-        index: "product-index",
-        text: {
-          query: text,
-          path: {
-            wildcard: "*",
-          },
-          fuzzy: {},
+        index: "synonym",
+        compound: {
+          should: shouldList,
         },
       },
     },
@@ -137,10 +210,9 @@ const searchProducts = async (req, res) => {
   countPipeline.push({ $count: "count" });
 
   try {
-    const count = await Product.aggregate(countPipeline);
-    console.log(count, countPipeline);
+    let count = await Product.aggregate(countPipeline);
+    console.log("154", count, countPipeline);
     const searchList = await Product.aggregate(pipeline);
-    console.log(searchList);
 
     let products = [];
     searchList.forEach((product) => {
@@ -158,44 +230,48 @@ const searchProducts = async (req, res) => {
           : product.description["en"],
         tags: product.tags,
         price: product.price,
-        productCategory: product.productCategory?._id && {
-          id: product.productCategory._id,
-          name: product.productCategory.name[lang]
-            ? product.productCategory.name[lang]
-            : product.productCategory.name[LANG]
-            ? product.productCategory.name[LANG]
-            : product.productCategory.name["en"],
-          additionalPrice: product.productCategory.additionalPrice,
-          // additionalCost: product.productCategory.additionalCost,
-          stockItem: product.productCategory.stockItem?._id && {
-            id: product.productCategory.stockItem._id,
-            name: product.productCategory.stockItem.name[lang]
-              ? product.productCategory.stockItem.name[lang]
-              : product.productCategory.stockItem.name[LANG]
-              ? product.productCategory.stockItem.name[LANG]
-              : product.productCategory.stockItem.name["en"],
-            stockType: product.productCategory.stockItem.stockType?._id && {
-              id: product.productCategory.stockItem.stockType._id,
-              name: product.productCategory.stockItem.stockType.name[lang]
-                ? product.productCategory.stockItem.stockType.name[lang]
-                : product.productCategory.stockItem.stockType.name[LANG]
-                ? product.productCategory.stockItem.stockType.name[LANG]
-                : product.productCategory.stockItem.stockType.name["en"],
-            },
-            price: product.productCategory.stockItem.price,
-            // costToProduce: product.productCategory.stockItem.costToProduce,
-          },
-        },
+        score: product.score,
+        // productCategory: product.productCategory?._id && {
+        //   id: product.productCategory._id,
+        //   name: product.productCategory.name[lang]
+        //     ? product.productCategory.name[lang]
+        //     : product.productCategory.name[LANG]
+        //     ? product.productCategory.name[LANG]
+        //     : product.productCategory.name["en"],
+        //   additionalPrice: product.productCategory.additionalPrice,
+        //   // additionalCost: product.productCategory.additionalCost,
+        //   stockItem: product.productCategory.stockItem?._id && {
+        //     id: product.productCategory.stockItem._id,
+        //     name: product.productCategory.stockItem.name[lang]
+        //       ? product.productCategory.stockItem.name[lang]
+        //       : product.productCategory.stockItem.name[LANG]
+        //       ? product.productCategory.stockItem.name[LANG]
+        //       : product.productCategory.stockItem.name["en"],
+        //     stockType: product.productCategory.stockItem.stockType?._id && {
+        //       id: product.productCategory.stockItem.stockType._id,
+        //       name: product.productCategory.stockItem.stockType.name[lang]
+        //         ? product.productCategory.stockItem.stockType.name[lang]
+        //         : product.productCategory.stockItem.stockType.name[LANG]
+        //         ? product.productCategory.stockItem.stockType.name[LANG]
+        //         : product.productCategory.stockItem.stockType.name["en"],
+        //     },
+        //     price: product.productCategory.stockItem.price,
+        //     // costToProduce: product.productCategory.stockItem.costToProduce,
+        //   },
+        // },
       };
-      console.log(productItem, "after");
+
+      // console.log(productItem, "after");
       products.push(productItem);
     });
 
+    count = count[0]?.count ? count[0]?.count : 0;
+
     let data = {
       page: page.toString(),
-      pages: Math.ceil(count[0].count / limit).toString(),
+      pages: Math.ceil(count / limit).toString(),
       limit: limit.toString(),
-      count: count[0].count.toString(),
+      count: count.toString(),
       products: products,
     };
 

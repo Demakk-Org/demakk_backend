@@ -7,7 +7,6 @@ export const UserSchema = new Schema(
   {
     email: {
       type: String,
-      // unique: true,
       lowercase: true,
       default: "",
     },
@@ -18,7 +17,6 @@ export const UserSchema = new Schema(
     phoneNumber: {
       type: String,
       default: "",
-      // unique: true,
     },
     phoneNumberVerified: {
       type: Boolean,
@@ -68,15 +66,18 @@ export const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      immutable: true,
-    },
+    image: String,
+    searchTerms: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
   },
   {
     timestamps: {
-      updatedAt: "updatedAt", // and `updated_at` to store the last updated date
+      updatedAt: "updatedAt",
+      createdAt: "createdAt",
     },
   }
 );

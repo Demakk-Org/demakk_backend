@@ -8,11 +8,6 @@ const reserPasswordSchema = new Schema(
       type: String,
       required: true,
     },
-    // requestedAt: {
-    //   type: Date,
-    //   default: Date.now(),
-    //   immutable: true,
-    // },
     status: {
       type: String,
       enums: ["pending", "complete"],

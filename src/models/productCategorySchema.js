@@ -23,15 +23,11 @@ const ProductCategorySchema = Schema(
       type: Number,
       required: true,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      immutable: true,
-    },
   },
   {
     timestamps: {
       updatedAt: "updatedAt",
+      createdAt: "createdAt",
     },
   }
 );

@@ -17,7 +17,7 @@ const CartSchema = new Schema(
   },
   {
     timestamps: {
-      updatedAt: "updatedAt", // and `updated_at` to store the last updated date
+      updatedAt: "updatedAt",
     },
   }
 );

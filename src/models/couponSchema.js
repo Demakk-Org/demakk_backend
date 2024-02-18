@@ -22,15 +22,11 @@ export const couponSchema = new Schema(
         required: true,
       },
     ],
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      required: true,
-    },
     endsAt: Date,
   },
   {
     timestamps: {
+      createdAt: "createdAt",
       updatedAt: "updatedAt", // and `updated_at` to store the last updated date
     },
   }

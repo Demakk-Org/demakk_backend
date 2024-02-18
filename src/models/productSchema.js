@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Review } from "./reviewSchema.js";
 
 const { Schema } = mongoose;
 
@@ -26,6 +27,32 @@ const ProductSchema = Schema(
       },
     ],
     price: Number,
+    images: [
+      {
+        type: String,
+      },
+    ],
+    ratings: {
+      count: {
+        type: Number,
+        required: true,
+        min: 0,
+        default: 0,
+      },
+      average: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 5,
+        default: 0,
+      },
+    },
+    reviews: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
   },
   {
     timestamps: {
