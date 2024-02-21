@@ -20,21 +20,26 @@ const addStockType = async (req, res) => {
     return ErrorHandler(res, 400, lang);
   }
 
-  if (
-    !(
-      stockTypeName instanceof Object && stockTypeName.constructor === Object
-    ) ||
-    !stockTypeName.lang ||
-    !stockTypeName.value
-  ) {
+  if (!Array.isArray(stockTypeName)) {
     return ErrorHandler(res, 423, lang);
   }
 
+  let name = {};
+
+  stockTypeName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 423, lang);
+    }
+    name[item.lang] = item.value;
+  });
+
   try {
-    const stockType = await StockType.create({
-      name: { [stockTypeName["lang"]]: stockTypeName["value"] },
-    });
-    return ErrorHandler(res, 201, lang, { data: stockType });
+    const stockType = await StockType.create({ name });
+    return ErrorHandler(res, 201, lang, stockType);
   } catch (error) {
     console.log(error.message);
     return ErrorHandler(res, 500, lang);

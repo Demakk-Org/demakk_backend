@@ -29,10 +29,23 @@ export const autoComplete = async (req, res) => {
       {
         $search: {
           index: "autocomplete",
-          autocomplete: {
-            query: text,
-            path: "name.en",
-            tokenOrder: "sequential",
+          compound: {
+            should: [
+              {
+                autocomplete: {
+                  query: text,
+                  path: "name.am",
+                  tokenOrder: "sequential",
+                },
+              },
+              {
+                autocomplete: {
+                  query: text,
+                  path: "name.en",
+                  tokenOrder: "sequential",
+                },
+              },
+            ],
           },
         },
       },
@@ -41,6 +54,7 @@ export const autoComplete = async (req, res) => {
           _id: 0,
           name: {
             en: 1,
+            am: 1,
           },
           // score: { $meta: "searchScore" },
         },
@@ -50,7 +64,7 @@ export const autoComplete = async (req, res) => {
     let productList = [];
 
     products.forEach((product) => {
-      productList.push(product.name.en);
+      productList.push(product.name.am || product.name.en);
     });
 
     return ErrorHandler(res, 200, lang, productList);

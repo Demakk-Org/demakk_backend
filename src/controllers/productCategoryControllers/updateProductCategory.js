@@ -10,7 +10,7 @@ const updateProductCategory = async (req, res) => {
   let {
     productCategoryId,
     stockItemId,
-    name,
+    productCategoryName,
     additionalPrice,
     additionalCost,
     lang,
@@ -32,7 +32,12 @@ const updateProductCategory = async (req, res) => {
     return ErrorHandler(res, 437, lang);
   }
 
-  if (!stockItemId && !name && !additionalPrice && !additionalCost) {
+  if (
+    !stockItemId &&
+    !productCategoryName &&
+    !additionalPrice &&
+    !additionalCost
+  ) {
     return ErrorHandler(res, 400, lang);
   }
 
@@ -40,14 +45,22 @@ const updateProductCategory = async (req, res) => {
     return ErrorHandler(res, 428, lang);
   }
 
-  if (
-    name &&
-    (!(name instanceof Object && name.constructor === Object) ||
-      !name.lang ||
-      !name.value)
-  ) {
+  if (!Array.isArray(productCategoryName)) {
     return ErrorHandler(res, 440, lang);
   }
+
+  let name = {};
+
+  productCategoryName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 440, lang);
+    }
+    name[item.lang] = item.value;
+  });
 
   if (
     (additionalPrice && typeof additionalPrice !== "number") ||
@@ -63,7 +76,11 @@ const updateProductCategory = async (req, res) => {
     }
 
     if (stockItemId) productCategory.stockItem = stockItemId;
-    if (name) productCategory.name.set(name["lang"], name["value"]);
+    if (productCategoryName) {
+      Array.from(Object.keys(name)).forEach((key) => {
+        productCategory.name.set(key, name[key]);
+      });
+    }
     if (additionalPrice) productCategory.additionalPrice = additionalPrice;
     if (additionalCost) productCategory.additionalCost = additionalCost;
     await productCategory.save();

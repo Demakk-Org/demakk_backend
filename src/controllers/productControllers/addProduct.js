@@ -3,11 +3,12 @@ import response from "../../../response.js";
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isArr } from "../../utils/validate.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addProduct = async (req, res) => {
-  let { name, description, productCategoryId, lang } = req.body;
+  let { productName, description, tags, productCategoryId, lang } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -17,7 +18,7 @@ const addProduct = async (req, res) => {
     lang = req.language;
   }
 
-  if (!name || !description || !productCategoryId) {
+  if (!tags || !productName || !description || !productCategoryId) {
     return ErrorHandler(res, 400, lang);
   }
 
@@ -25,27 +26,49 @@ const addProduct = async (req, res) => {
     return ErrorHandler(res, 437, lang);
   }
 
-  if (
-    !(name instanceof Object && name.constructor === Object) ||
-    !name.lang ||
-    !name.value
-  ) {
-    return ErrorHandler(res, 440, lang);
+  if (!Array.isArray(productName)) {
+    return ErrorHandler(res, 441, lang);
   }
 
-  if (
-    !(description instanceof Object && description.constructor === Object) ||
-    !description.lang ||
-    !description.value
-  ) {
+  if (!Array.isArray(description)) {
     return ErrorHandler(res, 442, lang);
   }
 
+  if (!isArr(tags, "string")) {
+    return ErrorHandler(res, 460, lang);
+  }
+
+  let name = {};
+  let desc = {};
+
+  productName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 441, lang);
+    }
+    name[item.lang] = item.value;
+  });
+
+  description?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 442, lang);
+    }
+    desc[item.lang] = item.value;
+  });
+
   try {
     const product = await Product.create({
-      name: { [name.lang]: name.value },
-      description: { [description.lang]: description.value },
+      name,
+      description: desc,
       productCategory: productCategoryId,
+      tags,
     });
 
     return ErrorHandler(res, 200, lang, product);

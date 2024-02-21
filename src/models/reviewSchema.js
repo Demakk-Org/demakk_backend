@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Product } from "./productSchema.js";
 
 const { Schema } = mongoose;
 
@@ -7,6 +8,10 @@ const reviewSchema = new Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    product: {
+      type: mongoose.Types.ObjectId,
+      ref: "Product",
     },
     text: {
       type: String,

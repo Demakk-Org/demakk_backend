@@ -7,7 +7,7 @@ import { ErrorHandler } from "../../utils/errorHandler.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addStockItem = async (req, res) => {
-  let { stockTypeId, name, price, costToProduce, lang } = req.body;
+  let { stockTypeId, stockItemName, price, costToProduce, lang } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -17,7 +17,7 @@ const addStockItem = async (req, res) => {
     lang = req.language;
   }
 
-  if (!stockTypeId || !name || !price || !costToProduce) {
+  if (!stockTypeId || !stockItemName || !price || !costToProduce) {
     return ErrorHandler(res, 400, lang);
   }
 
@@ -25,13 +25,23 @@ const addStockItem = async (req, res) => {
     return ErrorHandler(res, 425, lang);
   }
 
-  if (
-    !(name instanceof Object && name.constructor === Object) ||
-    !name.lang ||
-    !name.value
-  ) {
+  let name = {};
+
+  if (!Array.isArray(stockItemName)) {
     return ErrorHandler(res, 438, lang);
   }
+
+  stockItemName.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 438, lang);
+    }
+
+    name[item.lang] = item.value;
+  });
 
   if (typeof price !== "number" || typeof costToProduce !== "number") {
     return ErrorHandler(res, 443, lang);
@@ -40,7 +50,7 @@ const addStockItem = async (req, res) => {
   try {
     const stockItem = await StockItem.create({
       stockType: stockTypeId,
-      name: { [name.lang]: name.value },
+      name,
       price,
       costToProduce,
     });

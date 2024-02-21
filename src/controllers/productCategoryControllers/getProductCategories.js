@@ -32,62 +32,64 @@ const getProductCategories = async (req, res) => {
 
   let count = await ProductCategory.countDocuments(query);
 
-  ProductCategory.find(query)
-    .limit(limit)
-    .skip((page - 1) * limit)
-    .sort(sort)
-    .populate({
-      path: "stockItem",
-      populate: "stockType",
-    })
-    .then((data) => {
-      let productCategoryList = [];
+  try {
+    ProductCategory.find(query)
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .sort(sort)
+      .populate({
+        path: "stockItem",
+        populate: "stockType",
+      })
+      .then((data) => {
+        let productCategoryList = [];
 
-      data.forEach((productCategory) => {
-        console.log(productCategory);
-        let productCategoryItem = {
-          id: productCategory._id,
-          name: productCategory.name.get(lang)
-            ? productCategory.name.get(lang)
-            : productCategory.name.get(LANG)
-            ? productCategory.name.get(LANG)
-            : productCategory.name.get("en"),
-          additionalPrice: productCategory.additionalPrice,
-          additionalCost: productCategory.additionalCost,
-          stockItem: productCategory.stockItem && {
-            id: productCategory.stockItem?._id,
-            name: productCategory.stockItem?.name.get(lang)
-              ? productCategory.stockItem?.name.get(lang)
-              : productCategory.stockItem?.name.get(LANG)
-              ? productCategory.stockItem?.name.get(LANG)
-              : productCategory.stockItem?.name.get("en"),
-            stockType: productCategory.stockItem.stockType && {
-              id: productCategory.stockItem.stockType._id,
-              name: productCategory.stockItem.stockType.name.get(lang)
-                ? productCategory.stockItem.stockType.name.get(lang)
-                : productCategory.stockItem.stockType.name.get(LANG)
-                ? productCategory.stockItem.stockType.name.get(LANG)
-                : productCategory.stockItem.stockType.name.get("en"),
+        data.forEach((productCategory) => {
+          console.log(productCategory);
+          let productCategoryItem = {
+            id: productCategory._id,
+            name: productCategory.name.get(lang)
+              ? productCategory.name.get(lang)
+              : productCategory.name.get(LANG)
+              ? productCategory.name.get(LANG)
+              : productCategory.name.get("en"),
+            additionalPrice: productCategory.additionalPrice,
+            additionalCost: productCategory.additionalCost,
+            stockItem: productCategory.stockItem && {
+              id: productCategory.stockItem?._id,
+              name: productCategory.stockItem?.name.get(lang)
+                ? productCategory.stockItem?.name.get(lang)
+                : productCategory.stockItem?.name.get(LANG)
+                ? productCategory.stockItem?.name.get(LANG)
+                : productCategory.stockItem?.name.get("en"),
+              stockType: productCategory.stockItem.stockType && {
+                id: productCategory.stockItem.stockType._id,
+                name: productCategory.stockItem.stockType.name.get(lang)
+                  ? productCategory.stockItem.stockType.name.get(lang)
+                  : productCategory.stockItem.stockType.name.get(LANG)
+                  ? productCategory.stockItem.stockType.name.get(LANG)
+                  : productCategory.stockItem.stockType.name.get("en"),
+              },
             },
-          },
+          };
+
+          productCategoryList.push(productCategoryItem);
+        });
+
+        const productCategories = {
+          page: page.toString(),
+          pages: Math.ceil(count / limit).toString(),
+          limit: limit.toString(),
+          count: count.toString(),
+          data: productCategoryList,
         };
 
-        productCategoryList.push(productCategoryItem);
+        return ErrorHandler(res, 200, lang, productCategories);
       });
-
-      const productCategories = {
-        page: page.toString(),
-        pages: Math.ceil(count / limit).toString(),
-        limit: limit.toString(),
-        count: count.toString(),
-        data: productCategoryList,
-      };
-      return ErrorHandler(res, 200, lang, productCategories);
-    })
-    .catch((err) => {
-      console.log(err.message);
-      return ErrorHandler(err, 500, lang);
-    });
+  } catch (error) {
+    console.log(error.message);
+    return ErrorHandler(err, 500, lang);
+  }
 };
 
 export { getProductCategories };

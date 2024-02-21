@@ -7,7 +7,8 @@ import { ErrorHandler } from "../../utils/errorHandler.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateStockItem = async (req, res) => {
-  let { stockItemId, stockTypeId, name, price, costToProduce, lang } = req.body;
+  let { stockItemId, stockTypeId, stockItemName, price, costToProduce, lang } =
+    req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -25,7 +26,7 @@ const updateStockItem = async (req, res) => {
     return ErrorHandler(res, 428, lang);
   }
 
-  if (!stockTypeId && !name && !price && !costToProduce) {
+  if (!stockTypeId && !stockItemName && !price && !costToProduce) {
     return ErrorHandler(res, 400, lang);
   }
 
@@ -33,13 +34,23 @@ const updateStockItem = async (req, res) => {
     return ErrorHandler(res, 425, lang);
   }
 
-  if (
-    (name && !(name instanceof Object && name.constructor === Object)) ||
-    !name.lang ||
-    !name.value
-  ) {
-    return ErrorHandler(res, 438, lang);
+  if (stockItemName && !Array.isArray(stockItemName)) {
+    return ErrorHandler(res, 423, lang);
   }
+
+  let name = {};
+
+  stockItemName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 438, lang);
+    }
+
+    name[item.lang] = item.value;
+  });
 
   if (
     (price && typeof price !== "number") ||
@@ -56,7 +67,11 @@ const updateStockItem = async (req, res) => {
     }
 
     if (stockTypeId) stockItem.stockType = stockTypeId;
-    if (name) stockItem.name.set(name["lang"], name["value"]);
+    if (stockItemName) {
+      Array.from(Object.keys(name)).forEach((key) => {
+        stockItem.name.set(key, name[key]);
+      });
+    }
     if (price) stockItem.price = price;
     if (costToProduce) stockItem.costToProduce = costToProduce;
     await stockItem.save();

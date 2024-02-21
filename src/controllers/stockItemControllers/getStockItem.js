@@ -22,31 +22,33 @@ const getStockItem = (req, res) => {
     return ErrorHandler(res, 428, lang);
   }
 
-  StockItem.findById(stockItemId)
-    .populate("stockType", "name")
-    .then((data) => {
-      let stockItemList = {
-        id: data._id,
-        name: data.name.get(lang)
-          ? data.name.get(lang)
-          : data.name.get(LANG)
-          ? data.name.get(LANG)
-          : data.name.get("en"),
-        stockType: {
-          id: data.stockType._id,
-          name: data.stockType.name.get(lang)
-            ? data.stockType.name.get(lang)
-            : data.stockType.name.get(LANG)
-            ? data.stockType.name.get(LANG)
-            : data.stockType.name.get("en"),
-        },
-      };
-      return ErrorHandler(res, 200, lang, stockItemList);
-    })
-    .catch((err) => {
-      console.log(err.message);
-      return ErrorHandler(res, 500, lang);
-    });
+  try {
+    StockItem.findById(stockItemId)
+      .populate("stockType", "name")
+      .then((data) => {
+        let stockItemList = {
+          id: data._id,
+          name: data.name.get(lang)
+            ? data.name.get(lang)
+            : data.name.get(LANG)
+            ? data.name.get(LANG)
+            : data.name.get("en"),
+          stockType: data.stockType && {
+            id: data.stockType._id,
+            name: data.stockType.name.get(lang)
+              ? data.stockType.name.get(lang)
+              : data.stockType.name.get(LANG)
+              ? data.stockType.name.get(LANG)
+              : data.stockType.name.get("en"),
+          },
+        };
+
+        return ErrorHandler(res, 200, lang, stockItemList);
+      });
+  } catch (error) {
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
+  }
 };
 
 export { getStockItem };

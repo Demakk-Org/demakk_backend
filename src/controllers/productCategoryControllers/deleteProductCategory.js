@@ -33,6 +33,7 @@ const deleteProductCategory = async (req, res) => {
     if (!productCategory) {
       return ErrorHandler(res, 431, lang);
     }
+
     return ErrorHandler(res, 204, lang);
   } catch (error) {
     console.log(error.message);

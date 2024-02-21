@@ -66,7 +66,7 @@ export const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    image: String,
+    image: String,//fav viewed search,  
     searchTerms: [
       {
         type: String,

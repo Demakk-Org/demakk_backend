@@ -25,15 +25,23 @@ const updateStockType = async (req, res) => {
     return ErrorHandler(res, 425, lang);
   }
 
-  if (
-    !(
-      stockTypeName instanceof Object && stockTypeName.constructor === Object
-    ) ||
-    !stockTypeName.lang ||
-    !stockTypeName.value
-  ) {
+  if (!Array.isArray(stockTypeName)) {
     return ErrorHandler(res, 423, lang);
   }
+
+  let name = {};
+
+  stockTypeName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 423, lang);
+    }
+
+    name[item.lang] = item.value;
+  });
 
   try {
     const stockType = await StockType.findById(stockTypeId);
@@ -42,7 +50,10 @@ const updateStockType = async (req, res) => {
       return ErrorHandler(res, 424, lang);
     }
 
-    stockType.name.set(stockTypeName["lang"], stockTypeName["value"]);
+    Array.from(Object.keys(name)).forEach((key) => {
+      stockType.name.set(key, name[key]);
+    });
+
     await stockType.save();
 
     return ErrorHandler(res, 203, lang, stockType);

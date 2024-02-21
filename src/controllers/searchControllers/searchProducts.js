@@ -112,22 +112,36 @@ const searchProducts = async (req, res) => {
 
   if (text2) {
     text2.forEach((amh) => {
-      shouldList.push({
-        text: {
-          query: amh,
-          path: "name.en",
-          synonyms: "mySynonyms",
-          score: {
-            boost: {
-              value: 5,
+      shouldList.push(
+        {
+          text: {
+            query: amh,
+            path: "name.am",
+            fuzzy: {
+              prefixLength: 0,
+            },
+            score: {
+              boost: {
+                value: 5,
+              },
             },
           },
         },
-      });
+        {
+          text: {
+            query: amh,
+            path: "name.en",
+            synonyms: "mySynonyms",
+            score: {
+              boost: {
+                value: 3,
+              },
+            },
+          },
+        }
+      );
     });
   }
-
-  console.log(shouldList);
 
   let pipeline = [
     {
@@ -211,7 +225,7 @@ const searchProducts = async (req, res) => {
 
   try {
     let count = await Product.aggregate(countPipeline);
-    console.log("154", count, countPipeline);
+
     const searchList = await Product.aggregate(pipeline);
 
     let products = [];
@@ -261,7 +275,6 @@ const searchProducts = async (req, res) => {
         // },
       };
 
-      // console.log(productItem, "after");
       products.push(productItem);
     });
 

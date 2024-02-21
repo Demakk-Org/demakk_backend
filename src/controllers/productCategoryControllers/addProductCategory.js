@@ -7,7 +7,13 @@ import { ErrorHandler } from "../../utils/errorHandler.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addProductCategory = async (req, res) => {
-  let { stockItemId, name, additionalPrice, additionalCost, lang } = req.body;
+  let {
+    stockItemId,
+    productCategoryName,
+    additionalPrice,
+    additionalCost,
+    lang,
+  } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -17,7 +23,12 @@ const addProductCategory = async (req, res) => {
     lang = req.language;
   }
 
-  if (!stockItemId || !name || !additionalPrice || !additionalCost) {
+  if (
+    !stockItemId ||
+    !productCategoryName ||
+    !additionalPrice ||
+    !additionalCost
+  ) {
     return ErrorHandler(res, 400, lang);
   }
 
@@ -25,13 +36,23 @@ const addProductCategory = async (req, res) => {
     return ErrorHandler(res, 428, lang);
   }
 
-  if (
-    !(name instanceof Object && name.constructor === Object) ||
-    !name.lang ||
-    !name.value
-  ) {
+  if (!Array.isArray(productCategoryName)) {
     return ErrorHandler(res, 440, lang);
   }
+
+  let name = {};
+
+  productCategoryName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 440, lang);
+    }
+
+    name[item.lang] = item.value;
+  });
 
   if (
     typeof additionalPrice !== "number" ||
@@ -43,7 +64,7 @@ const addProductCategory = async (req, res) => {
   try {
     const productCategory = await ProductCategory.create({
       stockItem: stockItemId,
-      name: { [name.lang]: name.value },
+      name,
       additionalPrice,
       additionalCost,
     });

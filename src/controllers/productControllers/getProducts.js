@@ -13,7 +13,7 @@ const getProducts = async (req, res) => {
   if (!lang || !(lang in language)) {
     lang = LANG;
   }
-  console.log(token);
+
   if (token) {
     lang = Jwt.decode(token, "your_secret_key")?.lang;
   }
@@ -36,8 +36,6 @@ const getProducts = async (req, res) => {
     }
   });
 
-  console.log(query);
-
   try {
     const count = await Product.countDocuments(query);
 
@@ -53,7 +51,6 @@ const getProducts = async (req, res) => {
         },
       })
       .then((response) => {
-        console.log(response);
         let products = [];
         response.forEach((product) => {
           let productItem = {

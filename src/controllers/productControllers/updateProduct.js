@@ -3,11 +3,13 @@ import response from "../../../response.js";
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isArr } from "../../utils/validate.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateProduct = async (req, res) => {
-  let { productId, name, description, tag, productCategoryId, lang } = req.body;
+  let { productId, productName, description, tags, productCategoryId, lang } =
+    req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -21,7 +23,7 @@ const updateProduct = async (req, res) => {
     return ErrorHandler(res, 400, lang);
   }
 
-  if (!name && !description && !productCategoryId && !tag) {
+  if (!productName && !description && !productCategoryId && !tags) {
     return ErrorHandler(res, 400, lang);
   }
 
@@ -33,27 +35,42 @@ const updateProduct = async (req, res) => {
     return ErrorHandler(res, 430, lang);
   }
 
-  if (
-    name &&
-    (!(name instanceof Object && name.constructor === Object) ||
-      !name.lang ||
-      !name.value)
-  ) {
+  if (productName && !Array.isArray(productName)) {
     return ErrorHandler(res, 441, lang);
   }
 
-  if (
-    description &&
-    (!(description instanceof Object && description.constructor === Object) ||
-      !description.lang ||
-      !description.value)
-  ) {
+  if (description && !Array.isArray(description)) {
     return ErrorHandler(res, 442, lang);
   }
 
-  if (tag && !Array.isArray(tag)) {
+  if (tags && !isArr(tags, "string")) {
     return ErrorHandler(res, 460, lang);
   }
+
+  let name = {};
+  let desc = {};
+
+  productName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 441, lang);
+    }
+    name[item.lang] = item.value;
+  });
+
+  description?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 442, lang);
+    }
+    desc[item.lang] = item.value;
+  });
 
   try {
     const product = await Product.findById(productId);
@@ -63,10 +80,19 @@ const updateProduct = async (req, res) => {
     }
 
     if (productCategoryId) product.productCategory = productCategoryId;
-    if (name) product.name.set(name["lang"], name["value"]);
-    if (description)
-      product.description.set(description["lang"], description["value"]);
-    if (tag) product.tags = tag;
+    if (productName) {
+      Array.from(Object.keys(name)).forEach((key) => {
+        product.name.set(key, name[key]);
+      });
+    }
+
+    if (description) {
+      Array.from(Object.keys(desc)).forEach((key) => {
+        product.description.set(key, desc[key]);
+      });
+    }
+
+    if (tags) product.tags = tags;
 
     await product.save();
     return ErrorHandler(res, 201, lang, product);
