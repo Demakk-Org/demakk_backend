@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Product } from "./productSchema.js";
+import User from "./userSchema.js";
 
 const { Schema } = mongoose;
 
@@ -15,14 +16,11 @@ const reviewSchema = new Schema(
     },
     text: {
       type: String,
-      required: true,
       trim: true,
     },
     rating: {
       type: Number,
-      required: true,
-      min: 1,
-      max: 5,
+      default: 0,
     },
   },
   {

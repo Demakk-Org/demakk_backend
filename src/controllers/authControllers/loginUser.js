@@ -34,6 +34,10 @@ async function loginUser(req, res) {
       "_id email firstName password lang"
     );
 
+    if (!user) {
+      return ErrorHandler(res, 416, lang);
+    }
+
     if (user && (await bcrypt.compare(password, user.password))) {
       const token = Jwt.sign(
         {

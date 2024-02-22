@@ -31,6 +31,14 @@ const getProduct = (req, res) => {
           populate: "stockType",
         },
       })
+      .populate({
+        path: "reviews",
+        select: "user rating text -_id",
+        populate: {
+          path: "user",
+          select: "username email phoneNumber -_id",
+        },
+      })
       .then((product) => {
         if (!product) {
           return ErrorHandler(res, 433, lang);
@@ -49,6 +57,8 @@ const getProduct = (req, res) => {
             ? product.description.get(LANG)
             : product.description.get("en"),
           tags: product.tags,
+          reviews: product.reviews,
+          rating: product.ratings,
           productCategory: product.productCategory && {
             id: product.productCategory._id,
             name: product.productCategory.name.get(lang)

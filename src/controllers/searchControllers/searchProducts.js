@@ -41,9 +41,6 @@ const searchProducts = async (req, res) => {
   const text1 = text.match(regex1)?.join(" ");
   const text2 = text.match(regex);
 
-  console.log(text1);
-  console.log(text2);
-
   if (price) {
     match["$match"] = {
       $and: [

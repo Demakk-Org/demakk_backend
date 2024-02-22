@@ -66,11 +66,22 @@ export const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    image: String,//fav viewed search,  
+    image: String,
     searchTerms: [
       {
         type: String,
-        required: true,
+      },
+    ],
+    views: [
+      {
+        type: String,
+        ref: "Product",
+      },
+    ],
+    favs: [
+      {
+        type: String,
+        ref: "Product",
       },
     ],
   },
