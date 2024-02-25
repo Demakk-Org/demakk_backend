@@ -74,11 +74,14 @@ export const addReview = async (req, res) => {
       }
       if (rate) {
         if (newReview) {
+          product.ratings[rate] += 1;
           product.ratings.average =
             (product.ratings.average * product.ratings.count + rate) /
             (product.ratings.count + 1);
           product.ratings.count += 1;
         } else {
+          product.ratings[previousRate] -= 1;
+          product.ratings[rate] += 1;
           product.ratings.average =
             product.ratings.average +
             (rate - previousRate) / product.ratings.count;
