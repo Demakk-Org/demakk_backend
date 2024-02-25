@@ -74,8 +74,14 @@ export const UserSchema = new Schema(
     ],
     views: [
       {
-        type: String,
-        ref: "Product",
+        pid: {
+          type: String,
+          ref: "Product",
+        },
+        count: {
+          type: Number,
+          default: 1,
+        },
       },
     ],
     favs: [

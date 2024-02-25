@@ -38,6 +38,10 @@ const addProduct = async (req, res) => {
     return ErrorHandler(res, 460, lang);
   }
 
+  if (tags.length == 0) {
+    return ErrorHandler(res, 480, lang);
+  }
+
   let name = {};
   let desc = {};
 

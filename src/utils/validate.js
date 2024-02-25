@@ -18,4 +18,6 @@ export function isArr(arr, type) {
       return false;
     }
   });
+
+  return true;
 }

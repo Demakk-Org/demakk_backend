@@ -8,7 +8,7 @@ import { isValidObjectId } from "mongoose";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const addReview = async (req, res) => {
-  let { productId, type, text, rate, lang } = req.body;
+  let { productId, text, rate, lang } = req.body;
 
   let uid = req.uid;
 
@@ -18,14 +18,6 @@ export const addReview = async (req, res) => {
 
   if (req?.language) {
     lang = req.language;
-  }
-
-  if (!type || !(type == "text" || type == "rate")) {
-    return ErrorHandler(res, 478, lang);
-  }
-
-  if (typeof type !== "string") {
-    return ErrorHandler(res, 479, lang);
   }
 
   if (!productId) {
@@ -58,25 +50,21 @@ export const addReview = async (req, res) => {
 
   try {
     let review = await Review.findOne({ user: uid, product: productId });
+    let newReview = false;
+    let previousRate = review?.rating;
 
     console.log(review);
 
-    if (
-      (type == "text" && review?.text) ||
-      (type == "rate" && review?.rating)
-    ) {
-      return ErrorHandler(res, 476, lang);
-    }
-
     if (!review) {
+      newReview = true;
       review = await Review.create({
         user: uid,
         product: productId,
       });
     }
 
-    if (type == "text") review.text = text;
-    if (type == "rate") review.rating = rate;
+    if (text) review.text = text;
+    if (rate) review.rating = rate;
 
     review.save().then(async () => {
       const product = await Product.findById(productId);
@@ -84,20 +72,26 @@ export const addReview = async (req, res) => {
       if (!product) {
         return ErrorHandler(res, 433, lang);
       }
-
       if (rate) {
-        product.ratings.average =
-          (product.ratings.average * product.ratings.count + rate) /
-          (product.ratings.count + 1);
-        product.ratings.count += 1;
+        if (newReview) {
+          product.ratings.average =
+            (product.ratings.average * product.ratings.count + rate) /
+            (product.ratings.count + 1);
+          product.ratings.count += 1;
+        } else {
+          product.ratings.average =
+            product.ratings.average +
+            (rate - previousRate) / product.ratings.count;
+        }
       }
 
       if (!product.reviews.includes(review._id)) {
         product.reviews.push(review._id);
       }
+
       await product.save();
 
-      return ErrorHandler(res, 200, lang, review);
+      return ErrorHandler(res, newReview ? 201 : 203, lang, review);
     });
   } catch (error) {
     console.log(error.message);

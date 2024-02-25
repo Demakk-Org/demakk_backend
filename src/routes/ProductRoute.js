@@ -9,6 +9,7 @@ import { deleteProduct } from "../controllers/productControllers/deleteProduct.j
 import { getProducts } from "../controllers/productControllers/getProducts.js";
 import { getProduct } from "../controllers/productControllers/getProduct.js";
 import { addReview } from "../controllers/productControllers/addReview.js";
+import { addFavourite } from "../controllers/productControllers/addFavourite.js";
 
 const productRoute = Router();
 
@@ -18,5 +19,6 @@ productRoute.post("/", AdminAuthentication, addProduct);
 productRoute.put("/", AdminAuthentication, updateProduct);
 productRoute.delete("/", AdminAuthentication, deleteProduct);
 productRoute.post("/review", UserAuthentication, addReview);
+productRoute.post("/fav", UserAuthentication, addFavourite);
 
 export { productRoute };

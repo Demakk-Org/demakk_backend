@@ -3,12 +3,25 @@ import language from "../../../response.js";
 import { Product } from "../../models/productSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import Jwt from "jsonwebtoken";
+import User from "../../models/userSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
-const getProduct = (req, res) => {
+const getProduct = async (req, res) => {
   let productId = req.params.id;
   let { lang } = req.body;
+  let uid;
+
+  const token = req.headers?.authorization?.split(" ")[1];
+
+  if (token && Jwt.verify(token, "your_secret_key")) {
+    uid = Jwt.decode(token, "your_secret_key")?.uid;
+  }
+
+  if (uid && !isValidObjectId(uid)) {
+    uid = "";
+  }
 
   if (!lang || !(lang in language)) {
     lang = LANG;
@@ -23,6 +36,43 @@ const getProduct = (req, res) => {
   }
 
   try {
+    try {
+      if (uid) {
+        const user = await User.findById(uid);
+
+        let viewed = false;
+        let index;
+        user.views.forEach((prod, ind) => {
+          if (prod.pid == productId) {
+            viewed = true;
+            index = ind;
+          }
+        });
+
+        if (!viewed) {
+          user.views.push({
+            pid: productId,
+          });
+          await user.save();
+        } else {
+          user.views = user.views.map((p) => {
+            if (p.pid == productId) {
+              return {
+                pid: productId,
+                count: p.count + 1,
+              };
+            } else {
+              return p;
+            }
+          });
+
+          await user.save();
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+
     Product.findById(productId)
       .populate({
         path: "productCategory",

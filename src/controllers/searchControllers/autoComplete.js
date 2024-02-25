@@ -2,6 +2,9 @@ import { config } from "dotenv";
 import response from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { Product } from "../../models/productSchema.js";
+import User from "../../models/userSchema.js";
+import Jwt from "jsonwebtoken";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -12,8 +15,16 @@ export const autoComplete = async (req, res) => {
     lang = LANG;
   }
 
-  if (req?.language) {
-    lang = req.language;
+  let uid;
+
+  const token = req.headers?.authorization?.split(" ")[1];
+
+  if (token && Jwt.verify(token, "your_secret_key")) {
+    uid = Jwt.decode(token, "your_secret_key")?.uid;
+  }
+
+  if (uid && !isValidObjectId(uid)) {
+    uid = "";
   }
 
   if (!text) {
@@ -25,6 +36,45 @@ export const autoComplete = async (req, res) => {
   }
 
   try {
+    try {
+      if (uid) {
+        const searchTerms = await User.aggregate([
+          {
+            $search: {
+              text: {
+                query: text,
+                path: "searchTerms",
+                fuzzy: {},
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              firstName: 1,
+              searchTerms: 1,
+            },
+          },
+        ]);
+
+        console.log(searchTerms, uid);
+
+        if (searchTerms) {
+          let userSearchs = searchTerms.filter((term) => {
+            console.log(
+              "term id",
+              term._id.toString(),
+              term._id.toString() == uid
+            );
+            return term._id.toString() == uid;
+          })[0].searchTerms;
+          console.log("userSearchs", userSearchs);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+
     const products = await Product.aggregate([
       {
         $search: {

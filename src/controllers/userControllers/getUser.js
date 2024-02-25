@@ -27,9 +27,7 @@ async function getUser(req, res) {
 
   try {
     const user = await User.findById(uid)
-      .select(
-        "email phoneNumber firstName lastName role shippingAddress billingAddress cart lang"
-      )
+      .select("-password -_id")
       .populate("role shippingAddress billingAddress cart");
     console.log(user);
     return ErrorHandler(res, 200, lang, user);

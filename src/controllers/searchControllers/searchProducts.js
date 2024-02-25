@@ -2,6 +2,9 @@ import { config } from "dotenv";
 import response from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { Product } from "../../models/productSchema.js";
+import User from "../../models/userSchema.js";
+import Jwt from "jsonwebtoken";
+import { isValidObjectId } from "mongoose";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
@@ -10,6 +13,18 @@ const searchProducts = async (req, res) => {
 
   if (!lang || !(lang in response)) {
     lang = LANG;
+  }
+
+  let uid;
+
+  const token = req.headers?.authorization?.split(" ")[1];
+
+  if (token && Jwt.verify(token, "your_secret_key")) {
+    uid = Jwt.decode(token, "your_secret_key")?.uid;
+  }
+
+  if (uid && !isValidObjectId(uid)) {
+    uid = "";
   }
 
   if (sort === undefined) sort = SORT;
@@ -221,6 +236,21 @@ const searchProducts = async (req, res) => {
   countPipeline.push({ $count: "count" });
 
   try {
+    try {
+      if (uid) {
+        const user = await User.findById(uid).select("searchTerms");
+
+        let exists = user.searchTerms.includes(text);
+
+        if (!exists) {
+          user.searchTerms.push(text);
+          await user.save();
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+
     let count = await Product.aggregate(countPipeline);
 
     const searchList = await Product.aggregate(pipeline);
@@ -242,34 +272,6 @@ const searchProducts = async (req, res) => {
         tags: product.tags,
         price: product.price,
         score: product.score,
-        // productCategory: product.productCategory?._id && {
-        //   id: product.productCategory._id,
-        //   name: product.productCategory.name[lang]
-        //     ? product.productCategory.name[lang]
-        //     : product.productCategory.name[LANG]
-        //     ? product.productCategory.name[LANG]
-        //     : product.productCategory.name["en"],
-        //   additionalPrice: product.productCategory.additionalPrice,
-        //   // additionalCost: product.productCategory.additionalCost,
-        //   stockItem: product.productCategory.stockItem?._id && {
-        //     id: product.productCategory.stockItem._id,
-        //     name: product.productCategory.stockItem.name[lang]
-        //       ? product.productCategory.stockItem.name[lang]
-        //       : product.productCategory.stockItem.name[LANG]
-        //       ? product.productCategory.stockItem.name[LANG]
-        //       : product.productCategory.stockItem.name["en"],
-        //     stockType: product.productCategory.stockItem.stockType?._id && {
-        //       id: product.productCategory.stockItem.stockType._id,
-        //       name: product.productCategory.stockItem.stockType.name[lang]
-        //         ? product.productCategory.stockItem.stockType.name[lang]
-        //         : product.productCategory.stockItem.stockType.name[LANG]
-        //         ? product.productCategory.stockItem.stockType.name[LANG]
-        //         : product.productCategory.stockItem.stockType.name["en"],
-        //     },
-        //     price: product.productCategory.stockItem.price,
-        //     // costToProduce: product.productCategory.stockItem.costToProduce,
-        //   },
-        // },
       };
 
       products.push(productItem);
