@@ -4,6 +4,7 @@ import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isArr } from "../../utils/validate.js";
+import { ProductCategory } from "../../models/productCategorySchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -68,11 +69,27 @@ const addProduct = async (req, res) => {
   });
 
   try {
+    const productCategory = await ProductCategory.findById(
+      productCategoryId
+    ).populate("stockItem");
+
+    let price;
+    let additionalPrice = productCategory?.additionalPrice;
+    let stockItemPrice = productCategory?.stockItem?.price;
+
+    if (additionalPrice && stockItemPrice) {
+      price =
+        productCategory?.additionalPrice + productCategory?.stockItem?.price;
+    } else {
+      price = 0;
+    }
+
     const product = await Product.create({
       name,
       description: desc,
       productCategory: productCategoryId,
       tags,
+      price,
     });
 
     return ErrorHandler(res, 200, lang, product);

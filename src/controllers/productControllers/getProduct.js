@@ -107,6 +107,7 @@ const getProduct = async (req, res) => {
             ? product.description.get(LANG)
             : product.description.get("en"),
           tags: product.tags,
+          price: product.price,
           reviews: product.reviews,
           rating: product.ratings,
           productCategory: product.productCategory && {

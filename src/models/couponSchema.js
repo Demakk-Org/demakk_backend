@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import DiscountType from "./discountTypeSchema.js";
 
 const { Schema } = mongoose;
 export const couponSchema = new Schema(
@@ -18,7 +19,8 @@ export const couponSchema = new Schema(
     },
     appliesToProductCategory: [
       {
-        type: String,
+        type: mongoose.Types.ObjectId,
+        ref: "ProductCategory",
         required: true,
       },
     ],

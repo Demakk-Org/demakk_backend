@@ -7,7 +7,7 @@ import OrderItem from "../../models/orderItemSchema.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const addOrderItem = async (req, res) => {
-  let { orderId, quantity, price, couponCode, lang } = req.body;
+  let { productId, quantity, couponCode, lang } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -17,20 +17,16 @@ export const addOrderItem = async (req, res) => {
     lang = req.language;
   }
 
-  if (!orderId || !quantity || !price) {
+  if (!productId || !quantity) {
     return ErrorHandler(res, 400, lang);
   }
 
-  if (!isValidObjectId(orderId)) {
+  if (!isValidObjectId(productId)) {
     return ErrorHandler(res, 464, lang);
   }
 
   if (typeof quantity !== "number") {
     return ErrorHandler(res, 465, lang);
-  }
-
-  if (typeof price !== "number") {
-    return ErrorHandler(res, 443, lang);
   }
 
   if (couponCode && !isValidObjectId(couponCode)) {
@@ -39,9 +35,8 @@ export const addOrderItem = async (req, res) => {
 
   try {
     const orderItem = await OrderItem.create({
-      orderId,
+      product: productId,
       quantity,
-      unitPrice: price,
       couponCode,
     });
 

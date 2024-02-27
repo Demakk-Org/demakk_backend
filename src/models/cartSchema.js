@@ -11,7 +11,7 @@ const CartSchema = new Schema(
     orderItems: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "Order",
+        ref: "OrderItem",
       },
     ],
   },
