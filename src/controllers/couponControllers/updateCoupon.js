@@ -79,7 +79,7 @@ export const updateCoupon = async (req, res) => {
 
     await coupon.save();
 
-    return ErrorHandler(res, 203, lang);
+    return ErrorHandler(res, 203, lang, coupon);
   } catch (error) {
     console.log(error.message);
     return ErrorHandler(res, 500, lang);

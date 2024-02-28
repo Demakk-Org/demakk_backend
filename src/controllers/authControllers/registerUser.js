@@ -6,15 +6,12 @@ import Jwt from "jsonwebtoken";
 import response from "../../../response.js";
 import dotenv from "dotenv";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import { camelize } from "../../utils/validate.js";
 
 const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
 
-const camelize = (str) => {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-};
-
-async function registerUser(req, res) {
-  let { account, firstName, lastName, password, confirmPassword, role, lang } =
+const registerUser = async (req, res) => {
+  let { account, firstName, lastName, password, confirmPassword, lang } =
     req.body;
 
   if (!lang || !(lang in response)) {
@@ -95,6 +92,6 @@ async function registerUser(req, res) {
       return ErrorHandler(res, 500, lang);
     }
   }
-}
+};
 
 export default registerUser;

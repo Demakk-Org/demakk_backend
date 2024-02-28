@@ -4,6 +4,7 @@ import response from "../../../response.js";
 import Order from "../../models/orderSchema.js";
 import Cart from "../../models/cartSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import User from "../../models/userSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -40,7 +41,12 @@ export const addOrder = async (req, res) => {
       orderItems: cartInfo.orderItems,
       deliveryDate,
       orderStatus: "65a6f9a6e2caf4bfc91f2b27",
-    }).then((data) => {
+    }).then(async (data) => {
+      let user = await User.findById(uid);
+
+      user.orders.push(data._id);
+      await user.save();
+
       return ErrorHandler(res, 201, lang, data);
     });
   } catch (error) {

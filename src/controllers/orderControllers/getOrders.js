@@ -46,7 +46,13 @@ export const getOrders = async (req, res) => {
       .limit(limit)
       .skip((page - 1) * limit)
       .sort(sort)
-      .populate("OrderItem OrderStatus")
+      .select("-updatedAt -createdAt -__v")
+      .populate({
+        path: "orderItems",
+        select: "product quantity -_id",
+        populate: { path: "product", select: "name price -_id" },
+      })
+      .populate({ path: "orderStatus", select: "name -_id" })
       .then((order) => {
         const data = {
           page: page.toString(),

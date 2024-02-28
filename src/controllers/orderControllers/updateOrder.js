@@ -4,6 +4,7 @@ import Order from "../../models/orderSchema.js";
 import OrderStatus from "../../models/orderStatusSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import response from "../../../response.js";
+import { camelize } from "../../utils/validate.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -23,27 +24,32 @@ export const updateOrder = async (req, res) => {
     return ErrorHandler(res, 400, lang);
   }
 
-  const orderStatus = await OrderStatus.find({ name: status });
+  if (!isValidObjectId(orderId)) {
+    return ErrorHandler(res, 464, lang);
+  }
+
+  const orderStatus = await OrderStatus.findOne({ name: camelize(status) });
+
+  console.log(orderStatus && true);
 
   if (!orderStatus) {
     return ErrorHandler(res, 470, lang);
   }
 
-  if (orderStatus.user !== uid) {
-    return ErrorHandler(res, 472, lang);
-  }
-
-  if (!isValidObjectId(orderId)) {
-    return ErrorHandler(res, 418, lang);
-  }
-
   try {
-    Order.findById(orderId).then((order) => {
+    Order.findById(orderId).then(async (order) => {
       if (!order) {
         return ErrorHandler(res, 471, lang);
       }
+
+      if (order.user.toString() !== uid) {
+        return ErrorHandler(res, 472, lang);
+      }
+
       order.orderStatus = orderStatus._id;
-      return order.save();
+      await order.save();
+
+      return ErrorHandler(res, 203, lang);
     });
   } catch (error) {
     console.log(error.message);

@@ -21,3 +21,7 @@ export function isArr(arr, type) {
 
   return true;
 }
+
+export const camelize = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
