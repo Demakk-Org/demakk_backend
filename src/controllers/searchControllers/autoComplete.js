@@ -36,6 +36,7 @@ export const autoComplete = async (req, res) => {
   }
 
   try {
+    let previousSearch = [];
     try {
       if (uid) {
         const searchTerms = await User.aggregate([
@@ -69,6 +70,12 @@ export const autoComplete = async (req, res) => {
             return term._id.toString() == uid;
           })[0].searchTerms;
           console.log("userSearchs", userSearchs);
+
+          previousSearch = userSearchs.filter((term) => {
+            return term.match(`${text}`, "i");
+          });
+
+          console.log("previousSearch", previousSearch);
         }
       }
     } catch (error) {
@@ -117,7 +124,7 @@ export const autoComplete = async (req, res) => {
       productList.push(product.name.am || product.name.en);
     });
 
-    return ErrorHandler(res, 200, lang, productList);
+    return ErrorHandler(res, 200, lang, [...previousSearch, ...productList]);
   } catch (error) {
     console.log(error.message);
     return ErrorHandler(res, 500, lang);
