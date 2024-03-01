@@ -1,6 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
 import { config } from "dotenv";
-import { ErrorHandler } from "./errorHandler.js";
 
 cloudinary.config({
   cloud_name: "dov9kdlci",
@@ -8,19 +7,28 @@ cloudinary.config({
   api_secret: config(process.cwd, ".env").parsed.CLOUDINARY_SECRET_KEY,
 });
 
-export const uploadImage = async (res, lang, imagePath) => {
-  const options = {
-    use_filename: true,
-    unique_filename: true,
-    overwrite: true,
-  };
+const options = {
+  use_filename: true,
+  unique_filename: false,
+  overwrite: true,
+};
 
-  try {
-    const result = await cloudinary.uploader.upload(imagePath, options);
-    console.log(result);
-    return result.url;
-  } catch (error) {
-    console.log(error.message);
-    return ErrorHandler(res, 500, lang);
-  }
+export const uploadImage = (images) => {
+  return new Promise((resolve, reject) => {
+    let results = [];
+
+    try {
+      images.forEach(async (image) => {
+        const result = await cloudinary.uploader.upload(image.path, options);
+        results.push(result.url);
+
+        if (results.length == images.length) {
+          resolve(results);
+        }
+      });
+    } catch (error) {
+      console.log(error.message);
+      reject(error);
+    }
+  });
 };

@@ -12,14 +12,9 @@ import { getProduct } from "../controllers/productControllers/getProduct.js";
 import { addReview } from "../controllers/productControllers/addReview.js";
 import { addFavourite } from "../controllers/productControllers/addFavourite.js";
 import { addImages } from "../controllers/productControllers/addImages.js";
+import { updateImages } from "../controllers/productControllers/updateImages.js";
 
 const productRoute = Router();
-
-// productRoute.use(
-//   ExpressFormidable({
-//     multiples: true,
-//   })
-// );
 
 productRoute.get("/:id", getProduct);
 productRoute.get("/", getProducts);
@@ -35,6 +30,14 @@ productRoute.post(
   }),
   AdminAuthentication,
   addImages
+);
+productRoute.put(
+  "/images",
+  ExpressFormidable({
+    multiples: true,
+  }),
+  AdminAuthentication,
+  updateImages
 );
 
 export { productRoute };

@@ -12,15 +12,6 @@ export const addImages = async (req, res) => {
   const { image } = req.files;
   let { lang, productId, name, description, primary } = req.fields;
 
-  console.log(
-    productId,
-    name,
-    typeof primary,
-    primary && true,
-    typeof (primary * 1),
-    description && true
-  );
-
   if (!lang || !(lang in response)) {
     lang = LANG;
   }
@@ -78,23 +69,18 @@ export const addImages = async (req, res) => {
       return ErrorHandler(res, 433, lang);
     }
 
-    images.forEach(async (img) => {
-      await uploadImage(res, lang, img.path).then((data) => {
-        results.push(data);
-        if (results.length == images.length) {
-          Image.create({
-            product: productId,
-            name,
-            description,
-            primary: primary ? primary : 0,
-            images: results,
-          }).then(async (resp) => {
-            product.images = resp._id;
-            await product.save();
+    uploadImage(images).then((data) => {
+      Image.create({
+        product: productId,
+        name,
+        description,
+        primary: primary ? primary : 0,
+        images: data,
+      }).then(async (resp) => {
+        product.images = resp._id;
+        await product.save();
 
-            return ErrorHandler(res, 201, lang, resp);
-          });
-        }
+        return ErrorHandler(res, 201, lang, resp);
       });
     });
   } catch (error) {
