@@ -108,8 +108,6 @@ export default {
       488: "Image description is a type of string",
       489: "Primary is a type of number",
       490: "Invalid Primary image value",
-      491: "Invalid images id",
-      492: "Images not found",
       500: "Internal Server Error, please try again!",
       501: "Not Implemented: it is under development",
     },
