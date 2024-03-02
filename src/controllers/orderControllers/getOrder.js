@@ -9,6 +9,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 export const getOrder = async (req, res) => {
   let { lang } = req.body;
   let orderId = req.params.id;
+  let uid = req.uid;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -44,6 +45,14 @@ export const getOrder = async (req, res) => {
       });
 
     console.log(order);
+
+    if (!order) {
+      return ErrorHandler(res, 471, lang);
+    }
+
+    if (order.user?._id != uid) {
+      return ErrorHandler(res, 472, lang);
+    }
 
     return ErrorHandler(res, 200, lang, order);
   } catch (error) {

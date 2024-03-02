@@ -13,6 +13,7 @@ import { addReview } from "../controllers/productControllers/addReview.js";
 import { addFavourite } from "../controllers/productControllers/addFavourite.js";
 import { addImages } from "../controllers/productControllers/addImages.js";
 import { updateImages } from "../controllers/productControllers/updateImages.js";
+import { deleteReview } from "../controllers/productControllers/deleteReview.js";
 
 const productRoute = Router();
 
@@ -22,6 +23,7 @@ productRoute.post("/", AdminAuthentication, addProduct);
 productRoute.put("/", AdminAuthentication, updateProduct);
 productRoute.delete("/", AdminAuthentication, deleteProduct);
 productRoute.post("/review", UserAuthentication, addReview);
+productRoute.delete("/review", UserAuthentication, deleteReview);
 productRoute.post("/fav", UserAuthentication, addFavourite);
 productRoute.post(
   "/images",

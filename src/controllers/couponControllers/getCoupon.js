@@ -40,7 +40,7 @@ export const getCoupon = async (req, res) => {
       return ErrorHandler(res, 485, lang);
     }
 
-    return ErrorHandler(res, 204, lang, coupon);
+    return ErrorHandler(res, 200, lang, coupon);
   } catch (error) {
     console.log(error.message);
     return ErrorHandler(res, 500, lang);

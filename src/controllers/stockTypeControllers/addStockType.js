@@ -2,11 +2,12 @@ import { StockType } from "../../models/stockTypeSchema.js";
 import { config } from "dotenv";
 import response from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isArr } from "../../utils/validate.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addStockType = async (req, res) => {
-  let { stockTypeName, lang } = req.body;
+  let { stockTypeName, images, stockVarieties, lang } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -24,6 +25,14 @@ const addStockType = async (req, res) => {
     return ErrorHandler(res, 423, lang);
   }
 
+  if (!isArr(images, "string")) {
+    return ErrorHandler(res, 491, lang);
+  }
+
+  if (!isArr(stockVarieties, "string")) {
+    return ErrorHandler(res, 495, lang);
+  }
+
   let name = {};
 
   stockTypeName?.forEach((item) => {
@@ -38,7 +47,7 @@ const addStockType = async (req, res) => {
   });
 
   try {
-    const stockType = await StockType.create({ name });
+    const stockType = await StockType.create({ name, images, stockVarieties });
     return ErrorHandler(res, 201, lang, stockType);
   } catch (error) {
     console.log(error.message);
