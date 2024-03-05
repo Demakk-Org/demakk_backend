@@ -117,6 +117,9 @@ export default {
       497: "Stock variety type already exists",
       498: "Invalid stock variety type id",
       499: "Stock variety type not found",
+      499.1: "Stock variety not found",
+      499.2: "Invalid stock variety id",
+      499.3: "Invalid image file",
       500: "Internal Server Error, please try again!", //-
       501: "Not Implemented: it is under development", //-
     },

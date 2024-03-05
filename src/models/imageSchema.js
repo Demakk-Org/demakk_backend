@@ -3,9 +3,17 @@ import { Product } from "./productSchema.js";
 
 const ImageSchema = new Schema(
   {
-    product: {
+    // product: {
+    //   type: mongoose.Types.ObjectId,
+    //   ref: "Product",
+    //   required: true,
+    // },
+    rid: {
       type: mongoose.Types.ObjectId,
-      ref: "Product",
+      required: true,
+    },
+    type: {
+      type: String,
       required: true,
     },
     name: String,

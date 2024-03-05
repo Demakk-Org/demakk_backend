@@ -2,9 +2,9 @@ import { Router } from "express";
 
 import AdminAuthentication from "../middlewares/AdminAuthentication.js";
 
-import { addStockVarietyType } from "../controllers/stockVarietyType/addStockVarietyType.js";
-import { deleteStockVarietyType } from "../controllers/stockVarietyType/deleteStockVarietyType.js";
-import { updateStockVarietytype } from "../controllers/stockVarietyType/updateStockVarietyType.js";
+import { addStockVarietyType } from "../controllers/stockVarietyTypeControllers/addStockVarietyType.js";
+import { deleteStockVarietyType } from "../controllers/stockVarietyTypeControllers/deleteStockVarietyType.js";
+import { updateStockVarietytype } from "../controllers/stockVarietyTypeControllers/updateStockVarietyType.js";
 
 export const stockVarietyTypeRoute = Router();
 

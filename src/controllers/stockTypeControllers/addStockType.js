@@ -7,7 +7,7 @@ import { isArr } from "../../utils/validate.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addStockType = async (req, res) => {
-  let { stockTypeName, images, stockVarieties, lang } = req.body;
+  let { stockTypeName, stockVarieties, lang } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -25,11 +25,7 @@ const addStockType = async (req, res) => {
     return ErrorHandler(res, 423, lang);
   }
 
-  if (!isArr(images, "string")) {
-    return ErrorHandler(res, 491, lang);
-  }
-
-  if (!isArr(stockVarieties, "string")) {
+  if (stockVarieties && !isArr(stockVarieties, "string")) {
     return ErrorHandler(res, 495, lang);
   }
 
@@ -47,7 +43,11 @@ const addStockType = async (req, res) => {
   });
 
   try {
-    const stockType = await StockType.create({ name, images, stockVarieties });
+    const stockType = await StockType.create({
+      name,
+      availableVarieties: stockVarieties,
+    });
+
     return ErrorHandler(res, 201, lang, stockType);
   } catch (error) {
     console.log(error.message);

@@ -49,7 +49,6 @@ const resoponse = {
       202: "User is unblocked",
 
       400: "Please provide user id",
-      401: "User not found",
       402: "Invalid user id",
       403: "User is already blocked",
       404: "User not found",
@@ -95,7 +94,7 @@ const resoponse = {
       401: "Invalid product category id",
       402: "Invalid product category name value!",
 
-      404: "Product category is not found",
+      404: "Product category is not found", 
     },
     order: {
       400: "Invalid order id",
@@ -330,3 +329,12 @@ const doc = {
     "saeN7av55OSoIQfXQTIbeVPhGyr1",
   ],
 };
+
+// {
+//   "stockTypeName":[{
+//       "lang":"am",
+//       "value":"ኤሌክትሮኒክስ3"
+//   }],
+//   "stockVarieties":["65e645e52c1ea04be97b826e", "65e645ee2c1ea04be97b8275", "65e646082c1ea04be97b827c"],
+//   lang:"en"
+// }

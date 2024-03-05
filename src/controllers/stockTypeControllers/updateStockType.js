@@ -3,11 +3,12 @@ import response from "../../../response.js";
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isArr } from "../../utils/validate.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateStockType = async (req, res) => {
-  let { stockTypeName, stockTypeId, lang } = req.body;
+  let { stockTypeName, stockTypeId, images, stockVarities, lang } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -17,8 +18,12 @@ const updateStockType = async (req, res) => {
     lang = req.language;
   }
 
-  if (!stockTypeName || !stockTypeId) {
+  if (!stockTypeId) {
     return ErrorHandler(res, 400, lang);
+  }
+
+  if (stockTypeName && !isArr(stockTypeName, "object")) {
+    return ErrorHandler(res, 423, lang);
   }
 
   if (!isValidObjectId(stockTypeId)) {
@@ -29,19 +34,36 @@ const updateStockType = async (req, res) => {
     return ErrorHandler(res, 423, lang);
   }
 
+  if (stockVarities && !isArr(stockVarities, "string")) {
+    return ErrorHandler(res, 495, lang);
+  }
+
+  if (stockVarities) {
+    stockVarities.forEach((item) => {
+      if (!isValidObjectId(item)) {
+        return ErrorHandler(res, 425, lang);
+      }
+    });
+  }
+
+  if (images && !isArr(images, "string")) {
+    return ErrorHandler(res, 491, lang);
+  }
+
   let name = {};
 
-  stockTypeName?.forEach((item) => {
-    if (
-      !(item instanceof Object && item.constructor === Object) ||
-      !item.lang ||
-      !item.value
-    ) {
-      return ErrorHandler(res, 423, lang);
-    }
+  stockTypeName &&
+    stockTypeName?.forEach((item) => {
+      if (
+        !(item instanceof Object && item.constructor === Object) ||
+        !item.lang ||
+        !item.value
+      ) {
+        return ErrorHandler(res, 423, lang);
+      }
 
-    name[item.lang] = item.value;
-  });
+      name[item.lang] = item.value;
+    });
 
   try {
     const stockType = await StockType.findById(stockTypeId);
@@ -53,6 +75,9 @@ const updateStockType = async (req, res) => {
     Array.from(Object.keys(name)).forEach((key) => {
       stockType.name.set(key, name[key]);
     });
+
+    if (stockVarities) stockType.availableVarieties = stockVarities;
+    if (images) stockType.images = images;
 
     await stockType.save();
 

@@ -6,7 +6,7 @@ const { Schema } = mongoose;
 const StockVarietySchema = new Schema(
   {
     value: String,
-    stockVariety: {
+    stockVarietyType: {
       type: mongoose.Types.ObjectId,
       ref: "StockVarietyType",
     },
