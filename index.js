@@ -50,7 +50,7 @@ app.use("/api/v1/orderItem", orderItemRoute);
 app.use("/api/v1/order", orderRoute);
 app.use("/api/v1/search", searchRoute);
 app.use("/api/v1/coupon", couponRoute);
-app.use("/api/v1/discount", discountTypeRoute);
+app.use("/api/v1/discountType", discountTypeRoute);
 
 app.get("/addProducts", async (req, res) => {
   function createRandomProduct() {

@@ -6,8 +6,7 @@ import { ErrorHandler } from "../../utils/errorHandler.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const addDiscount = async (req, res) => {
-  let { above, lang } = req.body;
-  let name = req.params.name;
+  let { name, above, lang } = req.body;
 
   if (!lang || !(lang in response)) {
     lang = LANG;
@@ -24,7 +23,7 @@ export const addDiscount = async (req, res) => {
   if (typeof name !== "string") {
     return ErrorHandler(res, 492, lang);
   }
-  if (above && typeof above !== "number") {
+  if (above && (typeof above !== "number" || above < 0)) {
     return ErrorHandler(res, 493, lang);
   }
 
