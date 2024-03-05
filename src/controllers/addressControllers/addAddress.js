@@ -5,6 +5,7 @@ import { config } from "dotenv";
 import { decode } from "jsonwebtoken";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -33,6 +34,7 @@ const addAddress = async (req, res) => {
 
   if (!isValidObjectId(uid)) {
     return ErrorHandler(res, 418, lang);
+    // return ResponseHandler(res, "user", 402, lang);
   }
 
   if (!country || !region || !city) {

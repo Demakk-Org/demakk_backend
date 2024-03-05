@@ -19,6 +19,7 @@ import { searchRoute } from "./src/routes/searchRoute.js";
 import { couponRoute } from "./src/routes/couponRoute.js";
 import { stockVarietyTypeRoute } from "./src/routes/stockVarietyTypeRoute.js";
 import { stockVarietyRoute } from "./src/routes/stockVarietyRoute.js";
+import responsse from "./responsse.js";
 // import bcrypt from "bcryptjs";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
@@ -83,6 +84,8 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port : ${PORT}`);
 });
+
+console.log(responsse["en"]["common"]["203"]);
 
 export { app };
 
