@@ -2,22 +2,25 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const reserPasswordSchema = new Schema({
-  uid: {
-    type: String,
-    required: true,
+const reserPasswordSchema = new Schema(
+  {
+    uid: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      enums: ["pending", "complete"],
+      default: "pending",
+    },
+    expiresIn: Number,
   },
-  requestedAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  status: {
-    type: String,
-    enums: ["pending", "complete"],
-    default: "pending",
-  },
-  expiresIn: Number,
-});
+  {
+    timestamps: {
+      createdAt: "requestedAt",
+    },
+  }
+);
 
 const ResetPassword = mongoose.model("ResetPassword", reserPasswordSchema);
 

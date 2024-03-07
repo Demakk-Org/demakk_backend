@@ -1,41 +1,61 @@
 import Jwt from "jsonwebtoken";
 import User from "../models/userSchema.js";
+import { config } from "dotenv";
+import responsse from "../../responsse.js";
+import { ResponseHandler } from "../utils/responseHandler.js";
+
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const AdminAuthentication = (req, res, next) => {
+  let { lang } = req.body;
+
   const token = req.headers?.authorization?.split(" ")[1];
-  if (!token) {
-    return res
-      .status(401)
-      .json({ message: "Authentication failed: No token provided" });
+  const bearer = req.headers?.authorization?.split(" ")[0];
+
+  if (!lang || !(lang in responsse)) {
+    lang = LANG;
   }
+
+  if (!token || bearer !== "Bearer") {
+    console.error("Authentication failed: No token provided");
+    return ResponseHandler(res, "auth", 411, lang);
+  }
+
   const tokenValues = Jwt.decode(token, "your_secret_key");
 
   if (!tokenValues) {
-    return res
-      .status(401)
-      .json({ message: "Authentication failed: Invalid token" });
+    return ResponseHandler(res, "auth", 412, lang);
   }
 
   const { exp, uid } = tokenValues;
 
   if (Date.now() > exp) {
-    return res
-      .status(401)
-      .json({ message: "Authentication failed: Token not expired" });
+    return ResponseHandler(res, "auth", 413, lang);
   }
 
-  User.findById(uid, "role")
-    .populate("role")
-    .then((user) => {
-      console.log(user);
-      if (user.role.name === "admin") {
-        return next();
-      } else {
-        return res
-          .status(401)
-          .json({ message: "Authentication failed: User not admin" });
-      }
-    });
+  try {
+    User.findById(uid)
+      .select("-password")
+      .populate("role")
+      .then((user) => {
+        if (!user) {
+          return ResponseHandler(res, "user", 404, lang);
+        }
+        console.log(uid, user);
+        if (user.role.name === "admin") {
+          req.language = user.lang;
+          req.uid = uid;
+          req.user = user;
+          req.role = "admin";
+          return next();
+        } else {
+          return ResponseHandler(res, "auth", 414, lang);
+        }
+      });
+  } catch (error) {
+    console.log(error.message);
+    return ResponseHandler(res, "common", 500, lang);
+  }
 };
 
-export default AdminAuthentication; //Bearer token
+export default AdminAuthentication;

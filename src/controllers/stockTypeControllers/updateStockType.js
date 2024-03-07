@@ -1,45 +1,90 @@
 import { StockType } from "../../models/stockTypeSchema.js";
-import language from "../../../language.js";
-import dotenv from "dotenv";
+import response from "../../../response.js";
+import { config } from "dotenv";
+import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isArr } from "../../utils/validate.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateStockType = async (req, res) => {
-  let { stockTypeName, id, lang } = req.body;
+  let { stockTypeName, stockTypeId, images, stockVarities, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
-  if (!stockTypeName || !id) {
-    return res.status(400).json({
-      message: language[lang].response[400],
+  if (req?.language) {
+    lang = req.language;
+  }
+
+  if (!stockTypeId) {
+    return ErrorHandler(res, 400, lang);
+  }
+
+  if (stockTypeName && !isArr(stockTypeName, "object")) {
+    return ErrorHandler(res, 423, lang);
+  }
+
+  if (!isValidObjectId(stockTypeId)) {
+    return ErrorHandler(res, 425, lang);
+  }
+
+  if (!Array.isArray(stockTypeName)) {
+    return ErrorHandler(res, 423, lang);
+  }
+
+  if (stockVarities && !isArr(stockVarities, "string")) {
+    return ErrorHandler(res, 495, lang);
+  }
+
+  if (stockVarities) {
+    stockVarities.forEach((item) => {
+      if (!isValidObjectId(item)) {
+        return ErrorHandler(res, 425, lang);
+      }
     });
   }
 
-  if (
-    !(stockTypeName instanceof Object) &&
-    stockTypeName.constructor === Object
-  ) {
-    return res.status(400).json({ message: language[lang].response[423] });
+  if (images && !isArr(images, "string")) {
+    return ErrorHandler(res, 491, lang);
   }
 
+  let name = {};
+
+  stockTypeName &&
+    stockTypeName?.forEach((item) => {
+      if (
+        !(item instanceof Object && item.constructor === Object) ||
+        !item.lang ||
+        !item.value
+      ) {
+        return ErrorHandler(res, 423, lang);
+      }
+
+      name[item.lang] = item.value;
+    });
+
   try {
-    const stockType = await StockType.findById(id);
+    const stockType = await StockType.findById(stockTypeId);
 
     if (!stockType) {
-      return res.status(404).json({ message: language[lang].response[424] });
+      return ErrorHandler(res, 424, lang);
     }
 
-    stockType.name.set(stockTypeName["lang"], stockTypeName["value"]);
+    Array.from(Object.keys(name)).forEach((key) => {
+      stockType.name.set(key, name[key]);
+    });
+
+    if (stockVarities) stockType.availableVarieties = stockVarities;
+    if (images) stockType.images = images;
+
     await stockType.save();
 
-    return res
-      .status(200)
-      .json({ message: language[lang].response[201], stockType });
+    return ErrorHandler(res, 203, lang, stockType);
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import DiscountType from "./discountTypeSchema.js";
 
 const { Schema } = mongoose;
 export const couponSchema = new Schema(
@@ -18,19 +19,16 @@ export const couponSchema = new Schema(
     },
     appliesToProductCategory: [
       {
-        type: String,
+        type: mongoose.Types.ObjectId,
+        ref: "ProductCategory",
         required: true,
       },
     ],
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      required: true,
-    },
     endsAt: Date,
   },
   {
     timestamps: {
+      createdAt: "createdAt",
       updatedAt: "updatedAt", // and `updated_at` to store the last updated date
     },
   }

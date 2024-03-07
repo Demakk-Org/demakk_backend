@@ -1,49 +1,85 @@
 import { StockItem } from "../../models/stockItemSchema.js";
-import language from "../../../language.js";
-import dotenv from "dotenv";
+import response from "../../../response.js";
+import { config } from "dotenv";
+import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateStockItem = async (req, res) => {
-  let { stockItemId, stockTypeId, name, price, costToProduce, lang } = req.body;
+  let { stockItemId, stockTypeId, stockItemName, price, costToProduce, lang } =
+    req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
-  if (!stockItemId) {
-    return res.status(400).json({ message: language[lang].response[400] });
+  if (req?.language) {
+    lang = req.language;
   }
 
+  if (!stockItemId) {
+    return ErrorHandler(res, 400, lang);
+  }
+
+  if (!isValidObjectId(stockItemId)) {
+    return ErrorHandler(res, 428, lang);
+  }
+
+  if (!stockTypeId && !stockItemName && !price && !costToProduce) {
+    return ErrorHandler(res, 400, lang);
+  }
+
+  if (stockTypeId && !isValidObjectId(stockTypeId)) {
+    return ErrorHandler(res, 425, lang);
+  }
+
+  if (stockItemName && !Array.isArray(stockItemName)) {
+    return ErrorHandler(res, 423, lang);
+  }
+
+  let name = {};
+
+  stockItemName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 438, lang);
+    }
+
+    name[item.lang] = item.value;
+  });
+
   if (
-    typeof stockItemId !== "string" ||
-    (stockTypeId && typeof stockTypeId !== "string") ||
-    (name && !(name instanceof Object && name.constructor === Object)) ||
     (price && typeof price !== "number") ||
-    (costToProduce && typeof costToProduce !== "number") ||
-    (!stockTypeId && !name && !price && !costToProduce)
+    (costToProduce && typeof costToProduce !== "number")
   ) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 443, lang);
   }
 
   try {
     const stockItem = await StockItem.findById(stockItemId);
 
     if (!stockItem) {
-      return res.status(404).json({ message: language[lang].response[404] });
+      return ErrorHandler(res, 427, lang);
     }
 
     if (stockTypeId) stockItem.stockType = stockTypeId;
-    if (name) stockItem.name.set(name["lang"], name["value"]);
+    if (stockItemName) {
+      Array.from(Object.keys(name)).forEach((key) => {
+        stockItem.name.set(key, name[key]);
+      });
+    }
     if (price) stockItem.price = price;
     if (costToProduce) stockItem.costToProduce = costToProduce;
     await stockItem.save();
 
-    return res
-      .status(201)
-      .json({ stockItem, message: language[lang].response[201] });
+    return ErrorHandler(res, 203, lang, stockItem);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

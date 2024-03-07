@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { Image } from "./imageSchema.js";
+import { StockVariety } from "./stockVarietySchema.js";
 
 const { Schema } = mongoose;
 
@@ -8,8 +10,16 @@ const StockTypeSchema = new Schema({
     of: String,
     required: true,
   },
+  images: {
+    type: mongoose.Types.ObjectId,
+    ref: "Image",
+  },
+  availableVarieties: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "StockVariety",
+    },
+  ],
 });
 
-const StockType = mongoose.model("StockType", StockTypeSchema);
-
-export { StockType };
+export const StockType = mongoose.model("StockType", StockTypeSchema);

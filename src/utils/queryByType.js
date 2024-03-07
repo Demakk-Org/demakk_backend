@@ -1,8 +1,10 @@
-import language from "../../language.js";
-
 const QueryByType = (account, lang) => {
+  if (typeof account != "string") return { status: 403 };
+
   if (
-    account.match(/^2519(?:(-|\s)?)?\d{2}(?:(-|\s)?)?\d{2}(?:(-|\s)?)?\d{4}$/)
+    account.match(
+      /^(251|0)(?:(-|\s)?)?\d{3}(?:(-|\s)?)?\d{2}(?:(-|\s)?)?\d{4}$/
+    )
   ) {
     return {
       status: 200,
@@ -23,8 +25,7 @@ const QueryByType = (account, lang) => {
     };
   } else {
     return {
-      status: 400,
-      message: language[lang].response[403],
+      status: 403,
     };
   }
 };

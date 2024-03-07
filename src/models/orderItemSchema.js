@@ -1,27 +1,40 @@
 import mongoose from "mongoose";
+import Coupon from "./couponSchema.js";
+import { Product } from "./productSchema.js";
 
 const { Schema } = mongoose;
 
-export const orderItemSchema = new Schema({
-  orderId: {
-    type: mongoose.Types.ObjectId,
-    ref: "Order",
-    required: true,
+export const orderItemSchema = new Schema(
+  {
+    product: {
+      type: mongoose.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+    // order: {
+    //   type: mongoose.Types.ObjectId,
+    //   ref: "Order",
+    //   required: true,
+    // },
+    quantity: {
+      type: Number,
+      required: true,
+    },
+    // unitPrice: {
+    //   type: Number,
+    //   required: true,
+    // },
+    couponCode: {
+      type: mongoose.Types.ObjectId,
+      ref: "Coupon",
+    },
   },
-  quantity: {
-    type: Number,
-    required: true,
-  },
-  unitPrice: {
-    type: Number,
-    required: true,
-  },
-  couponCode: String,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  {
+    timestamps: {
+      createdAt: "createdAt",
+    },
+  }
+);
 
 const OrderItem = mongoose.model("OrderItem", orderItemSchema);
 

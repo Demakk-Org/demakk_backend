@@ -10,20 +10,18 @@ export const AddressSchema = new Schema(
       required: true,
     },
     country: String,
+    region: String,
     city: String,
     subCity: String,
     woreda: String,
     uniqueIdentifier: String,
     streetAddress: String,
     postalCode: String,
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
   },
   {
     timestamps: {
       updatedAt: "updatedAt",
+      createdAt: "createdAt",
     },
   }
 );

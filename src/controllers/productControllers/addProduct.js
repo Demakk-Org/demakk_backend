@@ -1,43 +1,101 @@
 import { Product } from "../../models/productSchema.js";
-import language from "../../../language.js";
-import dotenv from "dotenv";
+import response from "../../../response.js";
+import { config } from "dotenv";
+import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isArr } from "../../utils/validate.js";
+import { ProductCategory } from "../../models/productCategorySchema.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addProduct = async (req, res) => {
-  let { name, description, productCategoryId, lang } = req.body;
+  let { productName, description, tags, productCategoryId, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
-  if (!name || !description || !productCategoryId) {
-    return res.status(400).json({ message: language[lang].response[400] });
+  if (req?.language) {
+    lang = req.language;
   }
 
-  if (
-    !(description instanceof Object && description.constructor === Object) ||
-    !(name instanceof Object && name.constructor === Object) ||
-    typeof productCategoryId !== "string"
-  ) {
-    return res.status(400).json({
-      message: language[lang].response[400],
-    });
+  if (!tags || !productName || !description || !productCategoryId) {
+    return ErrorHandler(res, 400, lang);
   }
+
+  if (!isValidObjectId(productCategoryId)) {
+    return ErrorHandler(res, 437, lang);
+  }
+
+  if (!Array.isArray(productName)) {
+    return ErrorHandler(res, 441, lang);
+  }
+
+  if (!Array.isArray(description)) {
+    return ErrorHandler(res, 442, lang);
+  }
+
+  if (!isArr(tags, "string")) {
+    return ErrorHandler(res, 460, lang);
+  }
+
+  if (tags.length == 0) {
+    return ErrorHandler(res, 480, lang);
+  }
+
+  let name = {};
+  let desc = {};
+
+  productName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 441, lang);
+    }
+    name[item.lang] = item.value;
+  });
+
+  description?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 442, lang);
+    }
+    desc[item.lang] = item.value;
+  });
 
   try {
+    const productCategory = await ProductCategory.findById(
+      productCategoryId
+    ).populate("stockItem");
+
+    let price;
+    let additionalPrice = productCategory?.additionalPrice;
+    let stockItemPrice = productCategory?.stockItem?.price;
+
+    if (additionalPrice && stockItemPrice) {
+      price =
+        productCategory?.additionalPrice + productCategory?.stockItem?.price;
+    } else {
+      price = 0;
+    }
+
     const product = await Product.create({
       name,
+      description: desc,
       productCategory: productCategoryId,
-      description,
+      tags,
+      price,
     });
 
-    return res
-      .status(201)
-      .json({ product, message: language[lang].response[201] });
+    return ErrorHandler(res, 200, lang, product);
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ message: language[lang].response[500] });
+    return ErrorHandler(res, 500, lang);
   }
 };
 

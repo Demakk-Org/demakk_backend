@@ -2,50 +2,62 @@ import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
 import queryByType from "../../utils/queryByType.js";
-import language from "../../../language.js";
 import { config } from "dotenv";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 async function loginUser(req, res) {
-
   let { account, password, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
-  const queryAndType = queryByType(account);
+  if (req?.language) {
+    lang = req.language;
+  }
 
-  if (queryAndType.status == 400) {
-    return res.status(400).json({ message: queryAndType.message });
+  if (!account || !password) {
+    return ResponseHandler(res, "common", 400, lang);
+  }
+
+  const queryAndType = queryByType(account, lang);
+
+  if (queryAndType.status == 403) {
+    return ResponseHandler(res, "auth", 405, lang);
   }
 
   try {
     const user = await User.findOne(queryAndType.searchQuery).select(
-      "_id email firstName password"
+      "_id email firstName password lang"
     );
+
+    if (!user) {
+      return ResponseHandler(res, "user", 404, lang);
+    }
 
     if (user && (await bcrypt.compare(password, user.password))) {
       const token = Jwt.sign(
         {
           from: "Demakk Printing Enterprise",
           uid: user._id,
-          email: user.email,
           name: user.firstName,
-          phoneNumber: user.phoneNumber,
+          ...queryAndType.searchQuery,
           iat: Date.now(),
-          lang,
+          lang: user.lang ? user.lang : lang,
         },
         "your_secret_key",
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
-      return res.json({ message: language[lang].response[205], token });
+      return ResponseHandler(res, "auth", 200, lang, token);
     } else {
-      return res.status(401).json({ message: language[lang].response[402] });
+      return ResponseHandler(res, "auth", 410, lang);
     }
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ResponseHandler(res, "common", 500, lang);
   }
 }
 

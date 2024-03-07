@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { Review } from "./reviewSchema.js";
+import { Image } from "./imageSchema.js";
 
 const { Schema } = mongoose;
 
@@ -19,14 +21,62 @@ const ProductSchema = Schema(
       required: true,
       ref: "ProductCategory",
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      immutable: true,
+    tags: [
+      {
+        type: String,
+        lowercase: true,
+      },
+    ],
+    price: Number,
+    images: {
+      type: mongoose.Types.ObjectId,
+      ref: "Image",
     },
+    ratings: {
+      1: {
+        type: Number,
+        default: 0,
+      },
+      2: {
+        type: Number,
+        default: 0,
+      },
+      3: {
+        type: Number,
+        default: 0,
+      },
+      4: {
+        type: Number,
+        default: 0,
+      },
+      5: {
+        type: Number,
+        default: 0,
+      },
+      count: {
+        type: Number,
+        required: true,
+        min: 0,
+        default: 0,
+      },
+      average: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 5,
+        default: 0,
+      },
+    },
+    reviews: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
   },
   {
     timestamps: {
+      createdAt: "createdAt",
       updatedAt: "updatedAt",
     },
   }

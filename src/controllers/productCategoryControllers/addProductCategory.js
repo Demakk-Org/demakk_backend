@@ -1,27 +1,64 @@
 import { ProductCategory } from "../../models/productCategorySchema.js";
-import language from "../../../language.js";
-import dotenv from "dotenv";
+import response from "../../../response.js";
+import { config } from "dotenv";
+import { isValidObjectId } from "mongoose";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addProductCategory = async (req, res) => {
-  let { stockItemId, name, additionalPrice, additionalCost, lang } = req.body;
+  let {
+    stockItemId,
+    productCategoryName,
+    additionalPrice,
+    additionalCost,
+    lang,
+  } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
+  }
+
+  if (req?.language) {
+    lang = req.language;
   }
 
   if (
     !stockItemId ||
-    !name ||
+    !productCategoryName ||
     !additionalPrice ||
-    !additionalCost ||
-    typeof stockItemId !== "string" ||
-    !(name instanceof Object && name.constructor === Object) ||
+    !additionalCost
+  ) {
+    return ErrorHandler(res, 400, lang);
+  }
+
+  if (!isValidObjectId(stockItemId)) {
+    return ErrorHandler(res, 428, lang);
+  }
+
+  if (!Array.isArray(productCategoryName)) {
+    return ErrorHandler(res, 440, lang);
+  }
+
+  let name = {};
+
+  productCategoryName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 440, lang);
+    }
+
+    name[item.lang] = item.value;
+  });
+
+  if (
     typeof additionalPrice !== "number" ||
     typeof additionalCost !== "number"
   ) {
-    return res.status(400).json({ message: language[lang].response[400] });
+    return ErrorHandler(res, 443, lang);
   }
 
   try {
@@ -32,12 +69,10 @@ const addProductCategory = async (req, res) => {
       additionalCost,
     });
 
-    return res.status(201).json({
-      productCategory,
-      message: language[lang].response[201],
-    });
+    return ErrorHandler(res, 201, lang, productCategory);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[500] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 

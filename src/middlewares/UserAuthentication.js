@@ -1,42 +1,64 @@
 import { decode } from "jsonwebtoken";
-import language from "../../language.js";
-import dotenv from "dotenv";
-import { ObjectId } from "bson";
+import { config } from "dotenv";
+import { isValidObjectId } from "mongoose";
+import User from "../models/userSchema.js";
+import responsse from "../../responsse.js";
+import { ResponseHandler } from "../utils/responseHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const UserAuthentication = (req, res, next) => {
+  let { lang } = req.body;
+
   const token = req.headers?.authorization?.split(" ")[1];
   const bearer = req.headers?.authorization?.split(" ")[0];
-  console.log(Date.now());
+
+  if (!lang || !(lang in responsse)) {
+    lang = LANG;
+  }
+
   if (!token || bearer !== "Bearer") {
-    console.error("Authentication failed: No token provided");
-    return res.status(401).json({ message: language[LANG].response[401] });
+    return ResponseHandler(res, "auth", 411, lang);
   }
 
   const tokenValues = decode(token, "your_secret_key");
+  console.log(tokenValues, "values");
 
   if (!tokenValues) {
     console.error("Authentication failed: Invalid token");
-    return res.status(401).json({ message: language[LANG].response[401] });
+    return ResponseHandler(res, "auth", 412, lang);
   }
 
-  let { exp, lang, uid } = tokenValues;
+  let { exp, uid } = tokenValues;
 
-  if (!uid || !ObjectId.isValid(uid)) {
-    return res.status(401).json({ message: language[LANG].response[407] });
+  if (!uid) {
+    return ResponseHandler(res, "common", 400, lang);
   }
 
-  if (!lang || !(lang in language)) {
-    lang = LANG;
+  if (!isValidObjectId(uid)) {
+    return ResponseHandler(res, "user", 402, lang);
   }
 
   if (Date.now() > exp) {
     console.error("Authentication failed: Token has expired");
-    return res.status(401).json({ message: language[LANG].response[401] });
+    return ResponseHandler(res, "auth", 413, lang);
   }
 
-  next();
+  try {
+    User.findById(uid)
+      .select("-password")
+      .populate("role")
+      .then((user) => {
+        req.language = user.lang;
+        req.user = user;
+        req.uid = uid;
+        req.role = user.role.name;
+        next();
+      });
+  } catch (error) {
+    console.log(error.message);
+    return ResponseHandler(res, "common", 500, lang);
+  }
 };
 
-export default UserAuthentication; //Bearer token
+export default UserAuthentication;

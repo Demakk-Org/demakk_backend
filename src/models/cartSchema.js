@@ -5,16 +5,19 @@ const { Schema } = mongoose;
 
 const CartSchema = new Schema(
   {
+    user: {
+      type: mongoose.Types.ObjectId,
+    },
     orderItems: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "Order",
+        ref: "OrderItem",
       },
     ],
   },
   {
     timestamps: {
-      updatedAt: "updatedAt", // and `updated_at` to store the last updated date
+      updatedAt: "updatedAt",
     },
   }
 );

@@ -1,36 +1,57 @@
 import { StockType } from "../../models/stockTypeSchema.js";
-import dotenv from "dotenv";
-import language from "../../../language.js";
+import { config } from "dotenv";
+import response from "../../../response.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
+import { isArr } from "../../utils/validate.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addStockType = async (req, res) => {
-  let { stockTypeName, lang } = req.body;
+  let { stockTypeName, stockVarieties, lang } = req.body;
 
-  if (!lang || !(lang in language)) {
+  if (!lang || !(lang in response)) {
     lang = LANG;
   }
 
-  if (!stockTypeName) {
-    return res.status(400).json({
-      message: language[lang].response[400],
-    });
+  if (req?.language) {
+    lang = req.language;
   }
 
-  if (
-    !stockTypeName instanceof Object &&
-    stockTypeName.constructor === Object
-  ) {
-    return res.status(400).json({ message: language[lang].response[423] });
+  if (!stockTypeName) {
+    return ErrorHandler(res, 400, lang);
   }
+
+  if (!Array.isArray(stockTypeName)) {
+    return ErrorHandler(res, 423, lang);
+  }
+
+  if (stockVarieties && !isArr(stockVarieties, "string")) {
+    return ErrorHandler(res, 495, lang);
+  }
+
+  let name = {};
+
+  stockTypeName?.forEach((item) => {
+    if (
+      !(item instanceof Object && item.constructor === Object) ||
+      !item.lang ||
+      !item.value
+    ) {
+      return ErrorHandler(res, 423, lang);
+    }
+    name[item.lang] = item.value;
+  });
 
   try {
-    const stockType = await StockType.create({ name: stockTypeName });
-    return res
-      .status(201)
-      .json({ message: language[lang].response[201], stockType });
+    const stockType = await StockType.create({
+      name,
+      availableVarieties: stockVarieties,
+    });
+
+    return ErrorHandler(res, 201, lang, stockType);
   } catch (error) {
-    return res.status(500).json({ message: language[lang].response[200] });
+    console.log(error.message);
+    return ErrorHandler(res, 500, lang);
   }
 };
 
