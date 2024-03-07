@@ -85,7 +85,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port : ${PORT}`);
 });
 
-console.log(responsse["en"]["common"]["203"]);
+console.log(responsse["en"].response["common"]["203"]);
 
 export { app };
 

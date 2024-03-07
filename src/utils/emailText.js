@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import responsse from "../../responsse";
+import responsse from "../../responsse.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 

@@ -11,13 +11,14 @@ export default {
         401: "Unauthorized",
         404: "Not Found",
         405: "Invalid date provided",
+        406: "Invalid input",
 
         500: "Internal Server Error, please try again!",
         501: "Not Implemented: it is under development",
       },
       auth: {
-        200: "Logged in successfilly",
-        201: "Logged out successfilly",
+        200: "Logged in successfully",
+        201: "Logged out successfully",
         202: "OTP has been sent to your email",
         203: "Reset message is sent",
         204: "Your email is verified",

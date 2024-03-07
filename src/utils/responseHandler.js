@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import library from "../../responsse.js";
+import response from "../../responsse.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -7,9 +7,9 @@ export function ResponseHandler(res, type, code, lang, data) {
   const statusCode = Math.floor(code / 100) * 100;
 
   if (
-    !library[lang] ||
-    !library[lang].response[type] ||
-    !library[lang].response[type][code]
+    !response[lang] ||
+    !response[lang].response[type] ||
+    !response[lang].response[type][code]
   ) {
     if (!data) {
       return res
