@@ -3,7 +3,7 @@ import response from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { uploadImage } from "../../utils/uploadImages.js";
 import { isValidObjectId } from "mongoose";
-import Image from "../../models/imageSchema.js";
+import { Image } from "../../models/imageSchema.js";
 import { Product } from "../../models/productSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;

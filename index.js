@@ -17,6 +17,9 @@ import { orderItemRoute } from "./src/routes/orderItemRoute.js";
 import { orderRoute } from "./src/routes/orderRoute.js";
 import { searchRoute } from "./src/routes/searchRoute.js";
 import { couponRoute } from "./src/routes/couponRoute.js";
+import { stockVarietyTypeRoute } from "./src/routes/stockVarietyTypeRoute.js";
+import { stockVarietyRoute } from "./src/routes/stockVarietyRoute.js";
+import responsse from "./responsse.js";
 import { discountTypeRoute } from "./src/routes/discountTypeRoute.js";
 // import bcrypt from "bcryptjs";
 
@@ -50,6 +53,8 @@ app.use("/api/v1/orderItem", orderItemRoute);
 app.use("/api/v1/order", orderRoute);
 app.use("/api/v1/search", searchRoute);
 app.use("/api/v1/coupon", couponRoute);
+app.use("/api/v1/stockVarietyType", stockVarietyTypeRoute);
+app.use("/api/v1/stockVariety", stockVarietyRoute);
 app.use("/api/v1/discountType", discountTypeRoute);
 
 app.get("/addProducts", async (req, res) => {
@@ -81,6 +86,8 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port : ${PORT}`);
 });
+
+console.log(responsse["en"].response["common"]["203"]);
 
 export { app };
 

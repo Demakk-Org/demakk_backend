@@ -1,35 +1,36 @@
 import Jwt from "jsonwebtoken";
 import User from "../models/userSchema.js";
-import { ErrorHandler } from "../utils/errorHandler.js";
 import { config } from "dotenv";
-import response from "../../response.js";
+import responsse from "../../responsse.js";
+import { ResponseHandler } from "../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const AdminAuthentication = (req, res, next) => {
   let { lang } = req.body;
+
   const token = req.headers?.authorization?.split(" ")[1];
   const bearer = req.headers?.authorization?.split(" ")[0];
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
   if (!token || bearer !== "Bearer") {
     console.error("Authentication failed: No token provided");
-    return ErrorHandler(res, 449, lang);
+    return ResponseHandler(res, "auth", 411, lang);
   }
 
   const tokenValues = Jwt.decode(token, "your_secret_key");
 
   if (!tokenValues) {
-    return ErrorHandler(res, 450, lang);
+    return ResponseHandler(res, "auth", 412, lang);
   }
 
   const { exp, uid } = tokenValues;
 
   if (Date.now() > exp) {
-    return ErrorHandler(res, 451, lang);
+    return ResponseHandler(res, "auth", 413, lang);
   }
 
   try {
@@ -38,7 +39,7 @@ const AdminAuthentication = (req, res, next) => {
       .populate("role")
       .then((user) => {
         if (!user) {
-          return ErrorHandler(res, 416, lang);
+          return ResponseHandler(res, "user", 404, lang);
         }
         console.log(uid, user);
         if (user.role.name === "admin") {
@@ -48,12 +49,12 @@ const AdminAuthentication = (req, res, next) => {
           req.role = "admin";
           return next();
         } else {
-          return ErrorHandler(res, 452, lang);
+          return ResponseHandler(res, "auth", 414, lang);
         }
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

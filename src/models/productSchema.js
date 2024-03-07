@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Review } from "./reviewSchema.js";
-import Image from "./imageSchema.js";
+import { Image } from "./imageSchema.js";
 
 const { Schema } = mongoose;
 

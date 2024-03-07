@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import response from "../../../response.js";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
-import Image from "../../models/imageSchema.js";
+import { Image } from "../../models/imageSchema.js";
 import { uploadImage } from "../../utils/uploadImages.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;

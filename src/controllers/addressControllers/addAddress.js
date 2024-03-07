@@ -1,10 +1,9 @@
 import Address from "../../models/addressSchema.js";
 import User from "../../models/userSchema.js";
-import response from "../../../response.js";
 import { config } from "dotenv";
-import { decode } from "jsonwebtoken";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+import responsse from "../../../responsse.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -23,7 +22,7 @@ const addAddress = async (req, res) => {
 
   const uid = req.uid;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -32,11 +31,11 @@ const addAddress = async (req, res) => {
   }
 
   if (!isValidObjectId(uid)) {
-    return ErrorHandler(res, 418, lang);
+    return ResponseHandler(res, "user", 402, lang);
   }
 
   if (!country || !region || !city) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (
@@ -49,13 +48,13 @@ const addAddress = async (req, res) => {
     (streetAddress && typeof streetAddress !== "string") ||
     (postalCode && typeof postalCode !== "string")
   ) {
-    return ErrorHandler(res, 407, lang);
+    return ResponseHandler(res, "common", 406, lang);
   }
 
   try {
     User.findById(uid).then((user) => {
       if (!user) {
-        return ErrorHandler(res, 416, lang);
+        return ResponseHandler(res, "user", 404, lang);
       }
 
       Address.create({
@@ -69,12 +68,12 @@ const addAddress = async (req, res) => {
         streetAddress,
         postalCode,
       }).then((data) => {
-        return ErrorHandler(res, 208, lang, data);
+        return ResponseHandler(res, "common", 201, lang, data);
       });
     });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

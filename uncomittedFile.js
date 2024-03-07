@@ -1,35 +1,144 @@
-response:{
-  common:{
-    200:"Creation completed successfully",
-    201:"Update completed successfully",
-    202:"Deletion completed successfully",
-    203:"Deletion completed successfully",
-    400: "Missing required fields",
+const resoponse = {
+  response: {
+    common: {
+      200: "OK",
+      201: "Creation completed successfully",
+      202: "Update completed successfully",
+      203: "Deletion completed successfully",
 
-  },
-  auth:{
-    204:"Logged in successfilly",
-    205:"Logged out successfilly",
-    206:"OTP has been sent to your email",
-    207:"Reset message is sent",
-    208:"",
-    400: "Account already exists",
-    401: "Request has expired, Please try again!",
-    402: "Your email is already verified",
-    403: "Your phone number is already verified",
-    414: "Your OTP has expired",
-    
+      400: "Missing required fields",
+      401: "Unauthorized",
+      404: "Not Found",
+      405: "Invalid date provided",
+
+      500: "Internal Server Error, please try again!",
+      501: "Not Implemented: it is under development",
     },
-  user: {
-    201: "User is blocked",
-    202: "User is unblocked",
+    auth: {
+      200: "Logged in successfilly",
+      201: "Logged out successfilly",
+      202: "OTP has been sent to your email",
+      203: "Reset message is sent",
+      204: "Your email is verified",
+      205: "OTP has been sent to your phone number",
+      206: "Your phone number is verified",
+      207: "Your email is already verified",
 
-    400: "Please provide user id",
-    401: "User not found",
-    402: "Invalid user id",
-    403: "User is already blocked",
-  }
-}
+      400: "Account already exists",
+      401: "Request has expired, Please try again!",
+      403: "Your phone number is already verified",
+      404: "Passwords don't match",
+      405: "Please enter valid phone number or email address!",
+      406: "OTP doesn't match",
+      407: "Your OTP has expired",
+      408: "Your OTP has expired",
+      409: "Invalid OTP id",
+      410: "The password is incorrect!",
+      411: "Authentication failed: No token provided",
+      412: "Authentication failed: Invalid token",
+      413: "Authentication failed: Token has expired",
+      414: "Authentication failed: User not admin",
+      415: "Phone number is not registered in your account",
+      416: "Email address is not registered in your account",
+      417: "Message was not sent successfully",
+      418: "The email is already in use",
+      419: "The password is already in use",
+    },
+    user: {
+      201: "User is blocked",
+      202: "User is unblocked",
+
+      400: "Please provide user id",
+      402: "Invalid user id",
+      403: "User is already blocked",
+      404: "User not found",
+      405: "User is already unblocked",
+      406: "This order does not belong to this user",
+      407: "This address does not belong to this user", //----
+    },
+    cart: {
+      400: "Cart not found",
+    },
+    product: {
+      200: "You liked this product",
+      201: "You unliked this product",
+      402: "Invalid product id",
+      400: "Invalid product name value!",
+      401: "Invalid product description value!",
+      404: "Product is not found",
+      405: "Invalid tag value",
+      406: "At least one tag is required",
+    },
+    address: {
+      400: "Address is not found",
+      401: "Invalid address id",
+    },
+    stockType: {
+      400: "Stock type name is invalid",
+      401: "Invalid stock type id",
+      404: "Stock type is not found",
+    },
+    role: {
+      400: "Invalid role id",
+      401: "The role already exists",
+      402: "Role name is type of string",
+      404: "Role is not found",
+    },
+    stockItem: {
+      400: "Invalid stock item id",
+      401: "Stock item name is invalid",
+      404: "Stock item is not found",
+    },
+    productCategory: {
+      400: "Invalid product category id",
+      401: "Invalid product category id",
+      402: "Invalid product category name value!",
+
+      404: "Product category is not found", 
+    },
+    order: {
+      400: "Invalid order id",
+      401: "Order not found",
+    },
+    orderItem: {
+      400: "Invalid order items value!",
+      401: "Invalid order item id!",
+      402: "Quantity is a type of number",
+      403: "Order item can not be empty",
+      404: "Order item not found",
+    },
+    coupon: {
+      400: "Invalid coupon code id!",
+      401: "Invalid coupon name",
+      404: "Coupon not found",
+    },
+    orderStatus: {
+      400: "Invalid order status name",
+      401: "Order status not found",
+    },
+    review: {
+      400: "Rating is a type of number",
+      401: "Review text is a value of type string",
+      402: "A review has already been registered by this user",
+      403: "Rating is between 1 and 5",
+      404: "Specify the correct type of review",
+    },
+    discountType: {
+      400: "Discount type name is invalid",
+      401: "Invalid discount type id",
+      402: "Discount amount is a type of number",
+      404: "Discount type is not found",
+    },
+    image: {
+      400: "Image name is a type of string",
+      401: "Image description is a type of string",
+      402: "Primary is a type of number",
+      403: "Invalid Primary image value",
+      404: "Images not found",
+      405: "Invalid images id",
+    },
+  },
+};
 
 const TaskSchema = new Schema({
   name: String,
@@ -56,7 +165,6 @@ export function createRandomProduct() {
 export const Products = faker.helpers.multiple(createRandomProduct, {
   count: 10,
 });
-
 
 export const aggregateProducts = async (req, res) => {
   const agg = [
@@ -210,3 +318,23 @@ const updateAddress = async (req, res) => {
 };
 
 export default updateAddress;
+
+const doc = {
+  _id: { $oid: "658778cb2740595f0491d5e2" },
+  type: "Group",
+  name: "Heavenly",
+  uid: [
+    "2Qj7AgVJOUXwdmosX10S5IoMOeC3",
+    "xJJ31BD05BRyBk6VuF68DYwfjaA3",
+    "saeN7av55OSoIQfXQTIbeVPhGyr1",
+  ],
+};
+
+// {
+//   "stockTypeName":[{
+//       "lang":"am",
+//       "value":"ኤሌክትሮኒክስ3"
+//   }],
+//   "stockVarieties":["65e645e52c1ea04be97b826e", "65e645ee2c1ea04be97b8275", "65e646082c1ea04be97b827c"],
+//   lang:"en"
+// }

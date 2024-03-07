@@ -1,118 +1,127 @@
 export default {
   en: {
     response: {
-      200: "OK",
-      201: "Creation was successfully",
-      202: "Reset message is sent!",
-      203: "Update finished successfully",
-      204: "Deletion completed successfully",
-      205: "Logged in successfilly",
-      206: "Logged out successfilly",
-      207: "OTP has been sent to your email",
-      208: "Address was created successfully",
+      200: "OK", //-
+      201: "Creation was successfully", //-
+      202: "Reset message is sent!", //
+      203: "Update finished successfully", //-
+      204: "Deletion completed successfully", //-
+      205: "Logged in successfilly", //-
+      206: "Logged out successfilly", //-
+      207: "OTP has been sent to your email", //-
+      208: "Address was created successfully", //-
       209: "Your email is verified", //---
-      210: "Your phone number is verified",
-      211: "User is blocked",
-      212: "User is unblocked",
-      213: "OTP has been sent to your phone number",
-      214: "You liked this product",
-      215: "You unliked this product",
-      400: "Missing required fields",
-      401: "Unauthorized",
-      402: "Passwords don't match",
-      403: "Please enter valid phone number or email address!",
-      404: "Not Found",
-      405: "Account already exists",
-      406: "Request has expired, Please try again!",
+      210: "Your phone number is verified", //--
+      211: "User is blocked", //-
+      212: "User is unblocked", //-
+      213: "OTP has been sent to your phone number", //-
+      214: "You liked this product", //-
+      215: "You unliked this product", //-
+      400: "Missing required fields", //
+      401: "Unauthorized", //-
+      402: "Passwords don't match", //-
+      403: "Please enter valid phone number or email address!", //-
+      404: "Not Found", //-
+      405: "Account already exists", //-
+      406: "Request has expired, Please try again!", //-
       407: "Invalid input", //for in valid ids
-      408: "Address not found",
-      409: "OTP doesn't match",
-      410: "Your email is already verified",
-      411: "Your phone number is already verified",
-      412: "Your phone number is verified",
-      413: "Your email is verified",
-      414: "Your OTP has expired",
-      415: "Please provide user id",
-      416: "User not found",
-      417: "Cart not found",
-      418: "Invalid user id",
-      419: "User is blocked",
-      420: "User is unblocked",
-      421: "User is already blocked",
-      422: "User is already unblocked",
-      423: "Stock type name is invalid",
-      424: "Stock type is not found",
-      425: "Invalid stock type id",
-      426: "Invalid role id",
-      427: "Stock item is not found",
-      428: "Invalid stock item id",
+      408: "Address not found", //-
+      409: "OTP doesn't match", //-
+      410: "Your email is already verified", //-
+      411: "Your phone number is already verified", //-
+      412: "Your phone number is verified", //-
+      413: "Your email is verified", //-
+      414: "Your OTP has expired", //
+      415: "Please provide user id", //-
+      416: "User not found", //-
+      417: "Cart not found", //-
+      418: "Invalid user id", //-
+      419: "User is blocked", //-
+      420: "User is unblocked", //-
+      421: "User is already blocked", //-
+      422: "User is already unblocked", //-
+      423: "Stock type name is invalid", //-
+      424: "Stock type is not found", //
+      425: "Invalid stock type id", //
+      426: "Invalid role id", //-
+      427: "Stock item is not found", //-
+      428: "Invalid stock item id", //-
       429: "Stock item is not found",
-      430: "Invalid product category id",
-      431: "Product category is not found",
-      432: "Invalid product id",
-      433: "Product is not found",
-      434: "Invalid address id",
-      435: "Address is not found",
-      436: "Role is not found",
-      437: "Invalid product category id",
-      438: "Stock item name is invalid",
-      439: "Prices are type of number!",
-      440: "Invalid product category name value!",
-      441: "Invalid product name value!",
-      442: "Invalid product description value!",
-      443: "Price is a type of number!",
-      444: "Invalid order items value!",
-      445: "Invalid order item id!",
+      430: "Invalid product category id", //-
+      431: "Product category is not found", //-
+      432: "Invalid product id", //-
+      433: "Product is not found", //-
+      434: "Invalid address id", //-
+      435: "Address is not found", //-
+      436: "Role is not found", //-
+      437: "Invalid product category id", //-
+      438: "Stock item name is invalid", //
+      439: "Prices are type of number!", //----------------
+      440: "Invalid product category name value!", //-
+      441: "Invalid product name value!", //-
+      442: "Invalid product description value!", //-
+      443: "Price is a type of number!", //----------------
+      444: "Invalid order items value!", //-
+      445: "Invalid order item id!", //-
       446: "Invalid search input value!",
-      447: "The password is incorrect!",
-      448: "Invalid OTP id",
-      449: "Authentication failed: No token provided",
-      450: "Authentication failed: Invalid token",
-      451: "Authentication failed: Token has expired",
-      452: "Authentication failed: User not admin",
-      453: "Phone number is not registered in your account",
-      454: "Email address is not registered in your account",
+      447: "The password is incorrect!", //-
+      448: "Invalid OTP id", //
+      449: "Authentication failed: No token provided", //-
+      450: "Authentication failed: Invalid token", //-
+      451: "Authentication failed: Token has expired", //-
+      452: "Authentication failed: User not admin", //-
+      453: "Phone number is not registered in your account", //-
+      454: "Email address is not registered in your account", //-
       455: "Language is type of two character string",
       456: "Language is not found",
-      457: "Message was not sent successfully",
-      458: "The email is already in use",
-      459: "The password is already in use",
-      460: "Invalid tag value",
-      461: "The role already exists",
-      462: "Role name is type of string",
+      457: "Message was not sent successfully", //-
+      458: "The email is already in use", //-
+      459: "The password is already in use", //-
+      460: "Invalid tag value", //-
+      461: "The role already exists", //-
+      462: "Role name is type of string", //-
       463: "This address does not belong to this user", //----
-      464: "Invalid order id",
-      465: "Quantity is a type of number",
-      466: "Invalid coupon code id!",
-      467: "Order item can not be empty",
-      468: "Ordet items is a type of Array",
-      469: "Invalid date provided",
-      470: "Invalid order status name",
-      471: "Order not found",
-      472: "This order does not belong to this user ",
-      473: "Order status not found",
-      474: "Review text is a value of type string",
-      475: "Rating is a type of number",
-      476: "A review has already been registered by this user",
-      477: "Rating is between 1 and 5",
-      478: "Specify correct the type of review",
+      464: "Invalid order id", //-
+      465: "Quantity is a type of number", //-
+      466: "Invalid coupon code id!", //-
+      467: "Order item can not be empty", //-
+      468: "Order items is a type of Array",
+      469: "Invalid date provided", //-
+      470: "Invalid order status name", //
+      471: "Order not found", //-
+      472: "This order does not belong to this user", //-
+      473: "Order status not found", //-
+      474: "Review text is a value of type string", //-
+      475: "Rating is a type of number", //-
+      476: "A review has already been registered by this user", //-
+      477: "Rating is between 1 and 5", //-
+      478: "Specify the correct type of review", //-
       479: "Type is a type of string",
-      480: "At least one tag is required",
-      481: "Order item not found",
-      482: "Invalid coupon name",
-      483: "Invalid discount type id",
-      484: "Discount amount is a type of number",
-      485: "Coupon not found",
+      480: "At least one tag is required", //-
+      481: "Order item not found", //-
+      482: "Invalid coupon name", //-
+      483: "Invalid discount type id", //-
+      484: "Discount amount is a type of number", //-
+      485: "Coupon not found", //-
       486: "Invalid coupon id",
-      487: "Image name is a type of string",
-      488: "Image description is a type of string",
-      489: "Primary is a type of number",
-      490: "Invalid Primary image value",
-      491: "discount type already exist",
-      492: "discount name must be string",
-      493: "Invalid discount amount",
-      500: "Internal Server Error, please try again!",
-      501: "Not Implemented: it is under development",
+      487: "Image name is a type of string", //-
+      488: "Image description is a type of string", //-
+      489: "Primary is a type of number", //-
+      490: "Invalid Primary image value", //-
+      491: "Invalid images value", //-
+      492: "Images not found", //-
+      493: "Invalid review id",
+      494: "Review not found",
+      495: "Invalid stock variety value",
+      496: "Invalid stock variety type name",
+      497: "Stock variety type already exists",
+      498: "Invalid stock variety type id",
+      499: "Stock variety type not found",
+      499.1: "Stock variety not found",
+      499.2: "Invalid stock variety id",
+      499.3: "Invalid image file",
+      500: "Internal Server Error, please try again!", //-
+      501: "Not Implemented: it is under development", //-
     },
     message: {
       text: "Demakk: Your verification code is: ",

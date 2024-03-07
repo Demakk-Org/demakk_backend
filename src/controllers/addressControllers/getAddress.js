@@ -1,14 +1,15 @@
 import { config } from "dotenv";
-import response from "../../../response.js";
+
+import { ResponseHandler } from "../../utils/responseHandler.js";
 import Address from "../../models/addressSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import responsse from "../../../responsse.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 const getAddresses = async (req, res) => {
   let { page, limit, lang, sort } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -53,11 +54,11 @@ const getAddresses = async (req, res) => {
           count: count.toString(),
           users: addresses,
         };
-        return ErrorHandler(res, 200, lang, data);
+        return ResponseHandler(res, "common", 200, lang, data);
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

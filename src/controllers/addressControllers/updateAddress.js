@@ -1,11 +1,11 @@
-import response from "../../../response.js";
-import dotenv from "dotenv";
-import Address from "../../models/addressSchema.js";
-import { decode } from "jsonwebtoken";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+import Address from "../../models/addressSchema.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateAddress = async (req, res) => {
   let {
@@ -23,7 +23,7 @@ const updateAddress = async (req, res) => {
 
   const uid = req.uid;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -32,11 +32,11 @@ const updateAddress = async (req, res) => {
   }
 
   if (!addressId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(addressId)) {
-    return ErrorHandler(res, 434, lang);
+    return ResponseHandler(res, "address", 402, lang);
   }
 
   if (
@@ -49,7 +49,7 @@ const updateAddress = async (req, res) => {
     !streetAddress &&
     !postalCode
   ) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (
@@ -62,18 +62,18 @@ const updateAddress = async (req, res) => {
     (streetAddress && typeof streetAddress !== "string") ||
     (postalCode && typeof postalCode !== "string")
   ) {
-    return ErrorHandler(res, 407, lang);
+    return ResponseHandler(res, "common", 406, lang);
   }
 
   try {
     const address = await Address.findById(addressId);
 
     if (!address) {
-      return ErrorHandler(res, 435, lang);
+      return ResponseHandler(res, "address", 404, lang);
     }
 
     if (address.uid.toString() !== uid) {
-      return ErrorHandler(res, 401, lang);
+      return ResponseHandler(res, "address", 405, lang);
     }
 
     if (country) address.country = country;
@@ -84,12 +84,13 @@ const updateAddress = async (req, res) => {
     if (uniqueIdentifier) address.uniqueIdentifier = uniqueIdentifier;
     if (streetAddress) address.streetAddress = streetAddress;
     if (postalCode) address.postalCode = postalCode;
+
     await address.save();
 
-    return ErrorHandler(res, 203, lang, address);
+    return ResponseHandler(res, "common", 202, lang, address);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 
