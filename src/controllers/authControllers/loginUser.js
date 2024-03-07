@@ -2,16 +2,16 @@ import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
 import queryByType from "../../utils/queryByType.js";
-import response from "../../../response.js";
 import { config } from "dotenv";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 async function loginUser(req, res) {
   let { account, password, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -20,13 +20,13 @@ async function loginUser(req, res) {
   }
 
   if (!account || !password) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   const queryAndType = queryByType(account, lang);
 
   if (queryAndType.status == 403) {
-    return ErrorHandler(res, queryAndType.status, lang);
+    return ResponseHandler(res, "auth", 405, lang);
   }
 
   try {
@@ -35,7 +35,7 @@ async function loginUser(req, res) {
     );
 
     if (!user) {
-      return ErrorHandler(res, 416, lang);
+      return ResponseHandler(res, "user", 404, lang);
     }
 
     if (user && (await bcrypt.compare(password, user.password))) {
@@ -51,13 +51,13 @@ async function loginUser(req, res) {
         "your_secret_key",
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
-      return ErrorHandler(res, 205, lang, token);
+      return ResponseHandler(res, "auth", 200, lang, token);
     } else {
-      return ErrorHandler(res, 447, lang);
+      return ResponseHandler(res, "auth", 410, lang);
     }
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 }
 
