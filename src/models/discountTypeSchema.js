@@ -10,6 +10,10 @@ export const discountTypeSchema = new Schema({
     type: Number,
     default: 0,
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const DiscountType = mongoose.model("DiscountType", discountTypeSchema);
