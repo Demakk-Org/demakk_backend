@@ -1,17 +1,18 @@
-import User from "../../models/userSchema.js";
-import bcrypt from "bcryptjs";
-import Jwt from "jsonwebtoken";
-import response from "../../../response.js";
-import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import { config } from "dotenv";
+import bcrypt from "bcryptjs";
+
+import User from "../../models/userSchema.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const changePassword = async (req, res) => {
   let { password, confirmPassword, lang } = req.body;
+  let uid = req.uid;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -19,32 +20,32 @@ const changePassword = async (req, res) => {
     lang = req.language;
   }
 
-  if (!isValidObjectId(req.uid)) {
-    return ErrorHandler(res, 407, lang);
+  if (!isValidObjectId(uid)) {
+    return ResponseHandler(res, "user", 402, lang);
   }
 
   if (!password || !confirmPassword) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (password != confirmPassword) {
-    return ErrorHandler(res, 402, lang);
+    return ResponseHandler(res, "auth", 404, lang);
   }
 
   try {
-    const user = await User.findById(req.uid).select("password");
+    const user = await User.findById(uid).select("password");
 
     if (!user) {
-      return ErrorHandler(res, 404, lang);
+      return ResponseHandler(res, "user", 404, lang);
     }
 
     user.password = await bcrypt.hash(password, 10);
     await user.save();
 
-    return ErrorHandler(res, 203, lang);
+    return ResponseHandler(res, "common", 202, lang);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

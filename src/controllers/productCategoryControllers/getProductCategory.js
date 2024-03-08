@@ -1,8 +1,10 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ProductCategory } from "../../models/productCategorySchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { ProductCategory } from "../../models/productCategorySchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -10,16 +12,16 @@ const getProductCategory = (req, res) => {
   let productCategoryId = req.params.id;
   let { lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
   if (!productCategoryId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(productCategoryId)) {
-    return ErrorHandler(res, 430, lang);
+    return ResponseHandler(res, "productCategory", 402, lang);
   }
 
   try {
@@ -56,11 +58,11 @@ const getProductCategory = (req, res) => {
           },
         };
 
-        return ErrorHandler(res, 200, lang, productCategory);
+        return ResponseHandler(res, "common", 200, lang, productCategory);
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

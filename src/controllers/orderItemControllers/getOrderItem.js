@@ -1,15 +1,17 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
-import OrderItem from "../../models/orderItemSchema.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import OrderItem from "../../models/orderItemSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const getOrderItem = async (req, res) => {
   let { lang, orderItemId } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -18,11 +20,11 @@ export const getOrderItem = async (req, res) => {
   }
 
   if (!orderItemId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(orderItemId)) {
-    return ErrorHandler(res, 445, lang);
+    return ResponseHandler(res, "orderItem", 402, lang);
   }
 
   try {
@@ -32,12 +34,12 @@ export const getOrderItem = async (req, res) => {
     });
 
     if (!orderItem) {
-      return ErrorHandler(res, 481, lang);
+      return ResponseHandler(res, "orderItem", 404, lang);
     }
 
-    return ErrorHandler(res, 200, lang, orderItem);
+    return ResponseHandler(res, "common", 200, lang, orderItem);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

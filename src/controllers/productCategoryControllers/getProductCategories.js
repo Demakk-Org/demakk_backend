@@ -1,14 +1,16 @@
 import { config } from "dotenv";
-import response from "../../../response.js";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+
 import { ProductCategory } from "../../models/productCategorySchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const { LANG, SORT, LIMIT, PAGE } = config(process.cwd, ".env").parsed;
 
 const getProductCategories = async (req, res) => {
   let { lang, page, limit, sort } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -84,11 +86,11 @@ const getProductCategories = async (req, res) => {
           data: productCategoryList,
         };
 
-        return ErrorHandler(res, 200, lang, productCategories);
+        return ResponseHandler(res, "common", 200, lang, productCategories);
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(err, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

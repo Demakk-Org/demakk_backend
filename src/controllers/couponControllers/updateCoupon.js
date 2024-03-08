@@ -1,8 +1,9 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import { config } from "dotenv";
+
 import { isDateValid } from "../../utils/validate.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 import Coupon from "../../models/couponSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
@@ -18,7 +19,7 @@ export const updateCoupon = async (req, res) => {
     lang,
   } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -27,48 +28,48 @@ export const updateCoupon = async (req, res) => {
   }
 
   if (!couponId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(couponId)) {
-    return ErrorHandler(res, 432, lang);
+    return ResponseHandler(res, "coupon", 402, lang);
   }
 
   if (!name && !discountTypeId && !discountAmount && !appliesTo && !endsAt) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (name && typeof name !== "string") {
-    return ErrorHandler(res, 482, lang);
+    return ResponseHandler(res, "common", 401, lang);
   }
 
   if (discountTypeId && !isValidObjectId(discountTypeId)) {
-    return ErrorHandler(res, 483, lang);
+    return ResponseHandler(res, "discountType", 402, lang);
   }
 
   if (discountAmount && typeof discountAmount !== "number") {
-    return ErrorHandler(res, 484, lang);
+    return ResponseHandler(res, "discountType", 405, lang);
   }
 
   if (appliesTo && !Array.isArray(appliesTo)) {
-    return ErrorHandler(res, 437, lang);
+    return ResponseHandler(res, "productCategory", 402, lang);
   }
 
   appliesTo?.forEach((item) => {
     if (!isValidObjectId(item)) {
-      return ErrorHandler(res, 437, lang);
+      return ResponseHandler(res, "productCategory", 402, lang);
     }
   });
 
   if (endsAt && !isDateValid(endsAt)) {
-    return ErrorHandler(res, 485, lang);
+    return ResponseHandler(res, "common", 405, lang);
   }
 
   try {
     const coupon = await Coupon.findById(couponId);
 
     if (!coupon) {
-      return ErrorHandler(res, 485, lang);
+      return ResponseHandler(res, "coupon", 404, lang);
     }
 
     if (name) coupon.name = name;
@@ -79,9 +80,9 @@ export const updateCoupon = async (req, res) => {
 
     await coupon.save();
 
-    return ErrorHandler(res, 203, lang, coupon);
+    return ResponseHandler(res, "common", 202, lang, coupon);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

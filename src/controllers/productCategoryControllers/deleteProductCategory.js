@@ -1,15 +1,17 @@
-import { ProductCategory } from "../../models/productCategorySchema.js";
-import response from "../../../response.js";
-import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import { config } from "dotenv";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { ProductCategory } from "../../models/productCategorySchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const deleteProductCategory = async (req, res) => {
   let { productCategoryId, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -18,11 +20,11 @@ const deleteProductCategory = async (req, res) => {
   }
 
   if (!productCategoryId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(productCategoryId)) {
-    return ErrorHandler(res, 430, lang);
+    return ResponseHandler(res, "productCategory", 402, lang);
   }
 
   try {
@@ -31,13 +33,13 @@ const deleteProductCategory = async (req, res) => {
     );
 
     if (!productCategory) {
-      return ErrorHandler(res, 431, lang);
+      return ResponseHandler(res, "productCategory", 404, lang);
     }
 
-    return ErrorHandler(res, 204, lang);
+    return ResponseHandler(res, "common", 203, lang);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 
