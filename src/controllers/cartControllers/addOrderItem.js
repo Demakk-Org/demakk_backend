@@ -1,7 +1,8 @@
 import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 import Cart from "../../models/cartSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
@@ -11,7 +12,7 @@ async function addOrderItem(req, res) {
   let cartId = req.user.cart;
   console.log(cartId);
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -20,27 +21,27 @@ async function addOrderItem(req, res) {
   }
 
   if (!orderItem) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(orderItem)) {
-    return ErrorHandler(res, 444, lang);
+    return ResponseHandler(res, "orderItem", 402, lang);
   }
 
   try {
     let cart = await Cart.findById(cartId);
 
     if (!cart) {
-      return ErrorHandler(res, 417, lang);
+      return ResponseHandler(res, "cart", 404, lang)
     }
 
     cart.orderItems.push(orderItem);
     await cart.save();
 
-    return ErrorHandler(res, 200, lang);
+    return ResponseHandler(res, "common", 201, lang);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 }
 

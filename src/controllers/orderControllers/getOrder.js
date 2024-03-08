@@ -1,7 +1,9 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+
 import Order from "../../models/orderSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
@@ -11,7 +13,7 @@ export const getOrder = async (req, res) => {
   let orderId = req.params.id;
   let uid = req.uid;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -20,11 +22,11 @@ export const getOrder = async (req, res) => {
   }
 
   if (!orderId) {
-    return ErrorHandler(res, 464, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(orderId)) {
-    return ErrorHandler(res, 418, lang);
+    return ResponseHandler(res, "order", 402, lang);
   }
 
   try {
@@ -47,16 +49,16 @@ export const getOrder = async (req, res) => {
     console.log(order);
 
     if (!order) {
-      return ErrorHandler(res, 471, lang);
+      return ResponseHandler(res, "order", 404, lang);
     }
 
-    if (order.user?._id != uid) {
-      return ErrorHandler(res, 472, lang);
+    if (order.user?._id.toString() != uid) {
+      return ResponseHandler(res, "order", 405, lang);
     }
 
-    return ErrorHandler(res, 200, lang, order);
+    return ResponseHandler(res, "common", 200, lang, order);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

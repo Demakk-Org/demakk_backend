@@ -1,14 +1,15 @@
 import { config } from "dotenv";
-import response from "../../../response.js";
+
 import Coupon from "../../models/couponSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 export const getCoupons = async (req, res) => {
   let { page, limit, lang, sort } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -71,10 +72,10 @@ export const getCoupons = async (req, res) => {
           data: coupons,
         };
 
-        return ErrorHandler(res, 200, lang, result);
+        return ResponseHandler(res, "common", 200, lang, result);
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

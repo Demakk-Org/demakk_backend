@@ -1,16 +1,16 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import Cart from "../../models/cartSchema.js";
-import User from "../../models/userSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
+import responsse from "../../../responsse.js";
+import User from "../../models/userSchema.js";
+import Cart from "../../models/cartSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const deleteUser = (req, res) => {
   let { uid, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -19,45 +19,45 @@ const deleteUser = (req, res) => {
   }
 
   if (!uid) {
-    return ErrorHandler(res, 415, lang);
+    return ResponseHandler(res, "user", 400, lang);
   }
 
   if (!isValidObjectId(uid)) {
-    return ErrorHandler(res, 418, lang);
+    return ResponseHandler(res, "user", 402, lang);
   }
 
   try {
     User.findById(uid, "cart")
       .then((user) => {
         if (!user) {
-          return ErrorHandler(res, 416, lang);
+          return ResponseHandler(res, "user", 404, lang);
         }
 
         Cart.findByIdAndDelete(user.cart)
           .then((cart) => {
             if (!cart) {
-              return ErrorHandler(res, 417, lang);
+              return ResponseHandler(res, "cart", 404, lang);
             }
           })
           .catch((error) => {
             console.log(error.message);
-            return ErrorHandler(res, 500, lang);
+            return ResponseHandler(res, "common", 500, lang);
           });
       })
       .finally(async () => {
         try {
           const user = await User.findByIdAndDelete(uid);
           if (user) {
-            return ErrorHandler(res, 204, lang);
+            return ResponseHandler(res, "common", 203, lang);
           }
         } catch (error) {
           console.log(error.message);
-          return ErrorHandler(res, 500, lang);
+          return ResponseHandler(res, "common", 500, lang);
         }
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

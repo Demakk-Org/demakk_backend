@@ -1,12 +1,14 @@
 import nodemailer from "nodemailer";
-import resetPasswordText from "../../utils/resetPasswordText.js";
-import ResetPassword from "../../models/resetPassword.js";
-import queryByType from "../../utils/queryByType.js";
-import User from "../../models/userSchema.js";
-import response from "../../../response.js";
 import { config } from "dotenv";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import axios from "axios";
+
+import resetPasswordText from "../../utils/resetPasswordText.js";
+import queryByType from "../../utils/queryByType.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import ResetPassword from "../../models/resetPassword.js";
+import User from "../../models/userSchema.js";
 
 const { LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID, GEEZ_SMS_URL } = config(
   process.cwd,
@@ -16,25 +18,28 @@ const { LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID, GEEZ_SMS_URL } = config(
 const requestResetPassword = async (req, res) => {
   let { account, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
   if (!account) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   const query = queryByType(account);
 
   if (query.status == 403) {
-    return ErrorHandler(res, 403, lang);
+    return ResponseHandler(res, "auth", 405, lang);
   }
 
-  const user = await User.findOne(query.searchQuery, "firstName phoneNumber");
+  const user = await User.findOne(
+    query.searchQuery,
+    "firstName phoneNumber email"
+  );
   console.log(user);
 
   if (!user) {
-    return ErrorHandler(res, 404, lang);
+    return ResponseHandler(res, "user", 404, lang);
   }
 
   ResetPassword.updateMany({ uid: user._id }, { status: "complete" })
@@ -45,6 +50,10 @@ const requestResetPassword = async (req, res) => {
       });
 
       if (query.type == "email") {
+        if (!user.email) {
+          return ResponseHandler(res, "auth", 416, lang);
+        }
+
         var message = {
           from: "Demakk: ",
           to: query.searchQuery.email,
@@ -56,29 +65,30 @@ const requestResetPassword = async (req, res) => {
           service: "gmail",
           auth: {
             user: "melkatole1@gmail.com",
-            pass: "gxwu fpjh psnj fgzz",
+            pass: "wrlh gpqs mjuy kevr",
           },
         });
 
         try {
           transporter.sendMail(message).then(async (response) => {
-            console.log("Reset message is sent!");
-            return ErrorHandler(res, 202, lang);
+            console.log("Reset message is sent!", response.response);
+
+            return ResponseHandler(res, "auth", 203, lang);
           });
         } catch (error) {
           console.log(error.message);
-          return ErrorHandler(res, 500, lang);
+          return ResponseHandler(res, "common", 500, lang);
         } finally {
           transporter.close();
         }
       } else if (query.type == "phoneNumber") {
         if (!user.phoneNumber) {
-          return ErrorHandler(res, 453, lang);
+          return ResponseHandler(res, "auth", 415, lang);
         }
-        // function to send link to the phone
+
         var data = new FormData();
+
         data.append("token", GEEZ_SMS_TOKEN);
-        // data.append("shortcode_id", SHORTCODE_ID);
         data.append(
           "msg",
           resetPasswordText(user.firstName, reset._id, "phoneNumber", lang)
@@ -93,21 +103,21 @@ const requestResetPassword = async (req, res) => {
         console.log(
           resetPasswordText(user.firstName, reset._id, "phoneNumber", lang)
         );
+
         try {
           axios(config).then(async (resp) => {
-            console.log(JSON.stringify(resp.data));
             console.log("Reset message is sent!");
-            return ErrorHandler(res, 202, lang);
+            return ResponseHandler(res, "auth", 203, lang);
           });
         } catch (error) {
-          console.log(JSON.stringify(err));
-          return ErrorHandler(res, 457, lang);
+          console.log(error.message);
+          return ResponseHandler(res, "auth", 417, lang);
         }
       }
     })
     .catch((error) => {
       console.log(error.message);
-      return ErrorHandler(res, 500, lang);
+      return ResponseHandler(res, "common", 500, lang);
     });
 };
 

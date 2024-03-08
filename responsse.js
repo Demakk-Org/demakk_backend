@@ -24,7 +24,6 @@ export default {
         204: "Your email is verified",
         205: "OTP has been sent to your phone number",
         206: "Your phone number is verified",
-        207: "Your email is already verified",
 
         400: "Account already exists",
         401: "Request has expired, Please try again!",
@@ -44,6 +43,7 @@ export default {
         416: "Email address is not registered in your account",
         417: "Message was not sent successfully",
         418: "The email is already in use",
+        419: "Your email is already verified",
       },
       user: {
         201: "User is blocked",
@@ -56,7 +56,7 @@ export default {
         406: "User is already unblocked",
       },
       cart: {
-        400: "Cart not found",
+        404: "Cart not found",
       },
       product: {
         200: "You liked this product",
@@ -104,8 +104,8 @@ export default {
         401: "Invalid order items value!",
         402: "Invalid order item id!",
         404: "Order item not found",
-        404: "Quantity is a type of number",
         405: "Order item can not be empty",
+        406: "Quantity is a type of number",
       },
       coupon: {
         401: "Invalid coupon name",

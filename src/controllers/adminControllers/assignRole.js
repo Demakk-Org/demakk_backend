@@ -1,16 +1,17 @@
 import { config } from "dotenv";
-import response from "../../../response.js";
-import Role from "../../models/roleSchema.js";
-import User from "../../models/userSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+import User from "../../models/userSchema.js";
+import Role from "../../models/roleSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const assignRole = async (req, res) => {
   let { lang, role, uid } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -19,18 +20,18 @@ const assignRole = async (req, res) => {
   }
 
   if (!role || !uid) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(uid)) {
-    return ErrorHandler(res, 418, lang);
+    return ResponseHandler(res, "user", 402, lang);
   }
 
   try {
     const role = await Role.findOne({ name: role });
 
     if (!role) {
-      return ErrorHandler(res, 436, lang);
+      return ResponseHandler(res, "role", 404, lang);
     }
 
     console.log(role);
@@ -43,10 +44,10 @@ const assignRole = async (req, res) => {
       .populate("role")
       .select("role");
 
-    return ErrorHandler(res, 203, lang, user);
+    return ResponseHandler(res, "common", 202, lang, user);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 
