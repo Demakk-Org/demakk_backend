@@ -128,7 +128,8 @@ export default {
         401: "Discount type name is invalid",
         402: "Invalid discount type id",
         404: "Discount type is not found",
-        405: "Discount amount is a type of number",
+        405: "Discount above amount is not valid",
+        406: "Discount type already exists",
       },
       image: {
         401: "Image name is a type of string",
@@ -287,6 +288,7 @@ export default {
         402: "ልክ ያልሆነ የቅናሽ አይነት መታወቂያ",
         404: "የቅናሽ አይነት አልተገኘም።",
         405: "የቅናሽ መጠን የቁጥር አይነት ነው",
+        406: "የቅናሽ አይነት አስቀድሞ አለ።",
       },
       image: {
         401: "የምስል ስም የሕብረቁምፊ አይነት ነው",
