@@ -2,9 +2,9 @@ import { Router } from "express";
 
 import AdminAuthentication from "../middlewares/AdminAuthentication.js";
 
-import { addDiscountType } from "../controllers/discountTypecontrollers/addDiscountType.js";
-import { updateDiscountType } from "../controllers/discountTypecontrollers/updateDiscountType.js";
-import { deleteDiscountType } from "../controllers/discountTypecontrollers/deleteDiscountType.js";
+import { addDiscountType } from "../controllers/discountTypeControllers/addDiscountType.js";
+import { updateDiscountType } from "../controllers/discountTypeControllers/updateDiscountType.js";
+import { deleteDiscountType } from "../controllers/discountTypeControllers/deleteDiscountType.js";
 
 export const discountTypeRoute = Router();
 
