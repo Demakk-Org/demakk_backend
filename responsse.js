@@ -12,6 +12,8 @@ export default {
         404: "Not Found",
         405: "Invalid date provided",
         406: "Invalid input",
+        407: "provide proper lang",
+        408: "lang must en or am",
 
         500: "Internal Server Error, please try again!",
         501: "Not Implemented: it is under development",
@@ -44,6 +46,7 @@ export default {
         416: "Email address is not registered in your account",
         417: "Message was not sent successfully",
         418: "The email is already in use",
+        419: "Phone number is already in use",
       },
       user: {
         201: "User is blocked",
@@ -138,7 +141,11 @@ export default {
         407: "Invalid Primary image value",
       },
       stockVariety: {},
-      stockVarietyType: {},
+      stockVarietyType: {
+        404: "stockVarietyType not found",
+        406: "StockVarietyType already exists",
+        407: "Invalid stockVarietyType id",
+      },
     },
     message: {
       text: "Demakk: Your verification code is: ",

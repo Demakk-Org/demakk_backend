@@ -6,6 +6,8 @@ import Address from "../../models/addressSchema.js";
 import QueryByType from "../../utils/queryByType.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -25,7 +27,7 @@ const updateUser = async (req, res) => {
     billingAddress,
   } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -42,61 +44,67 @@ const updateUser = async (req, res) => {
     !shippingAddress &&
     !billingAddress
   ) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (language && (typeof language !== "string" || language.length !== 2)) {
-    return ErrorHandler(res, 455, lang);
+    return ResponseHandler(res, "common", 407, lang);
   }
 
-  if (language && !(language in response)) {
-    return ErrorHandler(res, 456, lang);
+  if (language && !(language in responsse)) {
+    return ResponseHandler(res, "common", 408, lang);
   }
 
   if (
     (firstName && typeof firstName !== "string") ||
     (lastName && typeof lastName !== "string")
   ) {
-    return ErrorHandler(res, 407, lang);
+    return ResponseHandler(res, "common", 406, lang);
   }
 
   if (
     (email &&
-      (QueryByType(email, lang).status == 403 ||
+      (QueryByType(email, lang).status == 405 ||
         QueryByType(email, lang).type !== "email")) ||
     (phoneNumber &&
-      (QueryByType(phoneNumber, lang).status == 403 ||
+      (QueryByType(phoneNumber, lang).status == 405 ||
         QueryByType(phoneNumber, lang).type !== "phoneNumber"))
   ) {
-    return ErrorHandler(res, 403, lang);
+    //return ErrorHandler(res, 405, lang);
+    return ResponseHandler(res, "auth", 405, lang);
   }
 
   if (
     (shippingAddress && !isValidObjectId(shippingAddress)) ||
     (billingAddress && !isValidObjectId(billingAddress))
   ) {
-    return ErrorHandler(res, 434, lang);
+    //return ErrorHandler(res, 434, lang);
+    return ResponseHandler(res, "address", 402, lang);
   }
 
   if (shippingAddress) {
     const address = await Address.findById(shippingAddress);
     if (!address) {
-      return ErrorHandler(res, 408, lang);
+      //return ErrorHandler(res, 408, lang);
+      return ResponseHandler(res, "address", 404, lang);
     }
 
     if (address.uid.toString() !== uid) {
-      return ErrorHandler(res, 401, lang);
+      //return ErrorHandler(res, 401, lang);
+      return ResponseHandler(res, "common", 401, lang);
     }
   }
 
   if (billingAddress) {
     const address = await Address.findById(billingAddress);
     if (!address) {
-      return ErrorHandler(res, 408, lang);
+      //return ErrorHandler(res, 408, lang);
+      return ResponseHandler(res, "address", 404, lang);
     }
 
     if (address.uid.toString() !== uid) {
-      return ErrorHandler(res, 401, lang);
+      //return ErrorHandler(res, 401, lang);
+      return ResponseHandler(res, "common", 401, lang);
     }
   }
 
@@ -114,7 +122,8 @@ const updateUser = async (req, res) => {
       const userEmail = await User.findOne({ email });
 
       if (userEmail) {
-        return ErrorHandler(res, 458, lang);
+        //return ErrorHandler(res, 458(email is already in use), lang);
+        return ResponseHandler(res, "auth", 418, lang);
       }
 
       user.email = email;
@@ -124,7 +133,8 @@ const updateUser = async (req, res) => {
       const userPhoneNumber = await User.findOne({ phoneNumber });
 
       if (userPhoneNumber) {
-        return ErrorHandler(res, 459, lang);
+        //return ErrorHandler(res, 459, lang);
+        return ResponseHandler(res, "auth", 419, lang);
       }
 
       user.phoneNumber = phoneNumber;
@@ -146,10 +156,12 @@ const updateUser = async (req, res) => {
       lang: user.lang,
     };
 
-    return ErrorHandler(res, 203, lang, data);
+    //return ErrorHandler(res, 203, lang, data);
+    return ResponseHandler(res, "common", 202, lang, data);
   } catch (err) {
     console.error(err.message);
-    return ErrorHandler(res, 500, lang);
+    //return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

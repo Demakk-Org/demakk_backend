@@ -1,9 +1,9 @@
 import User from "../../models/userSchema.js";
 import Jwt from "jsonwebtoken";
-import response from "../../../response.js";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { config } from "dotenv";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -13,7 +13,7 @@ async function getUser(req, res) {
   const token = req.headers.authorization.split(" ")[1];
   const { uid } = Jwt.decode(token, "your_secret_key");
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -22,18 +22,23 @@ async function getUser(req, res) {
   }
 
   if (!isValidObjectId(uid)) {
-    return ErrorHandler(res, 418, lang);
+    return ResponseHandler(res, "user", 402, lang);
   }
 
   try {
     const user = await User.findById(uid)
       .select("-password -_id")
       .populate("role shippingAddress billingAddress cart");
+
+    if (!user) {
+      return ResponseHandler(res, "user", 404, lang);
+    }
+
     console.log(user);
-    return ErrorHandler(res, 200, lang, user);
+    return ResponseHandler(res, "common", 200, lang, user);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 }
 
