@@ -71,6 +71,7 @@ export default {
         404: "Product is not found",
         405: "Invalid tag value",
         406: "At least one tag is required",
+        407: "Product price is number",
       },
       address: {
         402: "Invalid address id",
@@ -81,6 +82,7 @@ export default {
         401: "Stock type name is invalid",
         402: "Invalid stock type id",
         404: "Stock type is not found",
+        408: "Invalid stock type name",
       },
       role: {
         401: "Role name is type of string",
@@ -92,6 +94,7 @@ export default {
         401: "Stock item name is invalid",
         402: "Invalid stock item id",
         404: "Stock item is not found",
+        405: "stock item price is a number",
       },
       productCategory: {
         401: "Invalid product category name value!",
@@ -139,12 +142,18 @@ export default {
         405: "Image description is a type of string",
         406: "Primary is a type of number",
         407: "Invalid Primary image value",
+        408: "Invalid image file",
       },
-      stockVariety: {},
+      stockVariety: {
+        404: "StockVariety not found",
+        407: "Invalid stockVariety id",
+        408: "Invalid stockVariety value",
+      },
       stockVarietyType: {
         404: "stockVarietyType not found",
         406: "StockVarietyType already exists",
         407: "Invalid stockVarietyType id",
+        408: "Invalid stockVarietyType name",
       },
     },
     message: {
