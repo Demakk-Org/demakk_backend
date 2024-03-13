@@ -3,6 +3,8 @@ import OrderStatus from "../../models/orderStatusSchema.js";
 import Order from "../../models/orderSchema.js";
 import response from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const { LIMIT, PAGE, LANG, SORT } = config(process.cwd, ".env").parsed;
 
@@ -10,7 +12,7 @@ export const getOrders = async (req, res) => {
   let { page, limit, lang, sort, orderStatus } = req.body;
   let uid = req.uid;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -25,13 +27,15 @@ export const getOrders = async (req, res) => {
   let query = { user: uid };
 
   if (orderStatus && typeof orderStatus !== "string") {
-    return ErrorHandler(res, 470, lang);
+    //return ErrorHandler(res, 470, lang);
+    return ResponseHandler(res, "orderStatus", 401, lang)
   }
 
   const order = await OrderStatus.findOne({ name: orderStatus });
 
   if (orderStatus && !order) {
-    return ErrorHandler(res, 473, lang);
+    //return ErrorHandler(res, 473, lang);
+    return ResponseHandler(res, "orderStatus", 404, lang)
   }
 
   if (orderStatus) {
@@ -61,10 +65,10 @@ export const getOrders = async (req, res) => {
           count: count.toString(),
           data: order,
         };
-        return ErrorHandler(res, 200, lang, data);
+        return ResponseHandler(res, "common", 200, lang, data);
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

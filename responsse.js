@@ -135,7 +135,8 @@ export default {
         401: "Discount type name is invalid",
         402: "Invalid discount type id",
         404: "Discount type is not found",
-        405: "Discount amount is a type of number",
+        405: "Discount amount is a type of number and greater than zero",
+
       },
       image: {
         401: "Image name is a type of string",

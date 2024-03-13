@@ -3,6 +3,8 @@ import response from "../../../response.js";
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -15,7 +17,7 @@ const addProductCategory = async (req, res) => {
     lang,
   } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -29,15 +31,17 @@ const addProductCategory = async (req, res) => {
     !additionalPrice ||
     !additionalCost
   ) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(stockItemId)) {
-    return ErrorHandler(res, 428, lang);
+    //return ErrorHandler(res, 428, lang);
+    return ResponseHandler(res, "stockItem", 402, lang)
   }
 
   if (!Array.isArray(productCategoryName)) {
-    return ErrorHandler(res, 440, lang);
+    ///return ErrorHandler(res, 440, lang);
+    return ResponseHandler(res, "productCategory", 401, lang)
   }
 
   let name = {};
@@ -48,7 +52,8 @@ const addProductCategory = async (req, res) => {
       !item.lang ||
       !item.value
     ) {
-      return ErrorHandler(res, 440, lang);
+      //return ErrorHandler(res, 440, lang);
+      return ResponseHandler(res, "productCategory", 401, lang)
     }
 
     name[item.lang] = item.value;
@@ -58,7 +63,8 @@ const addProductCategory = async (req, res) => {
     typeof additionalPrice !== "number" ||
     typeof additionalCost !== "number"
   ) {
-    return ErrorHandler(res, 443, lang);
+    //return ErrorHandler(res, 443, lang);
+    return ResponseHandler(res, "product", 407, lang)
   }
 
   try {
@@ -69,10 +75,10 @@ const addProductCategory = async (req, res) => {
       additionalCost,
     });
 
-    return ErrorHandler(res, 201, lang, productCategory);
+    return ResponseHandler(res, "common", 201, lang, productCategory);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

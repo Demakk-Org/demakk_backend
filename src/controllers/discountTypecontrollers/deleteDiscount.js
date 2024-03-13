@@ -3,13 +3,15 @@ import { config } from "dotenv";
 import response from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { aborted } from "util";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const deleteDiscount = async (req, res) => {
   let { discountTypeId, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -17,7 +19,7 @@ export const deleteDiscount = async (req, res) => {
     lang = req.language;
   }
   if (!discountTypeId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   try {
@@ -25,11 +27,12 @@ export const deleteDiscount = async (req, res) => {
       discountTypeId
     );
     if (!deletedDiscount) {
-      return ErrorHandler(res, 424, lang);
+      //return ErrorHandler(res, 424, lang);
+      return ResponseHandler(res, "discountType", 404, lang)
     }
-    return ErrorHandler(res, 204, lang);
+    return ResponseHandler(res, "common", 203, lang);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
