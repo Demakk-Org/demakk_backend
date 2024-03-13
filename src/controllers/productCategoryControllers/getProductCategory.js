@@ -3,6 +3,8 @@ import response from "../../../response.js";
 import { ProductCategory } from "../../models/productCategorySchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -10,16 +12,17 @@ const getProductCategory = (req, res) => {
   let productCategoryId = req.params.id;
   let { lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
   if (!productCategoryId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(productCategoryId)) {
-    return ErrorHandler(res, 430, lang);
+    //return ErrorHandler(res, 430, lang);
+    return ResponseHandler(res, "productCategory", 402, lang)
   }
 
   try {
@@ -34,8 +37,8 @@ const getProductCategory = (req, res) => {
           name: data.name.get(lang)
             ? data.name.get(lang)
             : data.name.get(LANG)
-            ? data.name.get(LANG)
-            : data.name.get("en"),
+              ? data.name.get(LANG)
+              : data.name.get("en"),
           additionalPrice: data.additionalPrice,
           additionalCost: data.additionalCost,
           stockItem: data.stockItem && {
@@ -43,24 +46,24 @@ const getProductCategory = (req, res) => {
             name: data.stockItem.name.get(lang)
               ? data.stockItem.name.get(lang)
               : data.stockItem.name.get(LANG)
-              ? data.stockItem.name.get(LANG)
-              : data.stockItem.name.get("en"),
+                ? data.stockItem.name.get(LANG)
+                : data.stockItem.name.get("en"),
             stockType: data.stockItem.stockType && {
               id: data.stockItem.stockType._id,
               name: data.stockItem.stockType.name.get(lang)
                 ? data.stockItem.stockType.name.get(lang)
                 : data.stockItem.stockType.name.get(LANG)
-                ? data.stockItem.stockType.name.get(LANG)
-                : data.stockItem.stockType.name.get("en"),
+                  ? data.stockItem.stockType.name.get(LANG)
+                  : data.stockItem.stockType.name.get("en"),
             },
           },
         };
 
-        return ErrorHandler(res, 200, lang, productCategory);
+        return ResponseHandler(res, "common", 200, lang, productCategory);
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

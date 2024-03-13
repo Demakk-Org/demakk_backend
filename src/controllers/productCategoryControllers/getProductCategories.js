@@ -2,13 +2,15 @@ import { config } from "dotenv";
 import response from "../../../response.js";
 import { ProductCategory } from "../../models/productCategorySchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const { LANG, SORT, LIMIT, PAGE } = config(process.cwd, ".env").parsed;
 
 const getProductCategories = async (req, res) => {
   let { lang, page, limit, sort } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -51,8 +53,8 @@ const getProductCategories = async (req, res) => {
             name: productCategory.name.get(lang)
               ? productCategory.name.get(lang)
               : productCategory.name.get(LANG)
-              ? productCategory.name.get(LANG)
-              : productCategory.name.get("en"),
+                ? productCategory.name.get(LANG)
+                : productCategory.name.get("en"),
             additionalPrice: productCategory.additionalPrice,
             additionalCost: productCategory.additionalCost,
             stockItem: productCategory.stockItem && {
@@ -60,15 +62,15 @@ const getProductCategories = async (req, res) => {
               name: productCategory.stockItem?.name.get(lang)
                 ? productCategory.stockItem?.name.get(lang)
                 : productCategory.stockItem?.name.get(LANG)
-                ? productCategory.stockItem?.name.get(LANG)
-                : productCategory.stockItem?.name.get("en"),
+                  ? productCategory.stockItem?.name.get(LANG)
+                  : productCategory.stockItem?.name.get("en"),
               stockType: productCategory.stockItem.stockType && {
                 id: productCategory.stockItem.stockType._id,
                 name: productCategory.stockItem.stockType.name.get(lang)
                   ? productCategory.stockItem.stockType.name.get(lang)
                   : productCategory.stockItem.stockType.name.get(LANG)
-                  ? productCategory.stockItem.stockType.name.get(LANG)
-                  : productCategory.stockItem.stockType.name.get("en"),
+                    ? productCategory.stockItem.stockType.name.get(LANG)
+                    : productCategory.stockItem.stockType.name.get("en"),
               },
             },
           };
@@ -84,11 +86,11 @@ const getProductCategories = async (req, res) => {
           data: productCategoryList,
         };
 
-        return ErrorHandler(res, 200, lang, productCategories);
+        return ResponseHandler(res, "common", 200, lang, productCategories);
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(err, 500, lang);
+    return ResponseHandler(err, "common", 500, lang);
   }
 };
 
