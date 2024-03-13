@@ -123,11 +123,13 @@ export default {
         404: "Order status not found",
       },
       review: {
+        402: "Invalid review Id",
         404: "Rating is a type of number",
         405: "Review text is a value of type string",
         406: "A review has already been registered by this user",
         407: "Rating is between 1 and 5",
         408: "Specify the correct type of review",
+        409: "Review not found",
       },
       discountType: {
         401: "Discount type name is invalid",

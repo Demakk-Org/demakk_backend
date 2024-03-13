@@ -5,13 +5,15 @@ import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isArr } from "../../utils/validate.js";
 import { ProductCategory } from "../../models/productCategorySchema.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addProduct = async (req, res) => {
   let { productName, description, tags, productCategoryId, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -20,27 +22,32 @@ const addProduct = async (req, res) => {
   }
 
   if (!tags || !productName || !description || !productCategoryId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(productCategoryId)) {
-    return ErrorHandler(res, 437, lang);
+    //return ErrorHandler(res, 437, lang);
+    return ResponseHandler(res, "productCategory", 402, lang);
   }
 
   if (!Array.isArray(productName)) {
-    return ErrorHandler(res, 441, lang);
+    //return ErrorHandler(res, 441, lang);
+    return ResponseHandler(res, "product", 401, lang);
   }
 
   if (!Array.isArray(description)) {
-    return ErrorHandler(res, 442, lang);
+    //return ErrorHandler(res, 442, lang);
+    return ResponseHandler(res, "product", 403, lang);
   }
 
   if (!isArr(tags, "string")) {
-    return ErrorHandler(res, 460, lang);
+    //return ErrorHandler(res, 460, lang);
+    return ResponseHandler(res, "product", 405, lang);
   }
 
   if (tags.length == 0) {
-    return ErrorHandler(res, 480, lang);
+    // return ErrorHandler(res, 480, lang);
+    return ResponseHandler(res, "product", 406, lang);
   }
 
   let name = {};
@@ -52,7 +59,8 @@ const addProduct = async (req, res) => {
       !item.lang ||
       !item.value
     ) {
-      return ErrorHandler(res, 441, lang);
+      //return ErrorHandler(res, 441, lang);
+      return ResponseHandler(res, "product", 401, lang);
     }
     name[item.lang] = item.value;
   });
@@ -63,7 +71,8 @@ const addProduct = async (req, res) => {
       !item.lang ||
       !item.value
     ) {
-      return ErrorHandler(res, 442, lang);
+      //return ErrorHandler(res, 442, lang);
+      return ResponseHandler(res, "product", 403, lang);
     }
     desc[item.lang] = item.value;
   });
@@ -92,10 +101,10 @@ const addProduct = async (req, res) => {
       price,
     });
 
-    return ErrorHandler(res, 200, lang, product);
+    return ResponseHandler(res, "common", 200, lang, product);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

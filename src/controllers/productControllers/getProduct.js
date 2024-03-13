@@ -5,6 +5,7 @@ import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
 import Jwt from "jsonwebtoken";
 import User from "../../models/userSchema.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -28,11 +29,12 @@ const getProduct = async (req, res) => {
   }
 
   if (!productId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(productId)) {
-    return ErrorHandler(res, 432, lang);
+    //return ErrorHandler(res, 432, lang);
+    return ResponseHandler(res, "product", 402, lang);
   }
 
   try {
@@ -94,7 +96,8 @@ const getProduct = async (req, res) => {
       })
       .then((product) => {
         if (!product) {
-          return ErrorHandler(res, 433, lang);
+          //return ErrorHandler(res, 433, lang);
+          return ResponseHandler(res, "product", 404, lang);
         }
 
         let data = {
@@ -142,11 +145,11 @@ const getProduct = async (req, res) => {
           },
         };
 
-        return ErrorHandler(res, 200, lang, data);
+        return ResponseHandler(res, "common", 200, lang, data);
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

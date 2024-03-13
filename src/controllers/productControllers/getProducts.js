@@ -3,6 +3,8 @@ import { Product } from "../../models/productSchema.js";
 import language from "../../../response.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import Jwt from "jsonwebtoken";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
@@ -10,7 +12,8 @@ const getProducts = async (req, res) => {
   let { page, limit, lang, sort } = req.body;
   const token = req.headers?.authorization?.split(" ")[1];
 
-  if (!lang || !(lang in language)) {
+  //if (!lang || !(lang in language)) { why?
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -108,11 +111,11 @@ const getProducts = async (req, res) => {
           data: products,
         };
 
-        return ErrorHandler(res, 200, lang, data);
+        return ResponseHandler(res, "common", 200, lang, data);
       });
   } catch (err) {
     console.log(err.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 
