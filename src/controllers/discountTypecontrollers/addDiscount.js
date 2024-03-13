@@ -24,18 +24,18 @@ export const addDiscount = async (req, res) => {
 
   if (typeof name !== "string") {
     //return ErrorHandler(res, 492, lang);
-    return ResponseHandler(res, "discountType", 401, lang)
+    return ResponseHandler(res, "discountType", 401, lang);
   }
   if (above && (typeof above !== "number" || above < 0)) {
     //return ErrorHandler(res, 493, lang);
-    return ResponseHandler(res, "discountType", 405, lang)
+    return ResponseHandler(res, "discountType", 405, lang);
   }
 
   try {
     const discountType = await DiscountType.findOne({ name });
     if (!discountType) {
       //return ErrorHandler(res, 491, lang);
-      return ResponseHandler(res, "discountType", 404, lang)
+      return ResponseHandler(res, "discountType", 404, lang);
     }
     DiscountType.create({ name, aboveAmount: above }).then((data) => {
       return ResponseHandler(res, "common", 201, lang, data);
