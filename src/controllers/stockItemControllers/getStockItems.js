@@ -2,13 +2,15 @@ import { config } from "dotenv";
 import response from "../../../response.js";
 import { StockItem } from "../../models/stockItemSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const getStockItems = async (req, res) => {
   let { lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -36,10 +38,10 @@ const getStockItems = async (req, res) => {
       });
     });
 
-    return ErrorHandler(res, 200, lang, stockItemList);
+    return ResponseHandler(res, "common", 200, lang, stockItemList);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

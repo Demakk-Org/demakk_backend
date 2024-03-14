@@ -5,13 +5,15 @@ import { Product } from "../../models/productSchema.js";
 import User from "../../models/userSchema.js";
 import Jwt from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 const searchProducts = async (req, res) => {
   let { page, limit, lang, sort, text, price } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -32,11 +34,12 @@ const searchProducts = async (req, res) => {
   if (limit === undefined || typeof limit !== "number") limit = LIMIT;
 
   if (!text) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (typeof text !== "string") {
-    return ErrorHandler(res, 446, lang);
+    //return ErrorHandler(res, 446, lang);
+    return ResponseHandler(res, "common", 406, lang);
   }
 
   if (
@@ -45,7 +48,8 @@ const searchProducts = async (req, res) => {
       !price.gte ||
       !price.lt)
   ) {
-    return ErrorHandler(res, 443, lang);
+    //return ErrorHandler(res, 443, lang);
+    return ResponseHandler(res, "product", 407, lang);
   }
 
   let match = {};
@@ -287,10 +291,10 @@ const searchProducts = async (req, res) => {
       products: products,
     };
 
-    return ErrorHandler(res, 200, lang, data);
+    return ResponseHandler(res, "common", 200, lang, data);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

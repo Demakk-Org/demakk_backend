@@ -3,6 +3,8 @@ import response from "../../../response.js";
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
 import { ErrorHandler } from "../../utils/errorHandler.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -10,7 +12,7 @@ const updateStockItem = async (req, res) => {
   let { stockItemId, stockTypeId, stockItemName, price, costToProduce, lang } =
     req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -19,23 +21,26 @@ const updateStockItem = async (req, res) => {
   }
 
   if (!stockItemId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(stockItemId)) {
-    return ErrorHandler(res, 428, lang);
+    //return ErrorHandler(res, 428, lang);
+    return ResponseHandler(res, "stockItem", 407, lang);
   }
 
   if (!stockTypeId && !stockItemName && !price && !costToProduce) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (stockTypeId && !isValidObjectId(stockTypeId)) {
-    return ErrorHandler(res, 425, lang);
+    //return ErrorHandler(res, 425, lang);
+    return ResponseHandler(res, "stockType", 402, lang);
   }
 
   if (stockItemName && !Array.isArray(stockItemName)) {
-    return ErrorHandler(res, 423, lang);
+    //return ErrorHandler(res, 423, lang);// invalid stock type name why?
+    return ResponseHandler(res, "stockItem", 401, lang);
   }
 
   let name = {};
@@ -46,7 +51,8 @@ const updateStockItem = async (req, res) => {
       !item.lang ||
       !item.value
     ) {
-      return ErrorHandler(res, 438, lang);
+      //return ErrorHandler(res, 438, lang);
+      return ResponseHandler(res, "stockItem", 401, lang);
     }
 
     name[item.lang] = item.value;
@@ -56,14 +62,16 @@ const updateStockItem = async (req, res) => {
     (price && typeof price !== "number") ||
     (costToProduce && typeof costToProduce !== "number")
   ) {
-    return ErrorHandler(res, 443, lang);
+    //return ErrorHandler(res, 443, lang);
+    return ResponseHandler(res, "stockItem", 405, lang);
   }
 
   try {
     const stockItem = await StockItem.findById(stockItemId);
 
     if (!stockItem) {
-      return ErrorHandler(res, 427, lang);
+      //return ErrorHandler(res, 427, lang);
+      return ResponseHandler(res, "stockItem", 404, lang);
     }
 
     if (stockTypeId) stockItem.stockType = stockTypeId;
@@ -76,10 +84,10 @@ const updateStockItem = async (req, res) => {
     if (costToProduce) stockItem.costToProduce = costToProduce;
     await stockItem.save();
 
-    return ErrorHandler(res, 203, lang, stockItem);
+    return ResponseHandler(res, "common", 203, lang, stockItem);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

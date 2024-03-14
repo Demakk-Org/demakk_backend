@@ -4,6 +4,7 @@ import { Product } from "../../models/productSchema.js";
 import User from "../../models/userSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -20,18 +21,18 @@ export const addFavourite = async (req, res) => {
   }
 
   if (!productId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(productId)) {
-    return ErrorHandler(res, 432, lang);
+    return ResponseHandler(res, "product", 402, lang);
   }
 
   try {
     const product = await Product.findById(productId);
 
     if (!product) {
-      return ErrorHandler(res, 433, lang);
+      return ResponseHandler(res, "product", 404, lang);
     }
 
     const user = await User.findById(uid);
@@ -39,14 +40,16 @@ export const addFavourite = async (req, res) => {
     if (user.favs.includes(productId)) {
       user.favs = user.favs.filter((f) => f != productId);
       user.save();
-      return ErrorHandler(res, 215, lang);
+      //return ErrorHandler(res, 215, lang);
+      return ResponseHandler(res, "product", 201, lang);
     } else {
       user.favs.push(productId);
       user.save();
-      return ErrorHandler(res, 214, lang);
+      //return ErrorHandler(res, 214, lang);
+      return ResponseHandler(res, "product", 200, lang);
     }
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

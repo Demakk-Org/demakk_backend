@@ -5,13 +5,15 @@ import { Product } from "../../models/productSchema.js";
 import User from "../../models/userSchema.js";
 import Jwt from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const autoComplete = async (req, res) => {
   let { text, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -28,11 +30,12 @@ export const autoComplete = async (req, res) => {
   }
 
   if (!text) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (typeof text !== "string") {
-    return ErrorHandler(res, 462, lang);
+    //return ErrorHandler(res, 462, lang);
+    return ResponseHandler(res, "role", 402, lang);
   }
 
   try {
@@ -124,9 +127,12 @@ export const autoComplete = async (req, res) => {
       productList.push(product.name.am || product.name.en);
     });
 
-    return ErrorHandler(res, 200, lang, [...previousSearch, ...productList]);
+    return ResponseHandler(res, "common", 200, lang, [
+      ...previousSearch,
+      ...productList,
+    ]);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

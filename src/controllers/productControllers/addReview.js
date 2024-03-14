@@ -4,6 +4,8 @@ import { Review } from "../../models/reviewSchema.js";
 import { Product } from "../../models/productSchema.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -12,7 +14,7 @@ export const addReview = async (req, res) => {
 
   let uid = req.uid;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -21,28 +23,32 @@ export const addReview = async (req, res) => {
   }
 
   if (!productId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!text && !rate) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(productId)) {
-    return ErrorHandler(res, 432, lang);
+    //return ErrorHandler(res, 432, lang);
+    return ResponseHandler(res, "product", 402, lang);
   }
 
   if (text && typeof text !== "string") {
-    return ErrorHandler(res, 474, lang);
+    //return ErrorHandler(res, 474, lang);
+    return ResponseHandler(res, "review", 405, lang);
   }
 
   if (rate && typeof rate !== "number") {
-    return ErrorHandler(res, 475, lang);
+    //return ErrorHandler(res, 475, lang);
+    return ResponseHandler(res, "review", 404, lang);
   }
 
   if (rate) {
     if (rate <= 0 || rate > 5) {
-      return ErrorHandler(res, 477, lang);
+      //return ErrorHandler(res, 477, lang);
+      return ResponseHandler(res, "review", 407, lang);
     }
 
     rate = Math.ceil(rate);
@@ -70,7 +76,8 @@ export const addReview = async (req, res) => {
       const product = await Product.findById(productId);
 
       if (!product) {
-        return ErrorHandler(res, 433, lang);
+        //return ErrorHandler(res, 433, lang);
+        return ResponseHandler(res, "product", 404, lang);
       }
       if (rate) {
         if (review.rating) {
@@ -94,10 +101,16 @@ export const addReview = async (req, res) => {
 
       await product.save();
 
-      return ErrorHandler(res, newReview ? 201 : 203, lang, review);
+      return ResponseHandler(
+        res,
+        "common",
+        newReview ? 201 : 203,
+        lang,
+        review
+      );
     });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

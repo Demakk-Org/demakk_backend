@@ -5,6 +5,8 @@ import { isValidObjectId } from "mongoose";
 import { StockType } from "../../models/stockTypeSchema.js";
 import { Image } from "../../models/imageSchema.js";
 import { uploadImage } from "../../utils/uploadImages.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -12,7 +14,7 @@ export const addStockTypeImage = async (req, res) => {
   let image = req.files?.image;
   let { lang, stockTypeId } = req.fields;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -21,11 +23,12 @@ export const addStockTypeImage = async (req, res) => {
   }
 
   if (!image || !stockTypeId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(stockTypeId)) {
-    return ErrorHandler(res, 425, lang);
+    //return ErrorHandler(res, 425, lang);
+    return ResponseHandler(res, "stockType", 402, lang);
   }
 
   let images = [];
@@ -38,7 +41,8 @@ export const addStockTypeImage = async (req, res) => {
 
   images.forEach((img) => {
     if (typeof img !== "object" || !img.name) {
-      return ErrorHandler(res, 499.3, lang);
+      //return ErrorHandler(res, 499.3, lang);//invalid image file
+      return ResponseHandler(res, "image", 408, lang);
     }
   });
 
@@ -46,7 +50,8 @@ export const addStockTypeImage = async (req, res) => {
     const stockType = await StockType.findById(stockTypeId);
 
     if (!stockType) {
-      return ErrorHandler(res, 424, lang);
+      //return ErrorHandler(res, 424, lang);
+      return ResponseHandler(res, "stockType", 404, lang);
     }
 
     uploadImage(images).then(async (data) => {
@@ -59,7 +64,7 @@ export const addStockTypeImage = async (req, res) => {
         previousImage.images = data;
         await previousImage.save();
 
-        return ErrorHandler(res, 203, lang, previousImage);
+        return ResponseHandler(res, "common", 203, lang, previousImage);
       }
 
       Image.create({
@@ -70,11 +75,11 @@ export const addStockTypeImage = async (req, res) => {
         stockType.images = img._id;
         await stockType.save();
 
-        return ErrorHandler(res, 201, lang, img);
+        return ResponseHandler(res, "common", 201, lang, img);
       });
     });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
