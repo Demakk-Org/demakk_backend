@@ -1,11 +1,11 @@
-import { Product } from "../../models/productSchema.js";
-import response from "../../../response.js";
-import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import { config } from "dotenv";
+
 import { isArr } from "../../utils/validate.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { Product } from "../../models/productSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -30,27 +30,22 @@ const updateProduct = async (req, res) => {
   }
 
   if (!isValidObjectId(productId)) {
-    //return ErrorHandler(res, 432, lang);
     return ResponseHandler(res, "product", 402, lang);
   }
 
   if (productCategoryId && !isValidObjectId(productCategoryId)) {
-    // return ErrorHandler(res, 430, lang);
     return ResponseHandler(res, "productCategory", 402, lang);
   }
 
   if (productName && !Array.isArray(productName)) {
-    //return ErrorHandler(res, 441, lang);
     return ResponseHandler(res, "product", 401, lang);
   }
 
   if (description && !Array.isArray(description)) {
-    //return ErrorHandler(res, 442, lang);
     return ResponseHandler(res, "product", 403, lang);
   }
 
   if (tags && !isArr(tags, "string")) {
-    //return ErrorHandler(res, 460, lang);
     return ResponseHandler(res, "product", 405, lang);
   }
 
@@ -63,7 +58,6 @@ const updateProduct = async (req, res) => {
       !item.lang ||
       !item.value
     ) {
-      //return ErrorHandler(res, 441, lang);
       return ResponseHandler(res, "product", 401, lang);
     }
     name[item.lang] = item.value;
@@ -75,7 +69,6 @@ const updateProduct = async (req, res) => {
       !item.lang ||
       !item.value
     ) {
-      //return ErrorHandler(res, 442, lang);
       return ResponseHandler(res, "product", 403, lang);
     }
     desc[item.lang] = item.value;
@@ -85,7 +78,6 @@ const updateProduct = async (req, res) => {
     const product = await Product.findById(productId);
 
     if (!product) {
-      //return ErrorHandler(res, 404, lang);
       return ResponseHandler(res, "product", 404, lang);
     }
 
