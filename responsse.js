@@ -148,15 +148,15 @@ export default {
         408: "Invalid image file",
       },
       stockVariety: {
-        404: "StockVariety not found",
-        407: "Invalid stockVariety id",
-        408: "Invalid stockVariety value",
+        404: "Stock variety not found",
+        407: "Invalid stock variety id",
+        408: "Invalid stock variety value",
       },
       stockVarietyType: {
-        404: "stockVarietyType not found",
-        406: "StockVarietyType already exists",
-        407: "Invalid stockVarietyType id",
-        408: "Invalid stockVarietyType name",
+        404: "stock variety type not found",
+        406: "Stock variety type already exists",
+        407: "Invalid stock variety type id",
+        408: "Invalid stock variety type name",
       },
     },
     message: {
