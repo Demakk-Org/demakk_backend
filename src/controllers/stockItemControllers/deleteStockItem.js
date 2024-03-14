@@ -1,10 +1,10 @@
-import { StockItem } from "../../models/stockItemSchema.js";
-import response from "../../../response.js";
-import { config } from "dotenv";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { StockItem } from "../../models/stockItemSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -24,7 +24,6 @@ const deleteStockItem = async (req, res) => {
   }
 
   if (!isValidObjectId(stockItemId)) {
-    //return ErrorHandler(res, 428, lang);
     return ResponseHandler(res, "stockItem", 402, lang);
   }
 
@@ -32,7 +31,6 @@ const deleteStockItem = async (req, res) => {
     const stockItem = await StockItem.findByIdAndDelete(stockItemId);
 
     if (!stockItem) {
-      //return ErrorHandler(res, 427, lang);
       return ResponseHandler(res, "stockItem", 404, lang);
     }
 

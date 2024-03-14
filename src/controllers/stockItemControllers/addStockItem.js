@@ -1,10 +1,10 @@
-import { StockItem } from "../../models/stockItemSchema.js";
-import response from "../../../response.js";
-import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { StockItem } from "../../models/stockItemSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -24,15 +24,13 @@ const addStockItem = async (req, res) => {
   }
 
   if (!isValidObjectId(stockTypeId)) {
-    //return ErrorHandler(res, 425, lang);
     return ResponseHandler(res, "stockType", 402, lang);
   }
 
   let name = {};
 
   if (!Array.isArray(stockItemName)) {
-    //return ErrorHandler(res, 438, lang);
-    return ResponseHandler(res, "stockType", 408, lang);
+    return ResponseHandler(res, "stockType", 401, lang);
   }
 
   stockItemName.forEach((item) => {
@@ -41,16 +39,14 @@ const addStockItem = async (req, res) => {
       !item.lang ||
       !item.value
     ) {
-      //return ErrorHandler(res, 438, lang);
-      return ResponseHandler(res, "stockType", 408, lang);
+      return ResponseHandler(res, "stockType", 401, lang);
     }
 
     name[item.lang] = item.value;
   });
 
   if (typeof price !== "number" || typeof costToProduce !== "number") {
-    //return ErrorHandler(res, 443, lang);
-    return ResponseHandler(res, "stockItem", 405, lang);
+    return ResponseHandler(res, "common", 407, lang);
   }
 
   try {

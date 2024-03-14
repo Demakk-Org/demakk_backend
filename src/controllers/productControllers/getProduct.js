@@ -1,11 +1,12 @@
-import { config } from "dotenv";
-import language from "../../../response.js";
-import { Product } from "../../models/productSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
 import Jwt from "jsonwebtoken";
-import User from "../../models/userSchema.js";
+
+import language from "../../../response.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { Product } from "../../models/productSchema.js";
+import User from "../../models/userSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -33,7 +34,6 @@ const getProduct = async (req, res) => {
   }
 
   if (!isValidObjectId(productId)) {
-    //return ErrorHandler(res, 432, lang);
     return ResponseHandler(res, "product", 402, lang);
   }
 
@@ -96,7 +96,6 @@ const getProduct = async (req, res) => {
       })
       .then((product) => {
         if (!product) {
-          //return ErrorHandler(res, 433, lang);
           return ResponseHandler(res, "product", 404, lang);
         }
 

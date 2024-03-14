@@ -1,10 +1,10 @@
-import { Product } from "../../models/productSchema.js";
-import response from "../../../response.js";
-import { config } from "dotenv";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { Product } from "../../models/productSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -29,11 +29,11 @@ const deleteProduct = async (req, res) => {
 
   try {
     const product = await Product.findByIdAndDelete(productId);
+
     if (!product) {
-      //return ErrorHandler(res, 433, lang);
       return ResponseHandler(res, "product", 404, lang);
     }
-    //return ErrorHandler(res, 204, lang);
+
     return ResponseHandler(res, "common", 203, lang);
   } catch (error) {
     console.log(error.message);

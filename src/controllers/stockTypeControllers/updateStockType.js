@@ -1,11 +1,11 @@
-import { StockType } from "../../models/stockTypeSchema.js";
-import response from "../../../response.js";
-import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import { config } from "dotenv";
+
 import { isArr } from "../../utils/validate.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { StockType } from "../../models/stockTypeSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -25,36 +25,30 @@ const updateStockType = async (req, res) => {
   }
 
   if (stockTypeName && !isArr(stockTypeName, "object")) {
-    //return ErrorHandler(res, 423, lang);
-    return ResponseHandler(res, "stockType", 408, lang);
+    return ResponseHandler(res, "stockType", 401, lang);
   }
 
   if (!isValidObjectId(stockTypeId)) {
-    //return ErrorHandler(res, 425, lang);
     return ResponseHandler(res, "stockType", 402, lang);
   }
 
   if (!Array.isArray(stockTypeName)) {
-    //return ErrorHandler(res, 423, lang);
     return ResponseHandler(res, "stockType", 408, lang);
   }
 
   if (stockVarities && !isArr(stockVarities, "string")) {
-    //return ErrorHandler(res, 495, lang);
     return ResponseHandler(res, "stockVariety", 408, lang);
   }
 
   if (stockVarities) {
     stockVarities.forEach((item) => {
       if (!isValidObjectId(item)) {
-        //return ErrorHandler(res, 425, lang);
         return ResponseHandler(res, "stockType", 402, lang);
       }
     });
   }
 
   if (images && !isArr(images, "string")) {
-    //return ErrorHandler(res, 491, lang);
     return ResponseHandler(res, "image", 407, lang);
   }
 
@@ -67,8 +61,7 @@ const updateStockType = async (req, res) => {
         !item.lang ||
         !item.value
       ) {
-        //return ErrorHandler(res, 423, lang);
-        return ResponseHandler(res, "stockType", 408, lang);
+        return ResponseHandler(res, "stockType", 401, lang);
       }
 
       name[item.lang] = item.value;
@@ -78,7 +71,6 @@ const updateStockType = async (req, res) => {
     const stockType = await StockType.findById(stockTypeId);
 
     if (!stockType) {
-      //return ErrorHandler(res, 424, lang);
       return ResponseHandler(res, "stockType", 404, lang);
     }
 
@@ -91,7 +83,7 @@ const updateStockType = async (req, res) => {
 
     await stockType.save();
 
-    return ResponseHandler(res, "common", 203, lang, stockType);
+    return ResponseHandler(res, "common", 202, lang, stockType);
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

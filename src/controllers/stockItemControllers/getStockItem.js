@@ -1,10 +1,10 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { StockItem } from "../../models/stockItemSchema.js";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { StockItem } from "../../models/stockItemSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -21,7 +21,7 @@ const getStockItem = (req, res) => {
   }
 
   if (!isValidObjectId(stockItemId)) {
-    return ResponseHandler(res, "common", 402, lang);
+    return ResponseHandler(res, "stockItem", 402, lang);
   }
 
   try {
