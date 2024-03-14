@@ -1,10 +1,10 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
-import { Review } from "../../models/reviewSchema.js";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { Review } from "../../models/reviewSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -24,7 +24,6 @@ export const deleteReview = async (req, res) => {
   }
 
   if (!isValidObjectId(reviewId)) {
-    //return ErrorHandler(res, 493, lang);
     return ResponseHandler(res, "review", 402, lang);
   }
 
@@ -32,8 +31,7 @@ export const deleteReview = async (req, res) => {
     const review = await Review.findByIdAndDelete(reviewId);
 
     if (!review) {
-      //return ErrorHandler(res, 494, lang);
-      return ResponseHandler(res, "review", 409, lang);
+      return ResponseHandler(res, "review", 404, lang);
     }
 
     return ResponseHandler(res, "common", 203, lang);

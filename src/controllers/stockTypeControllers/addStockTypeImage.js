@@ -1,12 +1,12 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
-import { StockType } from "../../models/stockTypeSchema.js";
-import { Image } from "../../models/imageSchema.js";
+import { config } from "dotenv";
+
 import { uploadImage } from "../../utils/uploadImages.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { Image } from "../../models/imageSchema.js";
+import { StockType } from "../../models/stockTypeSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -27,7 +27,6 @@ export const addStockTypeImage = async (req, res) => {
   }
 
   if (!isValidObjectId(stockTypeId)) {
-    //return ErrorHandler(res, 425, lang);
     return ResponseHandler(res, "stockType", 402, lang);
   }
 
@@ -41,7 +40,6 @@ export const addStockTypeImage = async (req, res) => {
 
   images.forEach((img) => {
     if (typeof img !== "object" || !img.name) {
-      //return ErrorHandler(res, 499.3, lang);//invalid image file
       return ResponseHandler(res, "image", 408, lang);
     }
   });
@@ -50,7 +48,6 @@ export const addStockTypeImage = async (req, res) => {
     const stockType = await StockType.findById(stockTypeId);
 
     if (!stockType) {
-      //return ErrorHandler(res, 424, lang);
       return ResponseHandler(res, "stockType", 404, lang);
     }
 

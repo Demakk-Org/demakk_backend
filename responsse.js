@@ -69,7 +69,7 @@ export default {
         404: "Product is not found",
         405: "Invalid tag value",
         406: "At least one tag is required",
-        407: "Product price is number",
+        407: "Invalid price range values ",
       },
       address: {
         402: "Invalid address id",
@@ -80,7 +80,6 @@ export default {
         401: "Stock type name is invalid",
         402: "Invalid stock type id",
         404: "Stock type is not found",
-        408: "Invalid stock type name",
       },
       role: {
         401: "Role name is type of string",
@@ -105,8 +104,8 @@ export default {
         405: "This order does not belong to this user",
       },
       orderItem: {
-        401: "Invalid order items value!",
         402: "Invalid order item id!",
+        403: "Invalid order items value!",
         404: "Order item not found",
         405: "Order item can not be empty",
         406: "Quantity is a type of number",
@@ -123,11 +122,11 @@ export default {
       review: {
         402: "Invalid review Id",
         403: "Rating is a type of number",
+        404: "Review not found",
         405: "Review text is a value of type string",
         406: "A review has already been registered by this user",
         407: "Rating is between 1 and 5",
         408: "Specify the correct type of review",
-        409: "Review not found",
       },
       discountType: {
         401: "Discount type name is invalid",
@@ -135,7 +134,6 @@ export default {
         404: "Discount type is not found",
         405: "Discount amount is a type of number and greater than zero",
         406: "Discount type already exists",
-
       },
       image: {
         401: "Image name is a type of string",
@@ -147,15 +145,15 @@ export default {
         408: "Invalid image file",
       },
       stockVariety: {
+        402: "Invalid stock variety id",
         404: "Stock variety not found",
-        407: "Invalid stock variety id",
         408: "Invalid stock variety value",
       },
       stockVarietyType: {
+        401: "Invalid stock variety type name",
+        402: "Invalid stock variety type id",
         404: "stock variety type not found",
         406: "Stock variety type already exists",
-        407: "Invalid stock variety type id",
-        408: "Invalid stock variety type name",
       },
     },
     message: {

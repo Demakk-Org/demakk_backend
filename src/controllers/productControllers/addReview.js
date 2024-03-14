@@ -1,11 +1,11 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { Review } from "../../models/reviewSchema.js";
-import { Product } from "../../models/productSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { Product } from "../../models/productSchema.js";
+import { Review } from "../../models/reviewSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -31,23 +31,19 @@ export const addReview = async (req, res) => {
   }
 
   if (!isValidObjectId(productId)) {
-    //return ErrorHandler(res, 432, lang);
     return ResponseHandler(res, "product", 402, lang);
   }
 
   if (text && typeof text !== "string") {
-    //return ErrorHandler(res, 474, lang);
     return ResponseHandler(res, "review", 405, lang);
   }
 
   if (rate && typeof rate !== "number") {
-    //return ErrorHandler(res, 475, lang);
-    return ResponseHandler(res, "review", 404, lang);
+    return ResponseHandler(res, "review", 403, lang);
   }
 
   if (rate) {
     if (rate <= 0 || rate > 5) {
-      //return ErrorHandler(res, 477, lang);
       return ResponseHandler(res, "review", 407, lang);
     }
 
@@ -76,9 +72,9 @@ export const addReview = async (req, res) => {
       const product = await Product.findById(productId);
 
       if (!product) {
-        //return ErrorHandler(res, 433, lang);
         return ResponseHandler(res, "product", 404, lang);
       }
+
       if (rate) {
         if (review.rating) {
           product.ratings[rate] += 1;
@@ -104,7 +100,7 @@ export const addReview = async (req, res) => {
       return ResponseHandler(
         res,
         "common",
-        newReview ? 201 : 203,
+        newReview ? 201 : 202,
         lang,
         review
       );

@@ -1,12 +1,12 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
-import { Product } from "../../models/productSchema.js";
-import User from "../../models/userSchema.js";
-import Jwt from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+import Jwt from "jsonwebtoken";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import User from "../../models/userSchema.js";
+import { Product } from "../../models/productSchema.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
@@ -38,7 +38,6 @@ const searchProducts = async (req, res) => {
   }
 
   if (typeof text !== "string") {
-    //return ErrorHandler(res, 446, lang);
     return ResponseHandler(res, "common", 406, lang);
   }
 
@@ -48,7 +47,6 @@ const searchProducts = async (req, res) => {
       !price.gte ||
       !price.lt)
   ) {
-    //return ErrorHandler(res, 443, lang);
     return ResponseHandler(res, "product", 407, lang);
   }
 

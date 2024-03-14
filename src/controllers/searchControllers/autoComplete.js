@@ -1,12 +1,12 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
-import { Product } from "../../models/productSchema.js";
-import User from "../../models/userSchema.js";
-import Jwt from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
-import responsse from "../../../responsse.js";
+import { config } from "dotenv";
+import Jwt from "jsonwebtoken";
+
 import { ResponseHandler } from "../../utils/responseHandler.js";
+import responsse from "../../../responsse.js";
+
+import User from "../../models/userSchema.js";
+import { Product } from "../../models/productSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -34,8 +34,7 @@ export const autoComplete = async (req, res) => {
   }
 
   if (typeof text !== "string") {
-    //return ErrorHandler(res, 462, lang);
-    return ResponseHandler(res, "role", 402, lang);
+    return ResponseHandler(res, "common", 406, lang);
   }
 
   try {

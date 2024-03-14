@@ -1,10 +1,10 @@
-import { StockType } from "../../models/stockTypeSchema.js";
 import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+
 import { isArr } from "../../utils/validate.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { StockType } from "../../models/stockTypeSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -20,17 +20,14 @@ const addStockType = async (req, res) => {
   }
 
   if (!stockTypeName) {
-    //return ErrorHandler(res, 400, lang);
     return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!Array.isArray(stockTypeName)) {
-    //return ErrorHandler(res, 423, lang);
     return ResponseHandler(res, "stockType", 401, lang);
   }
 
   if (stockVarieties && !isArr(stockVarieties, "string")) {
-    //return ErrorHandler(res, 495, lang);
     return ResponseHandler(res, "stockVariety", 408, lang);
   }
 
@@ -42,7 +39,6 @@ const addStockType = async (req, res) => {
       !item.lang ||
       !item.value
     ) {
-      //return ErrorHandler(res, 423, lang);
       return ResponseHandler(res, "stockType", 401, lang);
     }
     name[item.lang] = item.value;

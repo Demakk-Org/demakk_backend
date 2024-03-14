@@ -1,11 +1,11 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
-import { Image } from "../../models/imageSchema.js";
+import { config } from "dotenv";
+
 import { uploadImage } from "../../utils/uploadImages.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { Image } from "../../models/imageSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -37,18 +37,15 @@ export const updateImages = async (req, res) => {
   if (primary) primary = primary * 1;
 
   if (images && images?.length == 0) {
-    //return ErrorHandler(res, 400, lang); why?
     return ResponseHandler(res, "common", 400, lang);
   }
 
   if (name && typeof name !== "string") {
-    // return ErrorHandler(res, 487, lang);
     return ResponseHandler(res, "image", 401, lang);
   }
 
   if (description && typeof description !== "string") {
-    //return ErrorHandler(res, 488, lang);
-    return ResponseHandler(res, "image", 405, lang);
+    return ResponseHandler(res, "image", 403, lang);
   }
 
   if (image && image?.length) {
@@ -58,7 +55,6 @@ export const updateImages = async (req, res) => {
   }
 
   if (!isValidObjectId(imagesId)) {
-    //return ErrorHandler(res, 491, lang);
     return ResponseHandler(res, "image", 402, lang);
   }
 
@@ -66,7 +62,6 @@ export const updateImages = async (req, res) => {
     let productImages = await Image.findById(imagesId);
 
     if (!productImages) {
-      //return ErrorHandler(res, 492, lang);
       return ResponseHandler(res, "image", 404, lang);
     }
 
@@ -77,7 +72,6 @@ export const updateImages = async (req, res) => {
       productImages.images = [...imagesParsed, ...results];
 
       if (primary < 0 || primary >= [...imagesParsed, ...results].length) {
-        //return ErrorHandler(res, 490, lang);
         return ResponseHandler(res, "image", 407, lang);
       }
 
@@ -93,12 +87,10 @@ export const updateImages = async (req, res) => {
       if (imagesParsed.length) productImages.images = imagesParsed;
 
       if (images && (primary < 0 || primary >= imagesParsed?.length)) {
-        //return ErrorHandler(res, 490, lang);
         return ResponseHandler(res, "image", 407, lang);
       }
 
       if ((primary || primary == 0) && primary > productImages.images.length) {
-        //return ErrorHandler(res, 490, lang);
         return ResponseHandler(res, "image", 407, lang);
       }
 
