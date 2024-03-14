@@ -1,19 +1,19 @@
 import { config } from "dotenv";
+
 import { isDateValid } from "../../utils/validate.js";
-import response from "../../../response.js";
-import Order from "../../models/orderSchema.js";
-import Cart from "../../models/cartSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
-import User from "../../models/userSchema.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import Cart from "../../models/cartSchema.js";
+import User from "../../models/userSchema.js";
+import Order from "../../models/orderSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const addOrder = async (req, res) => {
   let { deliveryDate, lang } = req.body;
   let uid = req.uid;
-  let { cart } = req.user;
+  let cartId = req.user?.cart;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -24,20 +24,17 @@ export const addOrder = async (req, res) => {
   }
 
   if (deliveryDate && !isDateValid(deliveryDate)) {
-    //return ErrorHandler(res, 469, lang);
-    return ResponseHandler(res, "common", 405, lang)
+    return ResponseHandler(res, "common", 405, lang);
   }
 
-  const cartInfo = await Cart.findById(cart);
+  const cart = await Cart.findById(cartId);
 
-  if (!cartInfo) {
-    //return ErrorHandler(res, 417, lang);
-    return ResponseHandler(res, "cart", 400, lang)
+  if (!cart) {
+    return ResponseHandler(res, "cart", 404, lang);
   }
 
-  if (cartInfo.orderItems.length == 0) {
-    //return ErrorHandler(res, 467, lang);
-    return ResponseHandler(res, "orderItem", 405, lang)
+  if (cart.orderItems.length == 0) {
+    return ResponseHandler(res, "orderItem", 405, lang);
   }
 
   try {
@@ -47,8 +44,7 @@ export const addOrder = async (req, res) => {
       deliveryDate,
       orderStatus: "65a6f9a6e2caf4bfc91f2b27",
     }).then(async (data) => {
-      let user = await User.findById(uid);
-
+      let user = await User.findById(uid); //check using the user from middleware
       user.orders.push(data._id);
       await user.save();
 
@@ -56,6 +52,6 @@ export const addOrder = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    return ResponseHandler(res, "common", 500, LANG);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

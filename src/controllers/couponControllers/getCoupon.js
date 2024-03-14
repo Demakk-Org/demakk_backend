@@ -1,7 +1,8 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import { config } from "dotenv";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 import Coupon from "../../models/couponSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
@@ -10,7 +11,7 @@ export const getCoupon = async (req, res) => {
   let { lang } = req.body;
   let couponId = req.params.id;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -19,11 +20,11 @@ export const getCoupon = async (req, res) => {
   }
 
   if (!couponId) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(couponId)) {
-    return ErrorHandler(res, 486, lang);
+    return ResponseHandler(res, "coupon", 402, lang);
   }
 
   try {
@@ -37,12 +38,12 @@ export const getCoupon = async (req, res) => {
       });
 
     if (!coupon) {
-      return ErrorHandler(res, 485, lang);
+      return ResponseHandler(res, "coupon", 404, lang);
     }
 
-    return ErrorHandler(res, 200, lang, coupon);
+    return ResponseHandler(res, "common", 200, lang, coupon);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

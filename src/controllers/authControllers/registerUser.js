@@ -1,35 +1,37 @@
+import { config } from "dotenv";
+import Jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+
+import { camelize } from "../../utils/validate.js";
 import QueryByType from "../../utils/queryByType.js";
+import responsse from "../../../responsse.js";
+
 import Cart from "../../models/cartSchema.js";
 import User from "../../models/userSchema.js";
-import bcrypt from "bcryptjs";
-import Jwt from "jsonwebtoken";
-import response from "../../../response.js";
-import dotenv from "dotenv";
-import { ErrorHandler } from "../../utils/errorHandler.js";
-import { camelize } from "../../utils/validate.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
-const LANG = dotenv.config(process.cwd, ".env").parsed.LANG;
+const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const registerUser = async (req, res) => {
   let { account, firstName, lastName, password, confirmPassword, lang } =
     req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
   if (!account || !firstName || !lastName || !password || !confirmPassword) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (password !== confirmPassword) {
-    return ErrorHandler(res, 402, lang);
+    return ResponseHandler(res, "auth", 404, lang);
   }
 
   var queryAndType = QueryByType(account, lang);
 
   if (queryAndType.status == 403) {
-    return ErrorHandler(res, queryAndType.status, lang);
+    return ResponseHandler(res, "auth", 405, lang);
   }
 
   const user = await User.findOne(queryAndType.searchQuery);
@@ -37,7 +39,7 @@ const registerUser = async (req, res) => {
   console.log(user, queryAndType.type, account);
 
   if (user) {
-    return ErrorHandler(res, 405, lang);
+    return ResponseHandler(res, "auth", 400, lang);
   }
 
   var cart;
@@ -47,7 +49,7 @@ const registerUser = async (req, res) => {
     console.log(cart);
   } catch (error) {
     console.log(error);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 
   var query = {
@@ -86,10 +88,11 @@ const registerUser = async (req, res) => {
 
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
-      return ErrorHandler(res, 201, lang, token);
+
+      return ResponseHandler(res, "common", 201, lang, token);
     } catch (err) {
       console.log(err.message);
-      return ErrorHandler(res, 500, lang);
+      return ResponseHandler(res, "common", 500, lang);
     }
   }
 };

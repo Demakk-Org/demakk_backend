@@ -35,12 +35,12 @@ export const addStockVariety = async (req, res) => {
   }
 
   try {
-    StockVariety.create({ value, stockVarietyType: stockVarietyTypeId }).then(
-      (data) => {
-        //return ErrorHandler(res, 201, lang, data);
-        return ResponseHandler(res, "common", 201, lang, data);
-      }
-    );
+    const stockVariety = await StockVariety.create({
+      value,
+      stockVarietyType: stockVarietyTypeId,
+    });
+
+    return ResponseHandler(res, "common", 201, lang, stockVariety);
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

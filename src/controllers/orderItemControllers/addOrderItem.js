@@ -1,7 +1,9 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+
 import OrderItem from "../../models/orderItemSchema.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
@@ -24,18 +26,15 @@ export const addOrderItem = async (req, res) => {
   }
 
   if (!isValidObjectId(productId)) {
-    //return ErrorHandler(res, 464, lang);
-    return ResponseHandler(res, "product", 402, lang)
+    return ResponseHandler(res, "product", 402, lang);
   }
 
   if (typeof quantity !== "number") {
-    //return ErrorHandler(res, 465, lang);
-    return ResponseHandler(res, "orderItem", 404, lang)
+    return ResponseHandler(res, "orderItem", 406, lang);
   }
 
   if (couponCode && !isValidObjectId(couponCode)) {
-    //return ErrorHandler(res, 466, lang);
-    return ResponseHandler(res, "coupon", 402, lang)
+    return ResponseHandler(res, "couponCode", 402, lang);
   }
 
   try {

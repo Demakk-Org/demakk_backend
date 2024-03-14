@@ -1,9 +1,10 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
-import Cart from "../../models/cartSchema.js";
+import { config } from "dotenv";
+
 import { isArr } from "../../utils/validate.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+import responsse from "../../../responsse.js";
+import Cart from "../../models/cartSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -12,7 +13,7 @@ async function deleteOrderItems(req, res) {
 
   let cartId = req.user.cart;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -21,26 +22,25 @@ async function deleteOrderItems(req, res) {
   }
 
   if (!orderItems) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isArr(orderItems, "string")) {
-    return ErrorHandler(res, 444, lang);
+    return ResponseHandler(res, "orderItem", 401, lang);
   }
 
   orderItems?.forEach((item) => {
     console.log("Order");
     if (!isValidObjectId(item)) {
-      return ErrorHandler(res, 444, lang);
+      return ResponseHandler(res, "orderItem", 402, lang);
     }
   });
 
   try {
     let cart = await Cart.findById(cartId);
-    console.log(cart);
 
     if (!cart) {
-      return ErrorHandler(res, 417, lang);
+      return ResponseHandler(res, "cart", 404, lang);
     }
 
     orderItems.forEach((orderItem) => {
@@ -51,10 +51,10 @@ async function deleteOrderItems(req, res) {
 
     await cart.save();
 
-    return ErrorHandler(res, 200, lang);
+    return ResponseHandler(res, "common", 203, lang);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 }
 

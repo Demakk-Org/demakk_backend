@@ -1,15 +1,16 @@
 import { config } from "dotenv";
-import response from "../../../response.js";
-import User from "../../models/userSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+
+import User from "../../models/userSchema.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const blockUser = (req, res) => {
   let { uid, block, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -18,11 +19,11 @@ const blockUser = (req, res) => {
   }
 
   if (!uid || block == null) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(uid)) {
-    return ErrorHandler(res, 418, lang);
+    return ResponseHandler(res, "user", 402, lang);
   }
 
   try {
@@ -30,26 +31,26 @@ const blockUser = (req, res) => {
       .select("blocked")
       .then(async (user) => {
         if (!user) {
-          return ErrorHandler(res, 416, lang);
+          return ResponseHandler(res, "user", 404, lang);
         }
 
         if (block && user.blocked) {
-          return ErrorHandler(res, 421, lang);
+          return ResponseHandler(res, "user", 405, lang);
         }
 
         if (!block && !user.blocked) {
-          return ErrorHandler(res, 422, lang);
+          return ResponseHandler(res, "user", 406, lang);
         }
 
         user.blocked = block;
         await user.save();
         return block
-          ? ErrorHandler(res, 419, lang)
-          : ErrorHandler(res, 420, lang);
+          ? ResponseHandler(res, "user", 201, lang)
+          : ResponseHandler(res, "user", 202, lang);
       });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

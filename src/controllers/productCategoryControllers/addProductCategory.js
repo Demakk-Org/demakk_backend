@@ -1,10 +1,10 @@
-import { ProductCategory } from "../../models/productCategorySchema.js";
-import response from "../../../response.js";
-import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
-import responsse from "../../../responsse.js";
+import { config } from "dotenv";
+
 import { ResponseHandler } from "../../utils/responseHandler.js";
+import responsse from "../../../responsse.js";
+
+import { ProductCategory } from "../../models/productCategorySchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -35,13 +35,11 @@ const addProductCategory = async (req, res) => {
   }
 
   if (!isValidObjectId(stockItemId)) {
-    //return ErrorHandler(res, 428, lang);
-    return ResponseHandler(res, "stockItem", 402, lang)
+    return ResponseHandler(res, "stockItem", 402, lang);
   }
 
   if (!Array.isArray(productCategoryName)) {
-    ///return ErrorHandler(res, 440, lang);
-    return ResponseHandler(res, "productCategory", 401, lang)
+    return ResponseHandler(res, "productCategory", 401, lang);
   }
 
   let name = {};
@@ -52,8 +50,7 @@ const addProductCategory = async (req, res) => {
       !item.lang ||
       !item.value
     ) {
-      //return ErrorHandler(res, 440, lang);
-      return ResponseHandler(res, "productCategory", 401, lang)
+      return ResponseHandler(res, "productCategory", 401, lang);
     }
 
     name[item.lang] = item.value;
@@ -63,8 +60,7 @@ const addProductCategory = async (req, res) => {
     typeof additionalPrice !== "number" ||
     typeof additionalCost !== "number"
   ) {
-    //return ErrorHandler(res, 443, lang);
-    return ResponseHandler(res, "product", 407, lang)
+    return ResponseHandler(res, "common", 407, lang);
   }
 
   try {

@@ -1,9 +1,10 @@
-import { config } from "dotenv";
-import OrderItem from "../../models/orderItemSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import OrderItem from "../../models/orderItemSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -23,8 +24,7 @@ export const UpdateOrderItem = async (req, res) => {
   }
 
   if (!isValidObjectId(orderItemId)) {
-    //return ErrorHandler(res, 445, lang);
-    return ResponseHandler(res, "orderItem", 402, lang)
+    return ResponseHandler(res, "orderItem", 402, lang);
   }
 
   if (!quantity && !couponCode) {
@@ -32,21 +32,18 @@ export const UpdateOrderItem = async (req, res) => {
   }
 
   if (couponCode && !isValidObjectId(couponCode)) {
-    //return ErrorHandler(res, 466, lang);
-    return ResponseHandler(res, "coupon", 402, lang)
+    return ResponseHandler(res, "coupon", 402, lang);
   }
 
   if (quantity && (typeof quantity != "number" || quantity < 0)) {
-    // return ErrorHandler(res, 465, lang);
-    return ResponseHandler(res, "orderItem", 404, lang)
+    return ResponseHandler(res, "orderItem", 406, lang);
   }
 
   try {
     const orderItem = await OrderItem.findById(orderItemId);
 
     if (!orderItem) {
-      //return ErrorHandler(res, 481, lang);
-      return ResponseHandler(res, "orderItem", 404, lang)
+      return ResponseHandler(res, "orderItem", 404, lang);
     }
 
     if (couponCode) orderItem.couponCode = couponCode;

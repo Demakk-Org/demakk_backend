@@ -1,10 +1,10 @@
 import { config } from "dotenv";
-import OrderStatus from "../../models/orderStatusSchema.js";
-import Order from "../../models/orderSchema.js";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import OrderStatus from "../../models/orderStatusSchema.js";
+import Order from "../../models/orderSchema.js";
 
 const { LIMIT, PAGE, LANG, SORT } = config(process.cwd, ".env").parsed;
 
@@ -27,15 +27,13 @@ export const getOrders = async (req, res) => {
   let query = { user: uid };
 
   if (orderStatus && typeof orderStatus !== "string") {
-    //return ErrorHandler(res, 470, lang);
-    return ResponseHandler(res, "orderStatus", 401, lang)
+    return ResponseHandler(res, "orderStatus", 401, lang);
   }
 
   const order = await OrderStatus.findOne({ name: orderStatus });
 
   if (orderStatus && !order) {
-    //return ErrorHandler(res, 473, lang);
-    return ResponseHandler(res, "orderStatus", 404, lang)
+    return ResponseHandler(res, "orderStatus", 404, lang);
   }
 
   if (orderStatus) {
