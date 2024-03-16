@@ -1,12 +1,12 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
-import { uploadImage } from "../../utils/uploadImages.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
+import { uploadImage } from "../../utils/uploadImages.js";
 import { Image } from "../../models/imageSchema.js";
-import { Product } from "../../models/productSchema.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { Product } from "../../models/productSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -31,13 +31,11 @@ export const addImages = async (req, res) => {
   }
 
   if (typeof name !== "string") {
-    //return ErrorHandler(res, 487, lang);
     return ResponseHandler(res, "image", 401, lang);
   }
 
   if (description && typeof description !== "string") {
-    //return ErrorHandler(res, 488, lang);
-    return ResponseHandler(res, "image", 405, lang);
+    return ResponseHandler(res, "image", 403, lang);
   }
 
   if (
@@ -45,12 +43,10 @@ export const addImages = async (req, res) => {
     typeof primary !== "string" &&
     typeof (primary * 1) !== "number"
   ) {
-    //return ErrorHandler(res, 489, lang);
     return ResponseHandler(res, "image", 406, lang);
   }
 
   if (!image) {
-    //return ErrorHandler(res, 400, lang);
     return ResponseHandler(res, "image", 400, lang);
   }
 
@@ -65,7 +61,6 @@ export const addImages = async (req, res) => {
   }
 
   if (primary < 0 || primary >= images.length) {
-    //return ErrorHandler(res, 490, lang);
     return ResponseHandler(res, "image", 407, lang);
   }
 
@@ -73,7 +68,6 @@ export const addImages = async (req, res) => {
     let product = await Product.findById(productId).select("images");
 
     if (!product) {
-      //return ErrorHandler(res, 433, lang);
       return ResponseHandler(res, "product", 404, lang);
     }
 

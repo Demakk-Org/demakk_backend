@@ -1,10 +1,11 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { Product } from "../../models/productSchema.js";
-import User from "../../models/userSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
+import response from "../../../response.js";
+import User from "../../models/userSchema.js";
+
 import { ResponseHandler } from "../../utils/responseHandler.js";
+import { Product } from "../../models/productSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -40,12 +41,12 @@ export const addFavourite = async (req, res) => {
     if (user.favs.includes(productId)) {
       user.favs = user.favs.filter((f) => f != productId);
       user.save();
-      //return ErrorHandler(res, 215, lang);
+
       return ResponseHandler(res, "product", 201, lang);
     } else {
       user.favs.push(productId);
       user.save();
-      //return ErrorHandler(res, 214, lang);
+
       return ResponseHandler(res, "product", 200, lang);
     }
   } catch (error) {

@@ -1,43 +1,44 @@
 import { config } from "dotenv";
-import OTP from "../../models/otpSchema.js";
-import User from "../../models/userSchema.js";
-import response from "../../../response.js";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+import User from "../../models/userSchema.js";
+import OTP from "../../models/otpSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const veriftyOTP = async (req, res) => {
   let { otpID, otpValue, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
   if (!otpID || !otpValue) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(otpID)) {
-    return ErrorHandler(res, 448, lang);
+    return ResponseHandler(res, "auth", 409, lang);
   }
 
   const otp = await OTP.findById(otpID);
 
   if (!otp) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (new Date(Date.now() - otp.expiresIn) > otp.createdAt) {
-    return ErrorHandler(res, 406, lang);
+    return ResponseHandler(res, "auth", 401, lang);
   }
 
   if (otp.otp != otpValue) {
-    return ErrorHandler(res, 409, lang);
+    return ResponseHandler(res, "auth", 406, lang);
   } else {
     if (otp.type == "email") {
       if (otp.status == "complete") {
-        return ErrorHandler(res, 410, lang);
+        return ResponseHandler(res, "auth", 419, lang);
       }
 
       const user = await User.findOneAndUpdate(
@@ -53,10 +54,10 @@ const veriftyOTP = async (req, res) => {
       otp.status = "complete";
       otp.save();
 
-      return ErrorHandler(res, 413, lang, user);
+      return ResponseHandler(res, "auth", 204, lang, user);
     } else if (otp.type == "phoneNumber") {
       if (otp.status == "complete") {
-        return ErrorHandler(res, 411, lang);
+        return ResponseHandler(res, "auth", 403, lang);
       }
 
       const user = await User.findOneAndUpdate(
@@ -72,7 +73,7 @@ const veriftyOTP = async (req, res) => {
       otp.status = "complete";
       otp.save();
 
-      return ErrorHandler(res, 412, lang, user);
+      return ResponseHandler(res, "auth", 206, lang, user);
     }
   }
 };

@@ -1,9 +1,10 @@
-import { config } from "dotenv";
-import OrderItem from "../../models/orderItemSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import OrderItem from "../../models/orderItemSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -23,16 +24,14 @@ export const deleteOrderItem = async (req, res) => {
   }
 
   if (!isValidObjectId(orderItemId)) {
-    //return ErrorHandler(res, 445, lang);
-    return ResponseHandler(res, "orderItem", 402, lang)
+    return ResponseHandler(res, "orderItem", 402, lang);
   }
 
   try {
     const orderItem = await OrderItem.findByIdAndDelete(orderItemId);
 
     if (!orderItem) {
-      //return ErrorHandler(res, 481, lang);
-      return ResponseHandler(res, "orderItem", 404, lang)
+      return ResponseHandler(res, "orderItem", 404, lang);
     }
 
     return ResponseHandler(res, "common", 203, lang);

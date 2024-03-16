@@ -1,11 +1,13 @@
-import User from "../../models/userSchema.js";
 import { config } from "dotenv";
 import { decode } from "jsonwebtoken";
-import Address from "../../models/addressSchema.js";
-import QueryByType from "../../utils/queryByType.js";
 import { isValidObjectId } from "mongoose";
-import responsse from "../../../responsse.js";
+
 import { ResponseHandler } from "../../utils/responseHandler.js";
+import responsse from "../../../responsse.js";
+import QueryByType from "../../utils/queryByType.js";
+
+import Address from "../../models/addressSchema.js";
+import User from "../../models/userSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -68,7 +70,6 @@ const updateUser = async (req, res) => {
       (QueryByType(phoneNumber, lang).status == 405 ||
         QueryByType(phoneNumber, lang).type !== "phoneNumber"))
   ) {
-    //return ErrorHandler(res, 405, lang);
     return ResponseHandler(res, "auth", 405, lang);
   }
 
@@ -76,19 +77,16 @@ const updateUser = async (req, res) => {
     (shippingAddress && !isValidObjectId(shippingAddress)) ||
     (billingAddress && !isValidObjectId(billingAddress))
   ) {
-    //return ErrorHandler(res, 434, lang);
     return ResponseHandler(res, "address", 402, lang);
   }
 
   if (shippingAddress) {
     const address = await Address.findById(shippingAddress);
     if (!address) {
-      //return ErrorHandler(res, 408, lang);
       return ResponseHandler(res, "address", 404, lang);
     }
 
     if (address.uid.toString() !== uid) {
-      //return ErrorHandler(res, 401, lang);
       return ResponseHandler(res, "common", 401, lang);
     }
   }
@@ -96,12 +94,10 @@ const updateUser = async (req, res) => {
   if (billingAddress) {
     const address = await Address.findById(billingAddress);
     if (!address) {
-      //return ErrorHandler(res, 408, lang);
       return ResponseHandler(res, "address", 404, lang);
     }
 
     if (address.uid.toString() !== uid) {
-      //return ErrorHandler(res, 401, lang);
       return ResponseHandler(res, "common", 401, lang);
     }
   }
@@ -120,7 +116,6 @@ const updateUser = async (req, res) => {
       const userEmail = await User.findOne({ email });
 
       if (userEmail) {
-        //return ErrorHandler(res, 458(email is already in use), lang);
         return ResponseHandler(res, "auth", 418, lang);
       }
 
@@ -131,8 +126,7 @@ const updateUser = async (req, res) => {
       const userPhoneNumber = await User.findOne({ phoneNumber });
 
       if (userPhoneNumber) {
-        //return ErrorHandler(res, 459, lang);
-        return ResponseHandler(res, "auth", 419, lang);
+        return ResponseHandler(res, "auth", 408, lang);
       }
 
       user.phoneNumber = phoneNumber;
@@ -154,11 +148,9 @@ const updateUser = async (req, res) => {
       lang: user.lang,
     };
 
-    //return ErrorHandler(res, 203, lang, data);
     return ResponseHandler(res, "common", 202, lang, data);
   } catch (err) {
     console.error(err.message);
-    //return ErrorHandler(res, 500, lang);
     return ResponseHandler(res, "common", 500, lang);
   }
 };

@@ -1,10 +1,10 @@
-import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
-import { StockVariety } from "../../models/stockVarietySchema.js";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { StockVariety } from "../../models/stockVarietySchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -19,28 +19,25 @@ export const addStockVariety = async (req, res) => {
     lang = req.language;
   }
 
-  if (!value && !stockVarietyTypeId) {
-    //return ErrorHandler(res, 400, lang);
+  if (!value || !stockVarietyTypeId) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(stockVarietyTypeId)) {
-    //return ErrorHandler(res, 498, lang);
-    return ResponseHandler(res, "stockVarietyType", 407, lang);
+    return ResponseHandler(res, "stockVarietyType", 402, lang);
   }
 
   if (typeof value != "string") {
-    //return ErrorHandler(res, 496, lang);
     return ResponseHandler(res, "stockVarietyType", 408, lang);
   }
 
   try {
-    StockVariety.create({ value, stockVarietyType: stockVarietyTypeId }).then(
-      (data) => {
-        //return ErrorHandler(res, 201, lang, data);
-        return ResponseHandler(res, "common", 201, lang, data);
-      }
-    );
+    const stockVariety = await StockVariety.create({
+      value,
+      stockVarietyType: stockVarietyTypeId,
+    });
+
+    return ResponseHandler(res, "common", 201, lang, stockVariety);
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

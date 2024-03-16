@@ -1,14 +1,15 @@
 import { config } from "dotenv";
-import response from "../../../response.js";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 import Role from "../../models/roleSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const addRole = async (req, res) => {
   let { name, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -17,25 +18,25 @@ export const addRole = async (req, res) => {
   }
 
   if (!name) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (typeof name !== "string") {
-    return ErrorHandler(res, 462, lang);
+    return ResponseHandler(res, "role", 401, lang);
   }
 
   const role = await Role.findOne({ name });
 
   if (role) {
-    return ErrorHandler(res, 461, lang); // the role already exists
+    return ResponseHandler(res, "role", 461, lang);
   } else {
     try {
       Role.create({ name }).then((data) => {
-        return ErrorHandler(res, 201, lang, data);
+        return ResponseHandler(res, "common", 201, lang);
       });
     } catch (error) {
       console.log(error.message);
-      return ErrorHandler(res, 500, lang);
+      return ResponseHandler(res, "common", 500, lang);
     }
   }
 };

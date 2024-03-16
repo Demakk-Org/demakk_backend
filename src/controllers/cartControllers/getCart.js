@@ -1,7 +1,8 @@
 import { config } from "dotenv";
-import response from "../../../response.js";
+
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 import Cart from "../../models/cartSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -10,7 +11,7 @@ export const getCart = async (req, res) => {
 
   let cartId = req.user.cart;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -19,18 +20,21 @@ export const getCart = async (req, res) => {
   }
 
   try {
-    Cart.findById(cartId)
+    const cart = await Cart.findById(cartId)
       .populate({
         path: "orderItems",
         select: "product quantity",
         populate: { path: "product", select: "name price images" },
       })
-      .select("orderItems")
-      .then((cart) => {
-        return ErrorHandler(res, 200, lang, cart);
-      });
+      .select("orderItems");
+
+    if (!cart) {
+      return ResponseHandler(res, "cart", 404, lang);
+    }
+
+    return ResponseHandler(res, "common", 200, lang, cart);
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };

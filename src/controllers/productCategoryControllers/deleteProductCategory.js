@@ -1,10 +1,10 @@
-import { ProductCategory } from "../../models/productCategorySchema.js";
-import response from "../../../response.js";
-import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
-import { ErrorHandler } from "../../utils/errorHandler.js";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { ProductCategory } from "../../models/productCategorySchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -24,8 +24,7 @@ const deleteProductCategory = async (req, res) => {
   }
 
   if (!isValidObjectId(productCategoryId)) {
-    //return ErrorHandler(res, 430, lang);
-    return ResponseHandler(res, "productCategory", 402, lang)
+    return ResponseHandler(res, "productCategory", 402, lang);
   }
 
   try {
@@ -34,11 +33,10 @@ const deleteProductCategory = async (req, res) => {
     );
 
     if (!productCategory) {
-      //return ErrorHandler(res, 431, lang);
-      return ResponseHandler(res, "productCategory", 404, lang)
+      return ResponseHandler(res, "productCategory", 404, lang);
     }
 
-    return ResponseHandler(res, "common", 204, lang);
+    return ResponseHandler(res, "common", 203, lang);
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

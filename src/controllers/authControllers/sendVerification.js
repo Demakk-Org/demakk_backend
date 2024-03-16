@@ -1,12 +1,14 @@
-import nodemailer from "nodemailer";
-import emailText from "../../utils/emailText.js";
-import OTP from "../../models/otpSchema.js";
-import response from "../../../response.js";
-import { config } from "dotenv";
-import User from "../../models/userSchema.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import axios from "axios";
+import { config } from "dotenv";
+import nodemailer from "nodemailer";
+
+import emailText from "../../utils/emailText.js";
+import { ErrorHandler } from "../../utils/errorHandler.js";
 import { phoneNumberText } from "../../utils/phoneNumberText.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+import User from "../../models/userSchema.js";
+import OTP from "../../models/otpSchema.js";
 
 const { LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID, GEEZ_SMS_URL } = config(
   process.cwd,
@@ -16,7 +18,7 @@ const { LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID, GEEZ_SMS_URL } = config(
 const sendVerification = async (req, res) => {
   let { type, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
@@ -25,34 +27,35 @@ const sendVerification = async (req, res) => {
   }
 
   if (!type) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (type !== "email" && type !== "phoneNumber") {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
-  const user = await User.findById(req.uid)
-    .select("email phoneNumber emailVerified phoneNumberVerified")
-    .catch((error) => {
-      console.log(error.message);
-      return ErrorHandler(res, 500, lang);
-    });
+  const user = await User.findById(req.uid).select(
+    "email phoneNumber emailVerified phoneNumberVerified"
+  );
+
+  if (!user) {
+    return ResponseHandler(res, "user", 404, lang);
+  }
 
   if (type == "email" && user.emailVerified) {
-    return ErrorHandler(res, 410, lang);
+    return ResponseHandler(res, "auth", 419, lang);
   }
 
   if (type == "phoneNumber" && user.phoneNumberVerified) {
-    return ErrorHandler(res, 411, lang);
+    return ResponseHandler(res, "auth", 403, lang);
   }
 
-  const otp = await OTP.updateMany(
+  OTP.updateMany(
     { account: type == "email" ? user.email : user.phoneNumber },
     { status: "complete" }
   ).catch((error) => {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   });
 
   var message;
@@ -60,13 +63,12 @@ const sendVerification = async (req, res) => {
   var otpKey = Math.round(Math.random() * 900000 + 100000);
 
   if (type == "phoneNumber") {
-    //add phone number send verification
     if (!user.phoneNumber) {
-      return ErrorHandler(res, 453, lang);
+      return ResponseHandler(res, "auth", 415, lang);
     }
+
     var data = new FormData();
     data.append("token", GEEZ_SMS_TOKEN);
-    // data.append("shortcode_id", SHORTCODE_ID);
     data.append("msg", phoneNumberText(otpKey, lang));
     data.append("phone", user.phoneNumber);
 
@@ -92,7 +94,8 @@ const sendVerification = async (req, res) => {
               account: response.account,
               expiresIn: response.expiresIn,
             };
-            return ErrorHandler(res, 213, lang, data);
+
+            return ResponseHandler(res, "auth", 205, lang, data);
           });
         })
         .catch((error) => {

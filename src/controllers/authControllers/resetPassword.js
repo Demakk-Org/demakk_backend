@@ -1,41 +1,42 @@
-import ResetPassword from "../../models/resetPassword.js";
-import User from "../../models/userSchema.js";
 import bcrypt from "bcryptjs";
-import response from "../../../response.js";
-import { config } from "dotenv";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
+import ResetPassword from "../../models/resetPassword.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+import User from "../../models/userSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const resetPassword = async (req, res) => {
   let { id, password, confirmPassword, lang } = req.body;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
   if (!id || !password || !confirmPassword) {
-    return ErrorHandler(res, 400, lang);
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(id)) {
-    return ErrorHandler(res, 407, lang);
+    return ResponseHandler(res, "common", 406, lang);
   }
 
   if (password !== confirmPassword) {
-    return ErrorHandler(res, 402, lang);
+    return ResponseHandler(res, "auth", 404, lang);
   }
-  console.log(id);
+
   const reset = await ResetPassword.findById(id);
   console.log(reset);
 
   if (!reset) {
-    return ErrorHandler(res, 404, lang);
+    return ResponseHandler(res, "common", 404, lang);
   }
 
   if (reset.status == "complete") {
-    return ErrorHandler(res, 406, lang);
+    return ResponseHandler(res, "auth", 401, lang);
   }
 
   const now = new Date(Date.now() - reset.expiresIn);
@@ -44,32 +45,28 @@ const resetPassword = async (req, res) => {
   console.log(now, time);
 
   if (now > time) {
-    return ErrorHandler(res, 406, lang);
+    return ResponseHandler(res, "auth", 401, lang);
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    User.findByIdAndUpdate(
-      reset.uid,
-      {
-        password: hashedPassword,
-      },
-      {
-        returnDocument: "after",
-      }
-    )
-      .then((user) => {
-        console.log(user);
-        return ErrorHandler(res, 203, lang);
-      })
-      .finally(() => {
-        reset.status = "complete";
-        reset.save();
-      });
+    let user = await User.findById(reset.uid);
+
+    if (!user) {
+      return ResponseHandler(res, "user", 404, lang);
+    }
+
+    user.password = hashedPassword;
+    await user.save().then(() => {
+      reset.status = "complete";
+      reset.save();
+
+      return ResponseHandler(res, "common", 202, lang);
+    });
   } catch (error) {
     console.log(error.message);
-    return ErrorHandler(res, 500, lang);
+    return ResponseHandler(res, "common", 500, lang);
   }
 };
 

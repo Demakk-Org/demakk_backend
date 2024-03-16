@@ -1,10 +1,10 @@
-import { StockType } from "../../models/stockTypeSchema.js";
-import response from "../../../response.js";
-import { config } from "dotenv";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+
+import { StockType } from "../../models/stockTypeSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -24,7 +24,6 @@ const deleteStockType = async (req, res) => {
   }
 
   if (!isValidObjectId(stockTypeId)) {
-    //return ErrorHandler(res, 425, lang);
     return ResponseHandler(res, "stockType", 402, lang);
   }
 
@@ -32,11 +31,9 @@ const deleteStockType = async (req, res) => {
     const stockType = await StockType.findByIdAndDelete(stockTypeId);
 
     if (!stockType) {
-      //return ErrorHandler(res, 424, lang);
       return ResponseHandler(res, "stockType", 404, lang);
     }
 
-    //return ErrorHandler(res, 204, lang);
     return ResponseHandler(res, "common", 203, lang);
   } catch (error) {
     console.log(error.message);
