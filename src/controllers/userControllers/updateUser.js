@@ -1,10 +1,8 @@
 import User from "../../models/userSchema.js";
-import response from "../../../response.js";
 import { config } from "dotenv";
 import { decode } from "jsonwebtoken";
 import Address from "../../models/addressSchema.js";
 import QueryByType from "../../utils/queryByType.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
 import { isValidObjectId } from "mongoose";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
