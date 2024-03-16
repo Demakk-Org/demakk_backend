@@ -28,17 +28,17 @@ const assignRole = async (req, res) => {
   }
 
   try {
-    const role = await Role.findOne({ name: role });
+    const roles = await Role.findOne({ name: role });
 
-    if (!role) {
+    if (!roles) {
       return ResponseHandler(res, "role", 404, lang);
     }
 
-    console.log(role);
+    console.log(roles);
 
     const user = await User.findByIdAndUpdate(
       uid,
-      { role: data._id },
+      { role: roles._id },
       { returnDocument: "after" }
     )
       .populate("role")

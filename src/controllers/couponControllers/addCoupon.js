@@ -51,15 +51,21 @@ export const addCoupon = async (req, res) => {
   }
 
   try {
-    const coupon = await Coupon.create({
+    const coupon = await Coupon.findOne({ name });
+
+    if (coupon) {
+      return ResponseHandler(res, "coupon", 405, lang);
+    }
+
+    Coupon.create({
       name,
       discountTypeId,
       discountAmount,
       appliesToProductCategory: appliesTo,
       endsAt,
+    }).then((res) => {
+      return ResponseHandler(res, "common", 201, lang, res);
     });
-
-    return ResponseHandler(res, "common", 201, lang, coupon);
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

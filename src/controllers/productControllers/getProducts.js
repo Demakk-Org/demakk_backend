@@ -68,6 +68,7 @@ const getProducts = async (req, res) => {
               ? product.description.get(LANG)
               : product.description.get("en"),
             tags: product.tags,
+            popularity: product.popularity,
             productCategory: product?.productCategory && {
               id: product.productCategory._id,
               name: product.productCategory.name.get(lang)

@@ -4,6 +4,7 @@ import responsse from "../../../responsse.js";
 import Role from "../../models/roleSchema.js";
 import User from "../../models/userSchema.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+import { isValidObjectId } from "mongoose";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
@@ -26,7 +27,7 @@ const getUsers = async (req, res) => {
 
   Array.from(Object.keys(req.body)).forEach((item) => {
     if (
-      item != null &&
+      req.body[item] != "" &&
       item != "page" &&
       item != "limit" &&
       item != "lang" &&
@@ -52,7 +53,7 @@ const getUsers = async (req, res) => {
         .skip((page - 1) * limit)
         .sort(sort)
         .select(
-          "email phoneNumber firstName lastName role shippingAddress billingAddress cart blocked"
+          "email phoneNumber firstName lastName role shippingAddress billingAddress cart blocked image"
         )
         .populate("role", "name")
         .populate("cart", "orderItems")
@@ -60,6 +61,7 @@ const getUsers = async (req, res) => {
           "shippingAddress billingAddress",
           "country city subCity woreda"
         )
+        .populate("image", "images primary")
         .then((users) => {
           const data = {
             page: page.toString(),
