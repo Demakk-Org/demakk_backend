@@ -1,12 +1,10 @@
 import nodemailer from "nodemailer";
 import { config } from "dotenv";
 import axios from "axios";
-
 import resetPasswordText from "../../utils/resetPasswordText.js";
 import queryByType from "../../utils/queryByType.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
-
 import ResetPassword from "../../models/resetPassword.js";
 import User from "../../models/userSchema.js";
 

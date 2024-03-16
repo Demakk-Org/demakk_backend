@@ -1,9 +1,7 @@
 import { config } from "dotenv";
-
 import { isArr } from "../../utils/validate.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
-
 import { StockType } from "../../models/stockTypeSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;

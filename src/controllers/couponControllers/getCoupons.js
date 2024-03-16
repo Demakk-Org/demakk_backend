@@ -1,5 +1,4 @@
 import { config } from "dotenv";
-
 import Coupon from "../../models/couponSchema.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";

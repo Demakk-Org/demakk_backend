@@ -1,6 +1,5 @@
 import { config } from "dotenv";
 import { isValidObjectId } from "mongoose";
-
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 import Cart from "../../models/cartSchema.js";
@@ -32,7 +31,7 @@ async function addOrderItem(req, res) {
     let cart = await Cart.findById(cartId);
 
     if (!cart) {
-      return ResponseHandler(res, "cart", 404, lang)
+      return ResponseHandler(res, "cart", 404, lang);
     }
 
     cart.orderItems.push(orderItem);

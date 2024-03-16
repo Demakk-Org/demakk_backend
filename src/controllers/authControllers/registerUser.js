@@ -1,7 +1,6 @@
 import { config } from "dotenv";
 import Jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-
 import { camelize } from "../../utils/validate.js";
 import QueryByType from "../../utils/queryByType.js";
 import responsse from "../../../responsse.js";

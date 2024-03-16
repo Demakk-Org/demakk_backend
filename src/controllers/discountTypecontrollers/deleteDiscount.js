@@ -1,8 +1,5 @@
 import DiscountType from "../../models/discountTypeSchema.js";
 import { config } from "dotenv";
-import response from "../../../response.js";
-import { ErrorHandler } from "../../utils/errorHandler.js";
-import { aborted } from "util";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 
@@ -28,7 +25,7 @@ export const deleteDiscount = async (req, res) => {
     );
     if (!deletedDiscount) {
       //return ErrorHandler(res, 424, lang);
-      return ResponseHandler(res, "discountType", 404, lang)
+      return ResponseHandler(res, "discountType", 404, lang);
     }
     return ResponseHandler(res, "common", 203, lang);
   } catch (error) {

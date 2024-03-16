@@ -1,7 +1,6 @@
 import axios from "axios";
 import { config } from "dotenv";
 import nodemailer from "nodemailer";
-
 import emailText from "../../utils/emailText.js";
 import { ErrorHandler } from "../../utils/errorHandler.js";
 import { phoneNumberText } from "../../utils/phoneNumberText.js";

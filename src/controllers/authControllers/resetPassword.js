@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import { isValidObjectId } from "mongoose";
 import { config } from "dotenv";
-
 import ResetPassword from "../../models/resetPassword.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";

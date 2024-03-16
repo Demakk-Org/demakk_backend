@@ -1,8 +1,6 @@
 import { config } from "dotenv";
-
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
-
 import { ProductCategory } from "../../models/productCategorySchema.js";
 
 const { LANG, SORT, LIMIT, PAGE } = config(process.cwd, ".env").parsed;

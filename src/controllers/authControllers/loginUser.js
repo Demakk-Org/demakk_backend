@@ -1,7 +1,6 @@
 import { config } from "dotenv";
 import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
-
 import User from "../../models/userSchema.js";
 import queryByType from "../../utils/queryByType.js";
 import responsse from "../../../responsse.js";

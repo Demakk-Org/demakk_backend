@@ -1,8 +1,6 @@
 import { config } from "dotenv";
-
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
-
 import DiscountType from "../../models/discountTypeSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;

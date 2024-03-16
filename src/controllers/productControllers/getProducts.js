@@ -1,9 +1,7 @@
 import { config } from "dotenv";
 import Jwt from "jsonwebtoken";
-
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
-
 import { Product } from "../../models/productSchema.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;

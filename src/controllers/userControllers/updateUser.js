@@ -1,11 +1,9 @@
 import { config } from "dotenv";
 import { decode } from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
-
 import { ResponseHandler } from "../../utils/responseHandler.js";
 import responsse from "../../../responsse.js";
 import QueryByType from "../../utils/queryByType.js";
-
 import Address from "../../models/addressSchema.js";
 import User from "../../models/userSchema.js";
 
