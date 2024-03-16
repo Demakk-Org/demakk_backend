@@ -1,5 +1,6 @@
 import { mongoose } from "mongoose";
 import Role from "./roleSchema.js";
+import { Image } from "./imageSchema.js";
 
 const { Schema } = mongoose;
 
@@ -66,7 +67,10 @@ export const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    image: String,
+    image: {
+      type: mongoose.Types.ObjectId,
+      ref: "Image",
+    },
     searchTerms: [
       {
         type: String,

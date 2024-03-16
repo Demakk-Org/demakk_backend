@@ -114,6 +114,7 @@ export default {
         401: "Invalid coupon name",
         402: "Invalid coupon code id!",
         404: "Coupon not found",
+        405: "Coupon code is already exists",
       },
       orderStatus: {
         401: "Invalid order status name",
@@ -311,6 +312,7 @@ export default {
         406: "ቀዳሚ የቁጥር አይነት ነው",
         404: "ምስሎች አልተገኙም።",
         407: "ልክ ያልሆነ ቀዳሚ ምስል ዋጋ",
+        408: "ልክ ያልሆነ የምስል ፋይል",
       },
       stockVariety: {},
       stockVarietyType: {},

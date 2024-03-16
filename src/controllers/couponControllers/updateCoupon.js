@@ -72,6 +72,10 @@ export const updateCoupon = async (req, res) => {
       return ResponseHandler(res, "coupon", 404, lang);
     }
 
+    if (name == coupon.name) {
+      return ResponseHandler(res, "coupon", 405, lang);
+    }
+
     if (name) coupon.name = name;
     if (discountTypeId) coupon.discountTypeId = discountTypeId;
     if (discountAmount) coupon.discountAmount = discountAmount;

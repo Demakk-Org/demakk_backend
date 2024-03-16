@@ -44,7 +44,8 @@ export const addOrder = async (req, res) => {
       deliveryDate,
       orderStatus: "65a6f9a6e2caf4bfc91f2b27",
     }).then(async (data) => {
-      let user = await User.findById(uid); //check using the user from middleware
+      let user = await User.findById(uid);
+
       user.orders.push(data._id);
       await user.save();
 

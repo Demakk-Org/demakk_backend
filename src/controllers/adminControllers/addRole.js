@@ -28,11 +28,11 @@ export const addRole = async (req, res) => {
   const role = await Role.findOne({ name });
 
   if (role) {
-    return ResponseHandler(res, "role", 461, lang);
+    return ResponseHandler(res, "role", 405, lang);
   } else {
     try {
       Role.create({ name }).then((data) => {
-        return ResponseHandler(res, "common", 201, lang);
+        return ResponseHandler(res, "common", 201, lang, data);
       });
     } catch (error) {
       console.log(error.message);
