@@ -125,6 +125,7 @@ const getProduct = async (req, res) => {
       price: product.price,
       reviews: product.reviews,
       rating: product.ratings,
+      sold: product.sold,
       images: product?.images,
       popularity: product?.popularity,
       productCategory: product?.productCategory && {

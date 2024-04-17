@@ -156,6 +156,12 @@ export default {
         404: "stock variety type not found",
         406: "Stock variety type already exists",
       },
+      dealType:{
+        401: "Invalid deal type name",
+        402: "Invalid deal type id",
+        404: "deal type not found",
+        406: "deal type already exists",
+      }
     },
     message: {
       text: "Demakk: Your verification code is: ",

@@ -11,6 +11,7 @@ const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 const getProducts = async (req, res) => {
   let { page, limit, lang, sort } = req.body;
   const token = req.headers?.authorization?.split(" ")[1];
+  console.log(req.body);
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -52,6 +53,7 @@ const getProducts = async (req, res) => {
           populate: "stockType",
         },
       })
+      .populate("images")
       .then((response) => {
         let products = [];
         response.forEach((product) => {
@@ -69,6 +71,11 @@ const getProducts = async (req, res) => {
               : product.description.get("en"),
             tags: product.tags,
             popularity: product.popularity,
+            images: product.images,
+            ratings: product.ratings,
+            reviews: product.reviews,
+            sold: product.sold,
+            price: product.price,
             productCategory: product?.productCategory && {
               id: product.productCategory._id,
               name: product.productCategory.name.get(lang)
