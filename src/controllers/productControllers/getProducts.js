@@ -9,7 +9,8 @@ import { Product } from "../../models/productSchema.js";
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 const getProducts = async (req, res) => {
-  let { page, limit, lang, sort } = req.body;
+  let { page, limit, lang, sort } = req.params;
+  // let { page, limit, lang, sort } = req.body;
   const token = req.headers?.authorization?.split(" ")[1];
   console.log(req.body);
 
