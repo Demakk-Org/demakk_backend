@@ -159,8 +159,8 @@ export default {
       dealType: {
         401: "Invalid deal type name",
         402: "Invalid deal type id",
-        404: "deal type not found",
-        406: "deal type already exists",
+        404: "Deal type not found",
+        406: "Deal type already exists",
       },
       deal: {
         401: "Invalid deal subtitle value",
