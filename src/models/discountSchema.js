@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
-import DiscountType from "./discountTypeSchema";
-import { Product } from "./productSchema";
+import DiscountType from "./discountTypeSchema.js";
+import { Product } from "./productSchema.js";
 
 const { Schema } = mongoose;
+
+export const statusEnum = ["active", "closed", "pending"];
 
 const DiscountSchema = new Schema(
   {
@@ -24,7 +26,7 @@ const DiscountSchema = new Schema(
     ],
     status: {
       type: String,
-      enum: ["active", "closed", "pending"],
+      enum: statusEnum,
       default: "pending",
     },
     aboveAmount: Number,
@@ -37,6 +39,6 @@ const DiscountSchema = new Schema(
   }
 );
 
-const Discount = mongoose.Model("Discount", DiscountSchema);
+const Discount = mongoose.model("Discount", DiscountSchema);
 
 export default Discount;

@@ -25,6 +25,8 @@ import { discountTypeRoute } from "./src/routes/discountTypeRoute.js";
 // const cors = require('cors')
 import cors from "cors";
 import dealTypeRoute from "./src/routes/dealTypeRoute.js";
+import dealRoute from "./src/routes/dealRoute.js";
+import discountRoute from "./src/routes/discountRoute.js";
 // import bcrypt from "bcryptjs";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
@@ -62,6 +64,8 @@ app.use("/api/v1/stockVarietyType", stockVarietyTypeRoute);
 app.use("/api/v1/stockVariety", stockVarietyRoute);
 app.use("/api/v1/discountType", discountTypeRoute);
 app.use("/api/v1/dealType", dealTypeRoute);
+app.use("/api/v1/deal", dealRoute);
+app.use("/api/v1/discount", discountRoute);
 
 app.get("/addProducts", async (req, res) => {
   function createRandomProduct() {
