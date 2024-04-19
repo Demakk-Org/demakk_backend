@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { Image } from "./imageSchema";
-import Discount from "./discountSchema";
-import DealType from "./dealTypeSchema";
+import { Image } from "./imageSchema.js";
+import Discount from "./discountSchema.js";
+import DealType from "./dealTypeSchema.js";
 
 const { Schema } = mongoose;
 
@@ -34,6 +34,6 @@ const DealSchema = new Schema({
   },
 });
 
-const Deal = mongoose.Model("Deal", DealSchema);
+const Deal = mongoose.model("Deal", DealSchema);
 
 export default Deal;
