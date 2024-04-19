@@ -29,7 +29,7 @@ export const couponSchema = new Schema(
   {
     timestamps: {
       createdAt: "createdAt",
-      updatedAt: "updatedAt", // and `updated_at` to store the last updated date
+      updatedAt: "updatedAt",
     },
   }
 );

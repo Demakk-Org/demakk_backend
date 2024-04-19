@@ -18,7 +18,7 @@ import { deleteReview } from "../controllers/productControllers/deleteReview.js"
 const productRoute = Router();
 
 productRoute.get("/:id", getProduct);
-productRoute.get("/", getProducts);
+productRoute.get("", getProducts);
 productRoute.post("/", AdminAuthentication, addProduct);
 productRoute.put("/", AdminAuthentication, updateProduct);
 productRoute.delete("/", AdminAuthentication, deleteProduct);

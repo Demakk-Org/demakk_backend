@@ -21,6 +21,12 @@ import { stockVarietyTypeRoute } from "./src/routes/stockVarietyTypeRoute.js";
 import { stockVarietyRoute } from "./src/routes/stockVarietyRoute.js";
 import responsse from "./responsse.js";
 import { discountTypeRoute } from "./src/routes/discountTypeRoute.js";
+
+// const cors = require('cors')
+import cors from "cors";
+import dealTypeRoute from "./src/routes/dealTypeRoute.js";
+import dealRoute from "./src/routes/dealRoute.js";
+import discountRoute from "./src/routes/discountRoute.js";
 // import bcrypt from "bcryptjs";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
@@ -30,6 +36,13 @@ console.log(PORT);
 
 const app = express();
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true, //access-control-allow-credentials:true
+    optionSuccessStatus: 200,
+  })
+);
 
 mongoose
   .connect(MONGODB_ULI)
@@ -56,6 +69,9 @@ app.use("/api/v1/coupon", couponRoute);
 app.use("/api/v1/stockVarietyType", stockVarietyTypeRoute);
 app.use("/api/v1/stockVariety", stockVarietyRoute);
 app.use("/api/v1/discountType", discountTypeRoute);
+app.use("/api/v1/dealType", dealTypeRoute);
+app.use("/api/v1/deal", dealRoute);
+app.use("/api/v1/discount", discountRoute);
 
 app.get("/addProducts", async (req, res) => {
   function createRandomProduct() {
