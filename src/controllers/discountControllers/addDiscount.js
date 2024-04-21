@@ -20,7 +20,7 @@ const addDiscount = async (req, res) => {
 
   if (
     !discountTypeId ||
-    !discountAmount ||
+    (!discountAmount && discountAmount != 0) ||
     !products ||
     (products && products.length == 0)
   ) {
