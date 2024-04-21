@@ -2,17 +2,17 @@ import { isValidObjectId } from "mongoose";
 import { config } from "dotenv";
 
 import { uploadImage } from "../../utils/uploadImages.js";
-import { Image } from "../../models/imageSchema.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 
-import { Product } from "../../models/productSchema.js";
+import { Image } from "../../models/imageSchema.js";
+import Deal from "../../models/dealSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
-export const addImages = async (req, res) => {
+const addDealImages = async (req, res) => {
   const { image } = req.files;
-  let { lang, rid, name, description, primary } = req.fields;
+  let { lang, rid, name, description, primary, type } = req.fields;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -27,11 +27,15 @@ export const addImages = async (req, res) => {
   }
 
   if (!isValidObjectId(rid)) {
-    return ResponseHandler(res, "product", 402, lang);
+    return ResponseHandler(res, "deal", 402, lang);
   }
 
   if (typeof name !== "string") {
     return ResponseHandler(res, "image", 401, lang);
+  }
+
+  if (typeof type !== "string") {
+    return ResponseHandler(res, "images", 409, lang);
   }
 
   if (description && typeof description !== "string") {
@@ -65,22 +69,23 @@ export const addImages = async (req, res) => {
   }
 
   try {
-    let product = await Product.findById(rid).select("images");
+    let deal = await Deal.findById(rid).select("images");
 
-    if (!product) {
-      return ResponseHandler(res, "product", 404, lang);
+    if (!deal) {
+      return ResponseHandler(res, "deal", 404, lang);
     }
 
     uploadImage(images).then((data) => {
       Image.create({
         rid,
         name,
+        type,
         description,
         primary: primary ? primary : 0,
         images: data,
       }).then(async (resp) => {
-        product.images = resp._id;
-        await product.save();
+        deal.images = resp._id;
+        await deal.save();
 
         return ResponseHandler(res, "common", 201, lang, resp);
       });
@@ -90,3 +95,5 @@ export const addImages = async (req, res) => {
     return ResponseHandler(res, "common", 500, lang);
   }
 };
+
+export default addDealImages;

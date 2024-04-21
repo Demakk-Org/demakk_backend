@@ -14,7 +14,7 @@ const DealSchema = new Schema({
     type: String,
     required: true,
   },
-  image: {
+  images: {
     type: mongoose.Types.ObjectId,
     ref: "Image",
   },

@@ -15,6 +15,8 @@ const ImageSchema = new Schema(
     type: {
       type: String,
       required: true,
+      enum: ["product", "category", "user", "deal", "discount"],
+      default: "product",
     },
     name: String,
     description: String,

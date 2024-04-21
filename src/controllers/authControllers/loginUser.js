@@ -52,7 +52,7 @@ async function loginUser(req, res) {
         "your_secret_key",
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
-      return ResponseHandler(res, "common", 200, lang, token);
+      return ResponseHandler(res, "auth", 200, lang, token);
     } else {
       return ResponseHandler(res, "auth", 410, lang);
     }

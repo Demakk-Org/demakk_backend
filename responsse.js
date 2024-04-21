@@ -144,6 +144,7 @@ export default {
         406: "Primary is a type of number",
         407: "Invalid Primary image value",
         408: "Invalid image file",
+        409: "Invalid images type value",
       },
       stockVariety: {
         402: "Invalid stock variety id",
