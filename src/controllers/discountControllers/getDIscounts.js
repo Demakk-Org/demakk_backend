@@ -22,6 +22,14 @@ const getDiscounts = async (req, res) => {
         path: "discountType",
         select: "name",
       })
+      .populate({
+        path: "deal",
+        select: "-_id -__v -discounts",
+        populate: {
+          path: "dealType",
+          select: "name",
+        },
+      })
       .select("-createdAt -updatedAt -__v");
 
     let discountList = [];
@@ -33,6 +41,7 @@ const getDiscounts = async (req, res) => {
         discountAmount: discount.discountAmount,
         products: discount.products,
         status: discount.status,
+        deal: discount.deal?.dealType.name,
         aboveAmount: discount.aboveAmount,
       });
     });

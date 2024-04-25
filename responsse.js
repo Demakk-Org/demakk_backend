@@ -169,6 +169,8 @@ export default {
         404: "deal not found",
         406: "Invalid discounts list",
         407: "Discount list cannot be empty",
+        408: "The discount already exists in another deal",
+        409: "Invalid deal status value",
       },
       discount: {
         401: "Invalid discount name",
@@ -179,6 +181,7 @@ export default {
         407: "Invalid discount type",
         408: "Invalid lists of product",
         409: "Invalid discount status",
+        410: "A product already exists in another discount",
       },
     },
     message: {

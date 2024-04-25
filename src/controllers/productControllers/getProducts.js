@@ -10,7 +10,7 @@ const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 const getProducts = async (req, res) => {
   let { page, limit, lang, sort } = req.query;
-  // let { page, limit, lang, sort } = req.body;
+
   const token = req.headers?.authorization?.split(" ")[1];
   console.log(typeof page, page, limit, lang, sort, " params");
 
@@ -48,13 +48,13 @@ const getProducts = async (req, res) => {
       .limit(limit)
       .skip((page - 1) * limit)
       .sort(sort)
-      .populate({
-        path: "productCategory",
-        populate: {
-          path: "stockItem",
-          populate: "stockType",
-        },
-      })
+      // .populate({
+      //   path: "productCategory",
+      //   populate: {
+      //     path: "stockItem",
+      //     populate: "stockType",
+      //   },
+      // })
       .populate("images")
       .then((response) => {
         let products = [];
@@ -78,36 +78,37 @@ const getProducts = async (req, res) => {
             reviews: product.reviews,
             sold: product.sold,
             price: product.price,
-            productCategory: product?.productCategory && {
-              id: product.productCategory._id,
-              name: product.productCategory.name.get(lang)
-                ? product.productCategory.name.get(lang)
-                : product.productCategory.name.get(LANG)
-                ? product.productCategory.name.get(LANG)
-                : product.productCategory.name.get("en"),
-              additionalPrice: product.productCategory.additionalPrice,
-              stockItem: product?.productCategory?.stockItem && {
-                id: product.productCategory.stockItem._id,
-                name: product.productCategory.stockItem.name.get(lang)
-                  ? product.productCategory.stockItem.name.get(lang)
-                  : product.productCategory.stockItem.name.get(LANG)
-                  ? product.productCategory.stockItem.name.get(LANG)
-                  : product.productCategory.stockItem.name.get("en"),
-                stockType: product?.productCategory?.stockItem?.stockType && {
-                  id: product.productCategory.stockItem.stockType._id,
-                  name: product.productCategory.stockItem.stockType.name.get(
-                    lang
-                  )
-                    ? product.productCategory.stockItem.stockType.name.get(lang)
-                    : product.productCategory.stockItem.stockType.name.get(LANG)
-                    ? product.productCategory.stockItem.stockType.name.get(LANG)
-                    : product.productCategory.stockItem.stockType.name.get(
-                        "en"
-                      ),
-                },
-                price: product.productCategory.stockItem.price,
-              },
-            },
+            productCategory: product?.productCategory,
+            // productCategory: product?.productCategory && {
+            //   id: product.productCategory._id,
+            //   name: product.productCategory.name.get(lang)
+            //     ? product.productCategory.name.get(lang)
+            //     : product.productCategory.name.get(LANG)
+            //     ? product.productCategory.name.get(LANG)
+            //     : product.productCategory.name.get("en"),
+            //   additionalPrice: product.productCategory.additionalPrice,
+            //   stockItem: product?.productCategory?.stockItem && {
+            //     id: product.productCategory.stockItem._id,
+            //     name: product.productCategory.stockItem.name.get(lang)
+            //       ? product.productCategory.stockItem.name.get(lang)
+            //       : product.productCategory.stockItem.name.get(LANG)
+            //       ? product.productCategory.stockItem.name.get(LANG)
+            //       : product.productCategory.stockItem.name.get("en"),
+            //     stockType: product?.productCategory?.stockItem?.stockType && {
+            //       id: product.productCategory.stockItem.stockType._id,
+            //       name: product.productCategory.stockItem.stockType.name.get(
+            //         lang
+            //       )
+            //         ? product.productCategory.stockItem.stockType.name.get(lang)
+            //         : product.productCategory.stockItem.stockType.name.get(LANG)
+            //         ? product.productCategory.stockItem.stockType.name.get(LANG)
+            //         : product.productCategory.stockItem.stockType.name.get(
+            //             "en"
+            //           ),
+            //     },
+            //     price: product.productCategory.stockItem.price,
+            //   },
+            // },
           };
           products.push(productItem);
         });

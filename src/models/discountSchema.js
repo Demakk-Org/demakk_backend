@@ -13,6 +13,11 @@ const DiscountSchema = new Schema(
       ref: "DiscountType",
       required: true,
     },
+    deal: {
+      type: mongoose.Types.ObjectId,
+      ref: "Deal",
+      required: true,
+    },
     discountAmount: {
       type: Number,
       required: true,

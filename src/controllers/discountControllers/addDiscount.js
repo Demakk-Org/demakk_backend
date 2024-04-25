@@ -3,6 +3,7 @@ import { ResponseHandler } from "../../utils/responseHandler.js";
 import { isValidObjectId } from "mongoose";
 import Discount from "../../models/discountSchema.js";
 import { isArr } from "../../utils/validate.js";
+import isProductInOtherDiscount from "../../utils/isProductInOtherDiscount.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -50,6 +51,12 @@ const addDiscount = async (req, res) => {
   }
 
   try {
+    const exists = await isProductInOtherDiscount(products);
+
+    if (exists) {
+      return ResponseHandler(res, "discount", 410, lang);
+    }
+
     const discount = await Discount.create({
       discountType: discountTypeId,
       discountAmount,

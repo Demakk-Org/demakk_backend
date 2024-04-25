@@ -4,12 +4,21 @@ import { isValidObjectId } from "mongoose";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 import Deal from "../../models/dealSchema.js";
 import { isArr, isDateValid } from "../../utils/validate.js";
+import isDiscountInOtherDeal from "../../utils/isDiscountInOtherDeal.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateDeal = async (req, res) => {
-  let { lang, dealId, dealTypeId, subTitle, discounts, startDate, endDate } =
-    req.body;
+  let {
+    lang,
+    dealId,
+    dealTypeId,
+    subTitle,
+    discounts,
+    startDate,
+    endDate,
+    status,
+  } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -23,7 +32,14 @@ const updateDeal = async (req, res) => {
     return ResponseHandler(res, "common", 400, lang);
   }
 
-  if (!dealTypeId && !subTitle && !discounts && !startDate && !endDate) {
+  if (
+    !dealTypeId &&
+    !subTitle &&
+    !discounts &&
+    !startDate &&
+    !endDate &&
+    !status
+  ) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
@@ -37,6 +53,10 @@ const updateDeal = async (req, res) => {
 
   if (subTitle && typeof subTitle !== "string") {
     return ResponseHandler(res, "deal", 401, lang);
+  }
+
+  if (status && typeof status !== "string") {
+    return ResponseHandler(res, "deal", 409, lang);
   }
 
   if (discounts && !isArr(discounts, "string")) {
@@ -69,7 +89,15 @@ const updateDeal = async (req, res) => {
 
     if (dealTypeId) deal.dealType = dealTypeId;
     if (subTitle) deal.subTitle = subTitle;
-    if (discounts) deal.discounts = discounts;
+    if (discounts) {
+      const exists = await isDiscountInOtherDeal(discounts);
+
+      if (exists) {
+        return ResponseHandler(res, "deal", 408, lang);
+      }
+      deal.discounts = discounts;
+    }
+    if (status) deal.status = status;
     if (startDate) deal.startDate = startDate;
     if (endDate) deal.endDate = endDate;
 

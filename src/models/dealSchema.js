@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Image } from "./imageSchema.js";
-import Discount from "./discountSchema.js";
+import Discount, { statusEnum } from "./discountSchema.js";
 import DealType from "./dealTypeSchema.js";
 
 const { Schema } = mongoose;
@@ -24,6 +24,12 @@ const DealSchema = new Schema({
       ref: "Discount",
     },
   ],
+  status: {
+    type: String,
+    enum: statusEnum,
+    // required: true,
+    default: "pending",
+  },
   startDate: {
     type: Date,
     required: true,

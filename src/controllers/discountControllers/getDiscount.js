@@ -29,7 +29,7 @@ const getDiscount = async (req, res) => {
   }
 
   try {
-    const discount = await Discount.findById(id);
+    const discount = await Discount.findById(id).populate("deal");
 
     if (!discount) {
       return ResponseHandler(res, "discount", 404, lang);
