@@ -2,7 +2,7 @@ import { isValidObjectId } from "mongoose";
 import { config } from "dotenv";
 import Jwt from "jsonwebtoken";
 
-import language from "../../../response.js";
+import language from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 
 import { Product } from "../../models/productSchema.js";
@@ -92,7 +92,16 @@ const getProduct = async (req, res) => {
         select: "name additionalPrice stockItem",
         populate: {
           path: "stockItem",
-          populate: { path: "stockType", select: "name" },
+          populate: {
+            path: "stockType",
+            select: "name availableVarieties",
+            populate: {
+              path: "availableVarieties",
+              populate: {
+                path: "stockVarietyType",
+              },
+            },
+          },
           select: "name price",
         },
       })
@@ -106,7 +115,7 @@ const getProduct = async (req, res) => {
       });
 
     if (!product) {
-      return ResponseHandler(res, "prod", 404, lang);
+      return ResponseHandler(res, "product", 404, lang);
     }
 
     let data = {
@@ -150,6 +159,13 @@ const getProduct = async (req, res) => {
               : product.productCategory.stockItem.stockType.name.get(LANG)
               ? product.productCategory.stockItem.stockType.name.get(LANG)
               : product.productCategory.stockItem.stockType.name.get("en"),
+            availableVarieties:
+              product?.productCategory?.stockItem?.stockType
+                ?.availableVarieties &&
+              //  {
+              // value:
+              product.productCategory?.stockItem?.stockType?.availableVarieties,
+            // },
           },
           price: product.productCategory.stockItem.price,
         },

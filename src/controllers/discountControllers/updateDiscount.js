@@ -4,6 +4,7 @@ import { isValidObjectId } from "mongoose";
 import Discount, { statusEnum } from "../../models/discountSchema.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 import { isArr } from "../../utils/validate.js";
+import isProductInOtherDiscount from "../../utils/isProductInOtherDiscount.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -13,6 +14,7 @@ const updateDiscount = async (req, res) => {
     discountTypeId,
     discountAmount,
     products,
+    dealId,
     status,
     aboveAmount,
     lang,
@@ -40,9 +42,14 @@ const updateDiscount = async (req, res) => {
     !products &&
     // products?.length == 0 &&
     !status &&
-    !aboveAmount
+    !aboveAmount &&
+    !dealId
   ) {
     return ResponseHandler(res, "common", 400, lang);
+  }
+
+  if (dealId && !isValidObjectId(dealId)) {
+    return ResponseHandler(res, "deal", 402, lang);
   }
 
   if (discountTypeId && !isValidObjectId(discountTypeId)) {
@@ -83,7 +90,16 @@ const updateDiscount = async (req, res) => {
 
     if (discountTypeId) discount.discountType = discountTypeId;
     if (discountAmount) discount.discountAmount = discountAmount;
-    if (products) discount.products = products;
+
+    if (products) {
+      const exists = await isProductInOtherDiscount(products);
+
+      if (exists) {
+        return ResponseHandler(res, "discount", 410, lang);
+      }
+      discount.products = products;
+    }
+    if (dealId) discount.deal = dealId;
     if (status) discount.status = status;
     if (aboveAmount) discount.aboveAmount = aboveAmount;
 

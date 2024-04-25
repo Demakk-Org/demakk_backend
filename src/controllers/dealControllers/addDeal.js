@@ -4,6 +4,7 @@ import { isValidObjectId } from "mongoose";
 import Deal from "../../models/dealSchema.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+import isDiscountInOtherDeal from "../../utils/isDiscountInOtherDeal.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -49,6 +50,13 @@ const addDeal = async (req, res) => {
   }
 
   try {
+    const exists = await isDiscountInOtherDeal(discounts);
+    console.log(exists, "here");
+
+    if (exists) {
+      return ResponseHandler(res, "deal", 408, lang);
+    }
+
     const deal = await Deal.create({
       dealType: dealTypeId,
       subTitle,
