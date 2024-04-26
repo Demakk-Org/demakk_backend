@@ -47,14 +47,7 @@ const getProducts = async (req, res) => {
     Product.find(query)
       .limit(limit)
       .skip((page - 1) * limit)
-      .sort(sort)
-      // .populate({
-      //   path: "productCategory",
-      //   populate: {
-      //     path: "stockItem",
-      //     populate: "stockType",
-      //   },
-      // })
+      // .sort(sort)
       .populate("images")
       .then((response) => {
         let products = [];
@@ -79,6 +72,7 @@ const getProducts = async (req, res) => {
             sold: product.sold,
             price: product.price,
             productCategory: product?.productCategory,
+            productVariants: product?.productVariants,
             // productCategory: product?.productCategory && {
             //   id: product.productCategory._id,
             //   name: product.productCategory.name.get(lang)

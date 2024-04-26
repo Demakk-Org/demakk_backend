@@ -94,13 +94,13 @@ const getProduct = async (req, res) => {
           path: "stockItem",
           populate: {
             path: "stockType",
-            select: "name availableVarieties",
-            populate: {
-              path: "availableVarieties",
-              populate: {
-                path: "stockVarietyType",
-              },
-            },
+            // select: "name availableVarieties",
+            // populate: {
+            //   path: "availableVarieties",
+            //   populate: {
+            //     path: "stockVarietyType",
+            //   },
+            // },
           },
           select: "name price",
         },
@@ -112,6 +112,23 @@ const getProduct = async (req, res) => {
           path: "user",
           select: "username email phoneNumber -_id",
         },
+      })
+      .populate({
+        path: "productVariants",
+        select: "-__v -createdAt -updatedAt",
+        populate: {
+          path: "stockVarietyType",
+          select: "-__v -createdAt -updatedAt",
+        },
+        // populate: {
+        //   path: "subVariants",
+        //   select:
+        //     "-__v -createdAt -updatedAt -subVariants -product -numberOfAvailable",
+        //   populate: {
+        //     path: "stockVarietyType",
+        //     select: "-__v -createdAt -updatedAt",
+        //   },
+        // },
       });
 
     if (!product) {
@@ -159,17 +176,20 @@ const getProduct = async (req, res) => {
               : product.productCategory.stockItem.stockType.name.get(LANG)
               ? product.productCategory.stockItem.stockType.name.get(LANG)
               : product.productCategory.stockItem.stockType.name.get("en"),
-            availableVarieties:
-              product?.productCategory?.stockItem?.stockType
-                ?.availableVarieties &&
-              //  {
-              // value:
-              product.productCategory?.stockItem?.stockType?.availableVarieties,
+            //availableVarieties:
+            //product?.productCategory?.stockItem?.stockType
+            //?.availableVarieties &&
+            //  {
+            // value:
+            //product.productCategory?.stockItem?.stockType?.availableVarieties,
             // },
           },
           price: product.productCategory.stockItem.price,
         },
       },
+      productVariants: product?.productVariants.filter(
+        (variant) => variant.type == "main"
+      ),
     };
 
     return ResponseHandler(res, "common", 200, lang, data);

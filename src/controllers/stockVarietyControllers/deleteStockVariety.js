@@ -5,6 +5,7 @@ import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 
 import { StockVariety } from "../../models/stockVarietySchema.js";
+import { Product } from "../../models/productSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -34,7 +35,18 @@ export const deleteStockVariety = async (req, res) => {
       return ResponseHandler(res, "stockVariety", 404, lang);
     }
 
-    return ResponseHandler(res, "common", 203, lang);
+    const product = await Product.findById(stockVariety.product).select(
+      "productVariants"
+    );
+
+    const variantList = product?.productVariants.filter(
+      (variant) => variant != stockVarietyId
+    );
+
+    product.productVariants = variantList;
+    await product.save();
+
+    return ResponseHandler(res, "common", 203, lang, stockVariety);
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

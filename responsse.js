@@ -12,7 +12,7 @@ export default {
         404: "Not Found",
         405: "Invalid date provided",
         406: "Invalid input",
-        407: "Prices are type of number!",
+        407: "Prices are type of number and greater than zero! ",
 
         500: "Internal Server Error, please try again!",
         501: "Not Implemented: it is under development",
@@ -149,7 +149,12 @@ export default {
       stockVariety: {
         402: "Invalid stock variety id",
         404: "Stock variety not found",
+        407: "Number of available stock variety is type of number!",
         408: "Invalid stock variety value",
+        409: "Stock variety for this product already exists",
+        410: "Type is type of string, 'main' or 'sub'",
+        411: "Invalid sub variants value",
+        412: "Invalid image value, it's type of string",
       },
       stockVarietyType: {
         401: "Invalid stock variety type name",
@@ -186,9 +191,9 @@ export default {
     },
     message: {
       text: "Demakk: Your verification code is: ",
-      title: "Demakk ecommerce site",
+      title: "Demakk e-commerce site",
       greetings: "Hi",
-      body: "Your Demmakk password can be reset by clicking the button below. It expires in 10 minutes. If you did not request a new password, please ignore this email.",
+      body: "Your Demakk password can be reset by clicking the button below. It expires in 10 minutes. If you did not request a new password, please ignore this email.",
       button: "Reset Password",
       regards: "Regards, ",
       name: "Demakk",

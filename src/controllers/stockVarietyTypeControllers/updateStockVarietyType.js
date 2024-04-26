@@ -8,7 +8,7 @@ import { StockVarietyType } from "../../models/stockVarietyTypeSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
-export const updateStockVarietytype = async (req, res) => {
+export const updateStockVarietyType = async (req, res) => {
   let { stockVarietyTypeId, name, lang } = req.body;
 
   if (!lang || !(lang in responsse)) {
