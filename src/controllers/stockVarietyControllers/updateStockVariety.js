@@ -5,11 +5,23 @@ import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 
 import { StockVariety } from "../../models/stockVarietySchema.js";
+import { isArr } from "../../utils/validate.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const updateStockVariety = async (req, res) => {
-  let { stockVarietyId, stockVarietyTypeId, value, lang } = req.body;
+  let {
+    stockVarietyId,
+    stockVarietyTypeId,
+    productId,
+    price,
+    numberOfAvailable,
+    value,
+    subVariants,
+    type,
+    image,
+    lang,
+  } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -19,7 +31,17 @@ export const updateStockVariety = async (req, res) => {
     lang = req.language;
   }
 
-  if (!stockVarietyId || (!stockVarietyTypeId && !value)) {
+  if (
+    !stockVarietyId ||
+    (!stockVarietyTypeId &&
+      !value &&
+      !price &&
+      !productId &&
+      !numberOfAvailable &&
+      !subVariants &&
+      !image &&
+      !type)
+  ) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
@@ -31,9 +53,43 @@ export const updateStockVariety = async (req, res) => {
     return ResponseHandler(res, "stockVarietyType", 402, lang);
   }
 
+  if (productId && !isValidObjectId(productId)) {
+    return ResponseHandler(res, "product", 402, lang);
+  }
+
+  if (price && (typeof price !== "number" || price <= 0)) {
+    return ResponseHandler(res, "common", 407, lang);
+  }
+
+  if (
+    numberOfAvailable &&
+    (typeof numberOfAvailable !== "number" || numberOfAvailable < 0)
+  ) {
+    return ResponseHandler(res, "stockVariety", 407, lang);
+  }
+
   if (value && typeof value !== "string") {
     return ResponseHandler(res, "stockVarietyType", 408, lang);
   }
+
+  if (type && typeof type != "string") {
+    return ResponseHandler(res, "common", 410, lang);
+  }
+
+  if (image && typeof image != "string") {
+    return ResponseHandler(res, "stockVariety", 412, lang);
+  }
+
+  if (subVariants && !isArr(subVariants, "string")) {
+    return ResponseHandler(res, "stockVariety", 411, lang);
+  }
+
+  subVariants &&
+    subVariants.forEach((variant) => {
+      if (!isValidObjectId(variant)) {
+        return ResponseHandler(res, "stockVariety", 402, lang);
+      }
+    });
 
   try {
     const stockVariety = await StockVariety.findById(stockVarietyId);
@@ -44,6 +100,12 @@ export const updateStockVariety = async (req, res) => {
 
     if (value) stockVariety.value = value;
     if (stockVarietyTypeId) stockVariety.stockVarietyType = stockVarietyTypeId;
+    if (productId) stockVariety.product = productId;
+    if (price) stockVariety.price = price;
+    if (numberOfAvailable) stockVariety.numberOfAvailable = numberOfAvailable;
+    if (subVariants) stockVariety.subVariants = subVariants;
+    if (type) stockVariety.type = type;
+    if (image) stockVariety.image = image;
 
     await stockVariety.save();
 

@@ -81,6 +81,12 @@ const ProductSchema = Schema(
       type: Number,
       default: 0,
     },
+    productVariants: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "StockVariety",
+      },
+    ],
   },
   {
     timestamps: {

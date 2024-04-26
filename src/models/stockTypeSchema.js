@@ -14,12 +14,12 @@ const StockTypeSchema = new Schema({
     type: mongoose.Types.ObjectId,
     ref: "Image",
   },
-  availableVarieties: [
-    {
-      type: mongoose.Types.ObjectId,
-      ref: "StockVariety",
-    },
-  ],
+  // availableVarieties: [
+  //   {
+  //     type: mongoose.Types.ObjectId,
+  //     ref: "StockVariety",
+  //   },
+  // ],
 });
 
 export const StockType = mongoose.model("StockType", StockTypeSchema);

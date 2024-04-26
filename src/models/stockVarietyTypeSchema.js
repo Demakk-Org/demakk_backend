@@ -9,6 +9,7 @@ const StockVarietyTypeSchema = new Schema(
       required: true,
     },
   },
+
   {
     timestamps: {
       createdAt: "createdAt",

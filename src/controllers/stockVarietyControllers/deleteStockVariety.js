@@ -34,7 +34,7 @@ export const deleteStockVariety = async (req, res) => {
       return ResponseHandler(res, "stockVariety", 404, lang);
     }
 
-    return ResponseHandler(res, "common", 203, lang);
+    return ResponseHandler(res, "common", 203, lang, stockVariety);
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);
