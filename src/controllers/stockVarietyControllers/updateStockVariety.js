@@ -19,7 +19,7 @@ export const updateStockVariety = async (req, res) => {
     value,
     subVariants,
     type,
-    image,
+    imageIndex,
     lang,
   } = req.body;
 
@@ -39,7 +39,8 @@ export const updateStockVariety = async (req, res) => {
       !productId &&
       !numberOfAvailable &&
       !subVariants &&
-      !image &&
+      !imageIndex &&
+      imageIndex != 0 &&
       !type)
   ) {
     return ResponseHandler(res, "common", 400, lang);
@@ -76,7 +77,7 @@ export const updateStockVariety = async (req, res) => {
     return ResponseHandler(res, "common", 410, lang);
   }
 
-  if (image && typeof image != "string") {
+  if (imageIndex && typeof imageIndex != "number") {
     return ResponseHandler(res, "stockVariety", 412, lang);
   }
 
@@ -105,7 +106,7 @@ export const updateStockVariety = async (req, res) => {
     if (numberOfAvailable) stockVariety.numberOfAvailable = numberOfAvailable;
     if (subVariants) stockVariety.subVariants = subVariants;
     if (type) stockVariety.type = type;
-    if (image) stockVariety.image = image;
+    if (imageIndex || imageIndex == 0) stockVariety.imageIndex = imageIndex;
 
     await stockVariety.save();
 

@@ -17,11 +17,11 @@ const StockVarietySchema = new Schema(
       ref: "Product",
       required: true,
     },
-    image: String,
+    imageIndex: Number,
     type: {
       type: String,
       enum: ["main", "sub"],
-      default: "main",
+      default: "sub",
     },
     subVariants: [
       {

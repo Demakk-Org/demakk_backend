@@ -120,15 +120,15 @@ const getProduct = async (req, res) => {
           path: "stockVarietyType",
           select: "-__v -createdAt -updatedAt",
         },
-        populate: {
-          path: "subVariants",
-          select:
-            "-__v -createdAt -updatedAt -subVariants -product -numberOfAvailable",
-          populate: {
-            path: "stockVarietyType",
-            select: "-__v -createdAt -updatedAt",
-          },
-        },
+        // populate: {
+        //   path: "subVariants",
+        //   select:
+        //     "-__v -createdAt -updatedAt -subVariants -product -numberOfAvailable",
+        //   populate: {
+        //     path: "stockVarietyType",
+        //     select: "-__v -createdAt -updatedAt",
+        //   },
+        // },
       });
 
     if (!product) {

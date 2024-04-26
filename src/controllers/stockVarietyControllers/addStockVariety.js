@@ -81,11 +81,11 @@ export const addStockVariety = async (req, res) => {
     });
 
   try {
-    const exists = await StockVariety.findOne({ value, product: productId });
+    // const exists = await StockVariety.findOne({ value, product: productId });
 
-    if (exists) {
-      return ResponseHandler(res, "stockVariety", 409, lang);
-    }
+    // if (exists) {
+    //   return ResponseHandler(res, "stockVariety", 409, lang);
+    // }
 
     const product = await Product.findById(productId);
 
