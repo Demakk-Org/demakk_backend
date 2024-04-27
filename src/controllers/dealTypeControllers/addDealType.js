@@ -8,7 +8,7 @@ import DealType from "../../models/dealTypeSchema.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const addDealType = async (req, res) => {
-  let { name, lang } = req.body;
+  let { name, subTitle, lang } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -26,6 +26,14 @@ export const addDealType = async (req, res) => {
     return ResponseHandler(res, "dealType", 401, lang);
   }
 
+  if (!subTitle) {
+    return ResponseHandler(res, "dealType", 407, lang);
+  }
+
+  if (typeof subTitle !== "string") {
+    return ResponseHandler(res, "dealType", 407, lang);
+  }
+
   try {
     const dealType = await DealType.findOne({ name });
 
@@ -33,7 +41,7 @@ export const addDealType = async (req, res) => {
       return ResponseHandler(res, "dealType", 406, lang);
     }
 
-    DealType.create({ name }).then((data) => {
+    DealType.create({ name, subTitle }).then((data) => {
       return ResponseHandler(res, "common", 201, lang, data);
     });
   } catch (error) {
