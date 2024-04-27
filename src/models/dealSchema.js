@@ -10,10 +10,6 @@ const DealSchema = new Schema({
     type: mongoose.Types.ObjectId,
     ref: "DealType",
   },
-  subTitle: {
-    type: String,
-    required: true,
-  },
   images: {
     type: mongoose.Types.ObjectId,
     ref: "Image",
@@ -27,7 +23,6 @@ const DealSchema = new Schema({
   status: {
     type: String,
     enum: statusEnum,
-    // required: true,
     default: "pending",
   },
   startDate: {

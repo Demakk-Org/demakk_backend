@@ -167,6 +167,7 @@ export default {
         402: "Invalid deal type id",
         404: "Deal type not found",
         406: "Deal type already exists",
+        407: "Invalid deal subtitle value",
       },
       deal: {
         401: "Invalid deal subtitle value",

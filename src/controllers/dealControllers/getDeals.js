@@ -1,4 +1,5 @@
 import { config } from "dotenv";
+
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 import Deal from "../../models/dealSchema.js";
@@ -20,7 +21,7 @@ const getDeals = async (req, res) => {
     const deals = await Deal.find({})
       .populate({
         path: "dealType",
-        select: "name",
+        select: "name subTitle",
       })
       .populate({
         path: "images",

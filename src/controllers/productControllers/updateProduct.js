@@ -10,8 +10,15 @@ import { Product } from "../../models/productSchema.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateProduct = async (req, res) => {
-  let { productId, productName, description, tags, productCategoryId, lang } =
-    req.body;
+  let {
+    productId,
+    productName,
+    description,
+    tags,
+    productCategoryId,
+    price,
+    lang,
+  } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -25,7 +32,7 @@ const updateProduct = async (req, res) => {
     return ResponseHandler(res, "common", 400, lang);
   }
 
-  if (!productName && !description && !productCategoryId && !tags) {
+  if (!productName && !description && !productCategoryId && !tags && !price) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
@@ -36,6 +43,8 @@ const updateProduct = async (req, res) => {
   if (productCategoryId && !isValidObjectId(productCategoryId)) {
     return ResponseHandler(res, "productCategory", 402, lang);
   }
+
+  //add validate for price
 
   if (productName && !Array.isArray(productName)) {
     return ResponseHandler(res, "product", 401, lang);
@@ -87,7 +96,7 @@ const updateProduct = async (req, res) => {
         product.name.set(key, name[key]);
       });
     }
-
+    if (price) product.price = price;
     if (description) {
       Array.from(Object.keys(desc)).forEach((key) => {
         product.description.set(key, desc[key]);

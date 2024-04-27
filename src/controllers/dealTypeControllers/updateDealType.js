@@ -7,7 +7,7 @@ import { isValidObjectId } from "mongoose";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateDealType = async (req, res) => {
-  let { lang, name, dealTypeId } = req.body;
+  let { lang, name, subTitle, dealTypeId } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -17,7 +17,7 @@ const updateDealType = async (req, res) => {
     lang = req.language;
   }
 
-  if (!dealTypeId || !name) {
+  if (!dealTypeId) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
@@ -25,8 +25,16 @@ const updateDealType = async (req, res) => {
     return ResponseHandler(res, "dealType", 402, lang);
   }
 
-  if (typeof name !== "string") {
-    return ResponseHandler(res, "common", 401, lang);
+  if (!name && !subTitle) {
+    return ResponseHandler(res, "common", 400, lang);
+  }
+
+  if (name && typeof name !== "string") {
+    return ResponseHandler(res, "dealType", 401, lang);
+  }
+
+  if (subTitle && typeof subTitle !== "string") {
+    return ResponseHandler(res, "dealTYpe", 407, lang);
   }
 
   try {
@@ -36,23 +44,18 @@ const updateDealType = async (req, res) => {
       return ResponseHandler(res, "dealType", 404, lang);
     }
 
-    DealType.find({ name }).then((data) => {
-      if (data) {
-        return ResponseHandler(res, "dealType", 406, lang);
-      }
+    if (name) dealType.name = name;
+    if (subTitle) dealType.subTitle = subTitle;
 
-      dealType.name = name;
-
-      dealType
-        .save()
-        .then((res) => {
-          return ResponseHandler(res, "common", 202, lang, res);
-        })
-        .catch((error) => {
-          console.log(error.message);
-          return ResponseHandler(res, "common", 500, lang);
-        });
-    });
+    dealType
+      .save()
+      .then((res) => {
+        return ResponseHandler(res, "common", 202, lang, res);
+      })
+      .catch((error) => {
+        console.log(error.message);
+        return ResponseHandler(res, "common", 500, lang);
+      });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

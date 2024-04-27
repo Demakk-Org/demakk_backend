@@ -8,7 +8,7 @@ import isProductInOtherDiscount from "../../utils/isProductInOtherDiscount.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addDiscount = async (req, res) => {
-  let { lang, discountTypeId, discountAmount, products, aboveAmount } =
+  let { lang, discountTypeId, discountAmount, products, aboveAmount, deal } =
     req.body;
 
   if (!lang || !(lang in responsse)) {
@@ -23,13 +23,18 @@ const addDiscount = async (req, res) => {
     !discountTypeId ||
     (!discountAmount && discountAmount != 0) ||
     !products ||
-    (products && products.length == 0)
+    (products && products.length == 0) ||
+    !deal
   ) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
   if (!isValidObjectId(discountTypeId)) {
     return ResponseHandler(res, "discountType", 402, lang);
+  }
+
+  if (!isValidObjectId(deal)) {
+    return ResponseHandler(res, "deal", 402, lang);
   }
 
   if (typeof discountAmount != "number") {
@@ -51,7 +56,7 @@ const addDiscount = async (req, res) => {
   }
 
   try {
-    const exists = await isProductInOtherDiscount(products);
+    const exists = await isProductInOtherDiscount(products, discountTypeId);
 
     if (exists) {
       return ResponseHandler(res, "discount", 410, lang);
@@ -62,6 +67,7 @@ const addDiscount = async (req, res) => {
       discountAmount,
       products,
       aboveAmount,
+      deal,
     });
 
     if (!discount) {

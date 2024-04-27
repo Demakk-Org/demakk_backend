@@ -12,7 +12,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const getProduct = async (req, res) => {
   let productId = req.params?.id;
-  let { lang } = req.body;
+  let { lang } = req.query;
   let uid;
 
   const token = req.headers?.authorization?.split(" ")[1];

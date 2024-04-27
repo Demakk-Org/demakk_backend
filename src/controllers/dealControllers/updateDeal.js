@@ -1,6 +1,7 @@
-import { config } from "dotenv";
-import responsse from "../../../responsse.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
+import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 import Deal from "../../models/dealSchema.js";
 import { isArr, isDateValid } from "../../utils/validate.js";
@@ -9,16 +10,8 @@ import isDiscountInOtherDeal from "../../utils/isDiscountInOtherDeal.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateDeal = async (req, res) => {
-  let {
-    lang,
-    dealId,
-    dealTypeId,
-    subTitle,
-    discounts,
-    startDate,
-    endDate,
-    status,
-  } = req.body;
+  let { lang, dealId, dealTypeId, discounts, startDate, endDate, status } =
+    req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -32,14 +25,7 @@ const updateDeal = async (req, res) => {
     return ResponseHandler(res, "common", 400, lang);
   }
 
-  if (
-    !dealTypeId &&
-    !subTitle &&
-    !discounts &&
-    !startDate &&
-    !endDate &&
-    !status
-  ) {
+  if (!dealTypeId && !discounts && !startDate && !endDate && !status) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
@@ -49,10 +35,6 @@ const updateDeal = async (req, res) => {
 
   if (dealTypeId && !isValidObjectId(dealTypeId)) {
     return ResponseHandler(res, "dealType", 402, lang);
-  }
-
-  if (subTitle && typeof subTitle !== "string") {
-    return ResponseHandler(res, "deal", 401, lang);
   }
 
   if (status && typeof status !== "string") {
@@ -88,9 +70,8 @@ const updateDeal = async (req, res) => {
     }
 
     if (dealTypeId) deal.dealType = dealTypeId;
-    if (subTitle) deal.subTitle = subTitle;
     if (discounts) {
-      const exists = await isDiscountInOtherDeal(discounts);
+      const exists = await isDiscountInOtherDeal(discounts, dealId);
 
       if (exists) {
         return ResponseHandler(res, "deal", 408, lang);

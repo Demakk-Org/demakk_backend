@@ -3,11 +3,6 @@ import { Product } from "./productSchema.js";
 
 const ImageSchema = new Schema(
   {
-    // product: {
-    //   type: mongoose.Types.ObjectId,
-    //   ref: "Product",
-    //   required: true,
-    // },
     rid: {
       type: mongoose.Types.ObjectId,
       required: true,
@@ -20,7 +15,7 @@ const ImageSchema = new Schema(
     },
     name: String,
     description: String,
-    images: [
+    imageUrls: [
       {
         type: String,
       },

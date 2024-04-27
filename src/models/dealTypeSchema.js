@@ -7,6 +7,10 @@ const DealTypeSchema = new Schema({
     type: String,
     required: true,
   },
+  subTitle: {
+    type: String,
+    required: true,
+  },
 });
 
 const DealType = mongoose.model("DealType", DealTypeSchema);
