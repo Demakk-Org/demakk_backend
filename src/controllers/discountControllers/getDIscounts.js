@@ -18,35 +18,22 @@ const getDiscounts = async (req, res) => {
 
   try {
     const discounts = await Discount.find({})
-      .populate({
-        path: "discountType",
-        select: "name",
-      })
+      .populate([
+        {
+          path: "discountType",
+        },
+        {
+          path: "products",
+        },
+      ])
       .populate({
         path: "deal",
-        select: "-_id -__v -discounts",
-        populate: {
-          path: "dealType",
-          select: "name",
-        },
+        select: "-_id -__v",
+        populate: "dealType",
       })
       .select("-createdAt -updatedAt -__v");
 
-    let discountList = [];
-
-    discounts.forEach((discount) => {
-      discountList.push({
-        id: discount._id,
-        discountType: discount.discountType?.name,
-        discountAmount: discount.discountAmount,
-        products: discount.products,
-        status: discount.status,
-        deal: discount.deal?.dealType.name,
-        aboveAmount: discount.aboveAmount,
-      });
-    });
-
-    return ResponseHandler(res, "common", 200, lang, discountList);
+    return ResponseHandler(res, "common", 200, lang, discounts);
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);
