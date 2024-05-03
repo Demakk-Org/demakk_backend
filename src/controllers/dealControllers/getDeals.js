@@ -1,4 +1,4 @@
-import { config } from "dotenv";
+import { config, populate } from "dotenv";
 
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
@@ -26,6 +26,11 @@ const getDeals = async (req, res) => {
       .populate({
         path: "images",
         select: "-__v -_id -createdAt -updatedAt",
+      })
+      .populate({
+        path: "discounts",
+        select: "-updatedAt -createdAt -__v",
+        populate: { path: "products", populate: "images" },
       });
 
     return ResponseHandler(res, "common", 200, lang, deals);

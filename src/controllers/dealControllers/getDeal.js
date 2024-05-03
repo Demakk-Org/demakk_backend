@@ -29,10 +29,16 @@ const getDeal = async (req, res) => {
   }
 
   try {
-    const deal = await Deal.findById(id).populate({
-      path: "dealType",
-      select: "name",
-    });
+    const deal = await Deal.findById(id)
+      .populate({
+        path: "dealType",
+        select: "name",
+      })
+      .populate({
+        path: "discounts",
+        select: "-updatedAt -createdAt -__v",
+        populate: "products discountType",
+      });
 
     if (!deal) {
       return ResponseHandler(res, "deal", 404, lang);
