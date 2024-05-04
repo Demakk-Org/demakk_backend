@@ -136,7 +136,7 @@ const getProduct = async (req, res) => {
     }
 
     let data = {
-      id: product._id,
+      _id: product._id,
       name: product.name.get(lang)
         ? product.name.get(lang)
         : product.name.get(LANG)
