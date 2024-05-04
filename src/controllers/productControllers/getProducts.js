@@ -53,7 +53,7 @@ const getProducts = async (req, res) => {
         let products = [];
         response.forEach((product) => {
           let productItem = {
-            id: product._id,
+            _id: product._id,
             name: product.name.get(lang)
               ? product.name.get(lang)
               : product.name.get(LANG)
