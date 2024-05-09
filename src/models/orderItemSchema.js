@@ -20,10 +20,6 @@ export const orderItemSchema = new Schema(
       type: Number,
       required: true,
     },
-    // unitPrice: {
-    //   type: Number,
-    //   required: true,
-    // },
     couponCode: {
       type: mongoose.Types.ObjectId,
       ref: "Coupon",

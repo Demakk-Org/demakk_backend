@@ -77,7 +77,7 @@ export const addImages = async (req, res) => {
         name,
         description,
         primary: primary ? primary : 0,
-        images: data,
+        imageUrls: data,
       }).then(async (resp) => {
         product.images = resp._id;
         await product.save();

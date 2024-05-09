@@ -70,6 +70,7 @@ export default {
         405: "Invalid tag value",
         406: "At least one tag is required",
         407: "Invalid price range values ",
+        408: "Invalid stock variety list values",
       },
       address: {
         402: "Invalid address id",
@@ -188,6 +189,18 @@ export default {
         408: "Invalid lists of product",
         409: "Invalid discount status",
         410: "A product already exists in another discount",
+      },
+      productVariant: {
+        402: "Invalid variant id",
+        404: "Product variant not found",
+        405: "Number of Available variants is type of number",
+        406: "Index of image is type of number",
+        407: "Stock varieties is a list",
+        408: "Invalid stock varieties provided",
+        409: "There is a missing stock variety type for this product",
+        410: "This product does not accept product variants, Please update the product first!",
+        411: "This variant already exists in this product",
+        412: "Stock variety list cannot be empty",
       },
     },
     message: {

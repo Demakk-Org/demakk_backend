@@ -27,6 +27,7 @@ import cors from "cors";
 import dealTypeRoute from "./src/routes/dealTypeRoute.js";
 import dealRoute from "./src/routes/dealRoute.js";
 import discountRoute from "./src/routes/discountRoute.js";
+import { productVariantRoute } from "./src/routes/productVariantRoute.js";
 // import bcrypt from "bcryptjs";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
@@ -72,40 +73,14 @@ app.use("/api/v1/discountType", discountTypeRoute);
 app.use("/api/v1/dealType", dealTypeRoute);
 app.use("/api/v1/deal", dealRoute);
 app.use("/api/v1/discount", discountRoute);
-
-app.get("/addProducts", async (req, res) => {
-  function createRandomProduct() {
-    return {
-      name: { en: faker.commerce.productName() },
-      description: { en: faker.commerce.productDescription() },
-      productCategory: new mongoose.Types.ObjectId(),
-      tags: faker.helpers.multiple(faker.commerce.productMaterial),
-      price: faker.commerce.price({ min: 100, max: 10000 }),
-    };
-  }
-
-  const Products = faker.helpers.multiple(createRandomProduct, {
-    count: 20,
-  });
-
-  console.log(Products);
-
-  Product.create(Products).then((products) => {
-    return res.json(products);
-  });
-});
+app.use("/api/v1/productVariant", productVariantRoute);
 
 app.get("/", (req, res) => {
-  res.send("Hello, this is demakk your most trusted ecommerce site");
+  res.send("Hello, this is demakk your most trusted e-commerce site");
 });
 
 app.listen(PORT, () => {
   console.log(`Server is running on port : ${PORT}`);
 });
 
-console.log(responsse["en"].response["common"]["203"]);
-
 export { app };
-
-// console.log(await bcrypt.hash("Melka7141", 10));
-// 11128847;
