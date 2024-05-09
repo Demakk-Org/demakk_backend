@@ -177,8 +177,19 @@ const getProduct = async (req, res) => {
           price: product.productCategory.stockItem.price,
         },
       },
-      productVariants: product?.productVariants,
-      stockVarietyTypeList: product?.stockVarietyTypeList,
+      productVariants: product?.productVariants?.map((productVariant) => ({
+        _id: productVariant._id,
+        stockVarieties: productVariant.stockVarieties.map((v) => ({
+          type: v.type.name,
+          value: v.value,
+        })),
+
+        imageIndex: productVariant.imageIndex,
+        imageUrl: product.images?.imageUrls[productVariant.imageIndex],
+        price: product.price + productVariant.additionalPrice,
+        numberOfAvailable: productVariant.numberOfAvailable,
+      })),
+      stockVarietyTypeList: product?.stockVarietyTypeList.map((l) => l.name),
     };
 
     return ResponseHandler(res, "common", 200, lang, data);
