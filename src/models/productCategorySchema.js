@@ -1,30 +1,40 @@
-
 import mongoose from "mongoose";
+import { StockItem } from "./stockItemSchema.js";
 
 const { Schema } = mongoose;
 
-const ProductCategorySchema = Schema({
-  stockItem: {
-    type:mongoose.Types.ObjectId,
-    required:true
+const ProductCategorySchema = Schema(
+  {
+    stockItem: {
+      type: mongoose.Types.ObjectId,
+      ref: "StockItem",
+      required: true,
+    },
+    name: {
+      type: Map,
+      of: String,
+      required: true,
+    },
+    additionalPrice: {
+      type: Number,
+      required: true,
+    },
+    additionalCost: {
+      type: Number,
+      required: true,
+    },
   },
-  name: {
-    type: String,
-    required: true,
-  },
-  additionalPrice: Number,
-  additionalCost: Number,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    immutable: true
-  },
-  updatedAt:{
-    type: Date,
-    require: true,
-  },
-})
+  {
+    timestamps: {
+      updatedAt: "updatedAt",
+      createdAt: "createdAt",
+    },
+  }
+);
 
-const ProductCategory = mongoose.model("ProductCategory", ProductCategorySchema);
+const ProductCategory = mongoose.model(
+  "ProductCategory",
+  ProductCategorySchema
+);
 
-export default ProductCategory;
+export { ProductCategory };

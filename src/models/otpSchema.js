@@ -1,17 +1,38 @@
 import mongoose from "mongoose";
 
-const { Schema } = mongoose
+const { Schema } = mongoose;
 
-const otpSchema = new Schema({
-  type:String,
-  otp:String,
-  account:String,
-  createdAt:{
-    type:Date,
-    default:Date.now
+const otpSchema = new Schema(
+  {
+    type: {
+      type: String,
+      required: true,
+    },
+    otp: {
+      type: String,
+      required: true,
+    },
+    account: {
+      type: String,
+      required: true,
+    },
+    expiresIn: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: String,
+      enums: ["pending", "complete"],
+      default: "pending",
+    },
   },
-})
+  {
+    timestamps: {
+      createdAt: "createdAt",
+    },
+  }
+);
 
-const OTP = mongoose.model("OTP", otpSchema)
+const OTP = mongoose.model("OTP", otpSchema);
 
-export default OTP
+export default OTP;

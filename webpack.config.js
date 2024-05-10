@@ -1,7 +1,7 @@
 import path from 'path'
 console.log(path.resolve('dist'))
 const webpackConfig = {
-  entry: './server.js',
+  entry: './index.js',
   target:'node',
   output: {
     path: path.resolve('dist'),

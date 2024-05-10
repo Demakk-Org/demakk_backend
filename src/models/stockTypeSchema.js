@@ -1,14 +1,25 @@
 import mongoose from "mongoose";
+import { Image } from "./imageSchema.js";
+import { StockVariety } from "./stockVarietySchema.js";
 
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
-const StockTypeSchema = Schema.create({
+const StockTypeSchema = new Schema({
   name: {
-    type: String,
+    type: Map,
+    of: String,
     required: true,
   },
-})
+  images: {
+    type: mongoose.Types.ObjectId,
+    ref: "Image",
+  },
+  // availableVarieties: [
+  //   {
+  //     type: mongoose.Types.ObjectId,
+  //     ref: "StockVariety",
+  //   },
+  // ],
+});
 
-const StockType = mongoose.model("StockType", StockTypeSchema);
-
-export default StockType;
+export const StockType = mongoose.model("StockType", StockTypeSchema);

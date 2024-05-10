@@ -3,18 +3,24 @@ import Order from "./orderSchema.js";
 
 const { Schema } = mongoose;
 
-const CartSchema = new Schema({
-  orderItems: [
-    {
+const CartSchema = new Schema(
+  {
+    user: {
       type: mongoose.Types.ObjectId,
-      ref: "Order",
     },
-  ],
-  updatedAt: {
-    type: Date,
-    default: Date.now,
+    orderItems: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "OrderItem",
+      },
+    ],
   },
-});
+  {
+    timestamps: {
+      updatedAt: "updatedAt",
+    },
+  }
+);
 
 const Cart = mongoose.model("Cart", CartSchema);
 

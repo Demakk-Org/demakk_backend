@@ -4,31 +4,35 @@ import User from "./userSchema.js";
 
 const { Schema } = mongoose;
 
-const OrderSchema = new Schema({
-  user: {
-    type: mongoose.Types.ObjectId,
-    ref: "User",
-  },
-  orderItems: [
-    {
+const OrderSchema = new Schema(
+  {
+    user: {
       type: mongoose.Types.ObjectId,
-      ref: "OrderItem",
+      ref: "User",
     },
-  ],
-  orderDate: {
-    type: Date,
-    required: true,
+    orderItems: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "OrderItem",
+      },
+    ],
+    orderDate: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
+    deliveryDate: Date,
+    orderStatus: {
+      type: mongoose.Types.ObjectId,
+      ref: "OrderStatus",
+    },
   },
-  deliveryDate: Date,
-  orderStatus: {
-    type: mongoose.Types.ObjectId,
-    ref: "OrderStatus",
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now(),
-  },
-});
+  {
+    timestamps: {
+      updatedAt: "updatedAt",
+    },
+  }
+);
 
 const Order = mongoose.model("Order", OrderSchema);
 

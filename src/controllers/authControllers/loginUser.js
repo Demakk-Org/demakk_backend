@@ -1,21 +1,64 @@
-import User from "../../models/userSchema.js";
-import bcrypt from "bcryptjs"
+import { config } from "dotenv";
+import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
 
+import User from "../../models/userSchema.js";
+import queryByType from "../../utils/queryByType.js";
+import responsse from "../../../responsse.js";
+import { ResponseHandler } from "../../utils/responseHandler.js";
+
+const LANG = config(process.cwd, ".env").parsed.LANG;
+
 async function loginUser(req, res) {
+  let { account, password, lang } = req.body;
+
+  if (!lang || !(lang in responsse)) {
+    lang = LANG;
+  }
+
+  if (req?.language) {
+    lang = req.language;
+  }
+
+  if (!account || !password) {
+    return ResponseHandler(res, "common", 400, lang);
+  }
+
+  const queryAndType = queryByType(account, lang);
+
+  if (queryAndType.status == 403) {
+    return ResponseHandler(res, "auth", 405, lang);
+  }
 
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email })
+    const user = await User.findOne(queryAndType.searchQuery).select(
+      "_id email firstName password lang"
+    );
 
-    if (user && await bcrypt.compare(password, user.password)) {
-      const token = Jwt.sign({ from: "Demakk Printing Enterprise", email:user.email, name:user.firstName }, 'your_secret_key', {expiresIn:1000*60*60*24*30});
-      res.json({ token })
+    if (!user) {
+      return ResponseHandler(res, "user", 404, lang);
+    }
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token = Jwt.sign(
+        {
+          from: "Demakk Printing Enterprise",
+          uid: user._id,
+          name: user.firstName,
+          ...queryAndType.searchQuery,
+          iat: Date.now(),
+          lang: user.lang ? user.lang : lang,
+        },
+        "your_secret_key",
+        { expiresIn: 1000 * 60 * 60 * 24 * 30 }
+      );
+      return ResponseHandler(res, "auth", 200, lang, token);
     } else {
-      res.status(401).json({message:"Invalid credential"});
+      return ResponseHandler(res, "auth", 410, lang);
     }
   } catch (error) {
-    res.status(500).send(error.message)
+    console.log(error.message);
+    return ResponseHandler(res, "common", 500, lang);
   }
 }
 

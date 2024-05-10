@@ -1,31 +1,45 @@
-import QueryByType from "../../libs/queryByType.js";
+import { config } from "dotenv";
+import Jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+
+import { camelize } from "../../utils/validate.js";
+import QueryByType from "../../utils/queryByType.js";
+import responsse from "../../../responsse.js";
+
 import Cart from "../../models/cartSchema.js";
 import User from "../../models/userSchema.js";
-import bcrypt from "bcryptjs";
-import Jwt from "jsonwebtoken";
+import { ResponseHandler } from "../../utils/responseHandler.js";
 
-async function registerUser(req, res) {
-  const { account, firstName, lastName, password, confirmPassword } = req.body;
+const LANG = config(process.cwd, ".env").parsed.LANG;
+
+const registerUser = async (req, res) => {
+  let { account, firstName, lastName, password, confirmPassword, lang } =
+    req.body;
+
+  if (!lang || !(lang in responsse)) {
+    lang = LANG;
+  }
 
   if (!account || !firstName || !lastName || !password || !confirmPassword) {
-    return res.status(400).send({ message: "Missing required fields" });
+    return ResponseHandler(res, "common", 400, lang);
   }
 
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: "Passwords do not match" });
+    return ResponseHandler(res, "auth", 404, lang);
   }
 
-  var queryAndType = QueryByType(account);
+  var queryAndType = QueryByType(account, lang);
 
-  if (queryAndType.status == 400) {
-    return res.status(400).json({ message: queryAndType.message });
+  if (queryAndType.status == 403) {
+    return ResponseHandler(res, "auth", 405, lang);
   }
 
-  const user = await User.find(queryAndType.searchQuery);
+  const user = await User.findOne(queryAndType.searchQuery);
 
-  console.log(user, type, account);
-  if (user.length != 0) {
-    return res.status(400).json({ message: "Account already exists" });
+  console.log(user, queryAndType.type, account);
+
+  if (user) {
+    return ResponseHandler(res, "auth", 400, lang);
   }
 
   var cart;
@@ -35,18 +49,19 @@ async function registerUser(req, res) {
     console.log(cart);
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: "Server Error" });
+    return ResponseHandler(res, "common", 500, lang);
   }
 
   var query = {
-    firstName,
-    lastName,
+    firstName: camelize(firstName),
+    lastName: camelize(lastName),
     password: await bcrypt.hash(password, 10),
     role: "65a6ee8675aa7a6c6924c260",
     cart: cart._id,
+    lang,
   };
 
-  if (type == "email") {
+  if (queryAndType.type == "email") {
     query.email = account;
   } else {
     query.phoneNumber = account;
@@ -57,21 +72,29 @@ async function registerUser(req, res) {
   if (cart) {
     try {
       const user = await User.create(query);
+      cart.user = user._id;
+      cart.save();
+
       const token = Jwt.sign(
         {
           from: "Demakk Printing Enterprise",
-          id: user._id,
+          uid: user._id,
           name: user.firstName,
+          ...queryAndType.searchQuery,
+          iat: Date.now(),
+          lang,
         },
         "your_secret_key",
+
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
-      return res.json({ message: "User registration successful", token });
-    } catch (e) {
-      console.log(e);
-      return res.status(500).json({ error: "Server Error" });
+
+      return ResponseHandler(res, "common", 201, lang, token);
+    } catch (err) {
+      console.log(err.message);
+      return ResponseHandler(res, "common", 500, lang);
     }
   }
-}
+};
 
 export default registerUser;
