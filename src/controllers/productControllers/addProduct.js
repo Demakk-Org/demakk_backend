@@ -1,4 +1,4 @@
-import { isValidObjectId } from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { config } from "dotenv";
 
 import { isArr } from "../../utils/validate.js";
@@ -11,7 +11,14 @@ import { Product } from "../../models/productSchema.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const addProduct = async (req, res) => {
-  let { productName, description, tags, productCategoryId, lang } = req.body;
+  let {
+    productName,
+    description,
+    tags,
+    productCategoryId,
+    stockVarietyTypeList,
+    lang,
+  } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -43,6 +50,10 @@ const addProduct = async (req, res) => {
 
   if (tags.length == 0) {
     return ResponseHandler(res, "product", 406, lang);
+  }
+
+  if (stockVarietyTypeList && !isArr(stockVarietyTypeList, "ObjectId")) {
+    return ResponseHandler(res, "product", 408, lang);
   }
 
   let name = {};
@@ -92,6 +103,7 @@ const addProduct = async (req, res) => {
       productCategory: productCategoryId,
       tags,
       price,
+      stockVarietyTypeList: stockVarietyTypeList || [],
     });
 
     return ResponseHandler(res, "common", 200, lang, product);

@@ -1,5 +1,5 @@
 import { isValidObjectId } from "mongoose";
-import { config } from "dotenv";
+import { config, populate } from "dotenv";
 import Jwt from "jsonwebtoken";
 
 import language from "../../../responsse.js";
@@ -94,13 +94,6 @@ const getProduct = async (req, res) => {
           path: "stockItem",
           populate: {
             path: "stockType",
-            // select: "name availableVarieties",
-            // populate: {
-            //   path: "availableVarieties",
-            //   populate: {
-            //     path: "stockVarietyType",
-            //   },
-            // },
           },
           select: "name price",
         },
@@ -113,25 +106,20 @@ const getProduct = async (req, res) => {
           select: "username email phoneNumber -_id",
         },
       })
-      .populate({
-        path: "productVariants",
-        select: "-__v -createdAt -updatedAt",
-        populate: [
-          {
-            path: "stockVarietyType",
-            select: "-__v -createdAt -updatedAt",
+      .populate([
+        {
+          path: "productVariants",
+          select: "-__v -createdAt -updatedAt",
+          populate: {
+            path: "stockVarieties",
+            populate: { path: "type", select: "-__v -createdAt -updatedAt" },
           },
-          {
-            path: "subVariants",
-            select:
-              "-__v -createdAt -updatedAt -subVariants -product -numberOfAvailable",
-            populate: {
-              path: "stockVarietyType",
-              select: "-__v -createdAt -updatedAt",
-            },
-          },
-        ],
-      });
+        },
+        {
+          path: "stockVarietyTypeList",
+          select: "-__v -createdAt -updatedAt",
+        },
+      ]);
 
     if (!product) {
       return ResponseHandler(res, "product", 404, lang);
@@ -178,20 +166,24 @@ const getProduct = async (req, res) => {
               : product.productCategory.stockItem.stockType.name.get(LANG)
               ? product.productCategory.stockItem.stockType.name.get(LANG)
               : product.productCategory.stockItem.stockType.name.get("en"),
-            //availableVarieties:
-            //product?.productCategory?.stockItem?.stockType
-            //?.availableVarieties &&
-            //  {
-            // value:
-            //product.productCategory?.stockItem?.stockType?.availableVarieties,
-            // },
           },
           price: product.productCategory.stockItem.price,
         },
       },
-      productVariants: product?.productVariants.filter(
-        (variant) => variant.type == "main"
-      ),
+      productVariants: product?.productVariants?.map((productVariant) => ({
+        _id: productVariant._id,
+        stockVarieties: productVariant.stockVarieties.map((v) => ({
+          type: v.type.name,
+          value: v.value,
+          class: v.class,
+        })),
+
+        imageIndex: productVariant.imageIndex,
+        imageUrl: product.images?.imageUrls[productVariant.imageIndex],
+        price: product.price + productVariant.additionalPrice,
+        numberOfAvailable: productVariant.numberOfAvailable,
+      })),
+      stockVarietyTypeList: product?.stockVarietyTypeList.map((l) => l.name),
     };
 
     return ResponseHandler(res, "common", 200, lang, data);

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Review } from "./reviewSchema.js";
 import { Image } from "./imageSchema.js";
+import { ProductVariant } from "./productVariantSchema.js";
 
 const { Schema } = mongoose;
 
@@ -84,7 +85,13 @@ const ProductSchema = Schema(
     productVariants: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "StockVariety",
+        ref: "ProductVariant",
+      },
+    ],
+    stockVarietyTypeList: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "StockVarietyType",
       },
     ],
   },
