@@ -57,12 +57,23 @@ export const addProductVariant = async (req, res) => {
   }
 
   let validStockVarieties = true;
+  let classType = 0;
 
   stockVarieties.forEach((item) => {
-    if (!isValidObjectId(item.type) || typeof item.value !== "string") {
+    if (
+      !isValidObjectId(item.type) ||
+      typeof item.value !== "string" ||
+      (item.class != "Main" && item.class != "Sub")
+    ) {
       validStockVarieties = false;
     }
+
+    if (item.class == "Main") classType++;
   });
+
+  if (classType == 2) {
+    return ResponseHandler(res, "productVariant", 413, lang);
+  }
 
   if (!validStockVarieties) {
     return ResponseHandler(res, "productVariant", 408, lang);
@@ -96,6 +107,7 @@ export const addProductVariant = async (req, res) => {
         validStockVarietiesList.push({
           type: variant,
           value: stockVarieties.find((v) => v.type === variant).value,
+          class: stockVarieties.find((v) => v.type === variant).class,
         });
       });
 
@@ -112,6 +124,7 @@ export const addProductVariant = async (req, res) => {
           variant.stockVarieties.map((v) => ({
             type: v.type.toString(),
             value: v.value,
+            class: v.class,
           }))
         )
       ) {

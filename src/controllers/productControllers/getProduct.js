@@ -94,13 +94,6 @@ const getProduct = async (req, res) => {
           path: "stockItem",
           populate: {
             path: "stockType",
-            // select: "name availableVarieties",
-            // populate: {
-            //   path: "availableVarieties",
-            //   populate: {
-            //     path: "stockVarietyType",
-            //   },
-            // },
           },
           select: "name price",
         },
@@ -182,6 +175,7 @@ const getProduct = async (req, res) => {
         stockVarieties: productVariant.stockVarieties.map((v) => ({
           type: v.type.name,
           value: v.value,
+          class: v.class,
         })),
 
         imageIndex: productVariant.imageIndex,

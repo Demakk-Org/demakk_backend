@@ -10,6 +10,11 @@ const productVariantSchema = new Schema(
       {
         type: { type: mongoose.Types.ObjectId, ref: "StockVarietyType" },
         value: { type: String, required: true },
+        class: {
+          type: String,
+          enum: ["Main", "Sub"],
+          required: true,
+        },
       },
     ],
     product: {

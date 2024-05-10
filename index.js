@@ -11,24 +11,19 @@ import { stockItemRoute } from "./src/routes/stockItemRoute.js";
 import { productCategoryRoute } from "./src/routes/ProductCategoryRoute.js";
 import { productRoute } from "./src/routes/ProductRoute.js";
 import { addressRoute } from "./src/routes/addressRoute.js";
-import { faker } from "@faker-js/faker";
-import { Product } from "./src/models/productSchema.js";
 import { orderItemRoute } from "./src/routes/orderItemRoute.js";
 import { orderRoute } from "./src/routes/orderRoute.js";
 import { searchRoute } from "./src/routes/searchRoute.js";
 import { couponRoute } from "./src/routes/couponRoute.js";
 import { stockVarietyTypeRoute } from "./src/routes/stockVarietyTypeRoute.js";
 import { stockVarietyRoute } from "./src/routes/stockVarietyRoute.js";
-import responsse from "./responsse.js";
 import { discountTypeRoute } from "./src/routes/discountTypeRoute.js";
 
-// const cors = require('cors')
 import cors from "cors";
 import dealTypeRoute from "./src/routes/dealTypeRoute.js";
 import dealRoute from "./src/routes/dealRoute.js";
 import discountRoute from "./src/routes/discountRoute.js";
 import { productVariantRoute } from "./src/routes/productVariantRoute.js";
-// import bcrypt from "bcryptjs";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
 const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;

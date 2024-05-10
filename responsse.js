@@ -201,6 +201,7 @@ export default {
         410: "This product does not accept product variants, Please update the product first!",
         411: "This variant already exists in this product",
         412: "Stock variety list cannot be empty",
+        413: "Can't have multiple main stock variety"
       },
     },
     message: {
