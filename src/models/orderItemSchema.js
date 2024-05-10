@@ -1,21 +1,16 @@
 import mongoose from "mongoose";
 import Coupon from "./couponSchema.js";
-import { Product } from "./productSchema.js";
+import { ProductVariant } from "./productVariantSchema.js";
 
 const { Schema } = mongoose;
 
 export const orderItemSchema = new Schema(
   {
-    product: {
+    productVariant: {
       type: mongoose.Types.ObjectId,
-      ref: "Product",
+      ref: "ProductVariant",
       required: true,
     },
-    // order: {
-    //   type: mongoose.Types.ObjectId,
-    //   ref: "Order",
-    //   required: true,
-    // },
     quantity: {
       type: Number,
       required: true,

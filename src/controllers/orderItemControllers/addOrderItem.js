@@ -9,7 +9,7 @@ import OrderItem from "../../models/orderItemSchema.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const addOrderItem = async (req, res) => {
-  let { productId, quantity, couponCode, lang } = req.body;
+  let { productVariantId, quantity, couponCode, lang } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -19,11 +19,11 @@ export const addOrderItem = async (req, res) => {
     lang = req.language;
   }
 
-  if (!productId || !quantity) {
+  if (!productVariantId || !quantity) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
-  if (!isValidObjectId(productId)) {
+  if (!isValidObjectId(productVariantId)) {
     return ResponseHandler(res, "product", 402, lang);
   }
 
@@ -37,7 +37,7 @@ export const addOrderItem = async (req, res) => {
 
   try {
     const orderItem = await OrderItem.create({
-      product: productId,
+      product: productVariantId,
       quantity,
       couponCode,
     });

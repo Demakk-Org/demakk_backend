@@ -1,4 +1,4 @@
-import { config } from "dotenv";
+import { config, populate } from "dotenv";
 
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
@@ -51,17 +51,88 @@ export const getOrders = async (req, res) => {
       .select("-updatedAt -createdAt -__v")
       .populate({
         path: "orderItems",
-        select: "product quantity -_id",
-        populate: { path: "product", select: "name price -_id" },
+        // select: "product quantity -_id",
+        populate: [
+          {
+            path: "productVariant",
+            populate: [
+              {
+                path: "product",
+                select: "name description images price",
+                populate: "images",
+              },
+              {
+                path: "stockVarieties",
+                populate: "type",
+              },
+            ],
+          },
+        ],
       })
       .populate({ path: "orderStatus", select: "name -_id" })
-      .then((order) => {
+      .then((orders) => {
+        let orderList = [];
+
+        orders.forEach((order) => {
+          orderList.push({
+            _id: order._id,
+            orderItems: order.orderItems.map((orderItem) => ({
+              _id: orderItem._id,
+              quantity: orderItem.quantity,
+              couponCode: orderItem.couponCode,
+              productVariant: {
+                _id: orderItem.productVariant._id,
+                stockVarieties: orderItem.productVariant.stockVarieties.map(
+                  (v) => ({
+                    type: v.type.name,
+                    value: v.value,
+                    class: v.class,
+                  })
+                ),
+                product: {
+                  _id: orderItem.productVariant.product._id,
+                  name: orderItem.productVariant.product.name.get(lang)
+                    ? orderItem.productVariant.product.name.get(lang)
+                    : orderItem.productVariant.product.name.get(LANG)
+                    ? orderItem.productVariant.product.name.get(LANG)
+                    : orderItem.productVariant.product.name.get("en"),
+                  description: orderItem.productVariant.product.description.get(
+                    lang
+                  )
+                    ? orderItem.productVariant.product.description.get(lang)
+                    : orderItem.productVariant.product.description.get(LANG)
+                    ? orderItem.productVariant.product.description.get(LANG)
+                    : orderItem.productVariant.product.description.get("en"),
+                  tags: orderItem.productVariant.product.tags,
+                  price: orderItem.productVariant.product.price,
+                  // stockVarietyTypeList:
+                  //   orderItem.productVariant.product.stockVarietyTypeList.map(
+                  //     (l) => l.name
+                  //   ),
+                },
+
+                imageUrl:
+                  orderItem.productVariant.product.images.imageUrls[
+                    orderItem.productVariant.imageIndex
+                  ],
+                price:
+                  orderItem.productVariant.product.price +
+                  orderItem.productVariant.additionalPrice,
+                numberOfAvailable: orderItem.productVariant.numberOfAvailable,
+              },
+            })),
+            orderDate: order.orderDate,
+            deliveryDate: order.deliveryDate,
+            orderStatus: order.orderStatus.name,
+          });
+        });
+
         const data = {
           page: page.toString(),
           pages: Math.ceil(count / limit).toString(),
           limit: limit.toString(),
           count: count.toString(),
-          data: order,
+          data: orderList,
         };
         return ResponseHandler(res, "common", 200, lang, data);
       });
