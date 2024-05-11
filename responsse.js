@@ -203,6 +203,12 @@ export default {
         412: "Stock variety list cannot be empty",
         413: "Can't have multiple main stock variety"
       },
+      orderStatus:{
+        401: "Invalid order status name",
+        402: "Invalid order status id",
+        404: "Order status not found",
+        406: "Order status already exists",
+      }
     },
     message: {
       text: "Demakk: Your verification code is: ",

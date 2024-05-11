@@ -24,6 +24,7 @@ import dealTypeRoute from "./src/routes/dealTypeRoute.js";
 import dealRoute from "./src/routes/dealRoute.js";
 import discountRoute from "./src/routes/discountRoute.js";
 import { productVariantRoute } from "./src/routes/productVariantRoute.js";
+import orderStatusRoute from "./src/routes/orderStatusRoute.js";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
 const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;
@@ -69,6 +70,7 @@ app.use("/api/v1/dealType", dealTypeRoute);
 app.use("/api/v1/deal", dealRoute);
 app.use("/api/v1/discount", discountRoute);
 app.use("/api/v1/productVariant", productVariantRoute);
+app.use("/api/v1/orderStatus", orderStatusRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello, this is demakk your most trusted e-commerce site");
