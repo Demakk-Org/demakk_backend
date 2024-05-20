@@ -22,13 +22,20 @@ const addOrderStatus = async (req, res) => {
   }
 
   try {
-    const orderStatus = await OrderStatus.findOne({ name: camelize(name) });
+    const orderStatuses = await OrderStatus.find({});
 
-    if (orderStatus) {
+    if (orderStatuses.filter((os) => os.name == camelize(name)).length) {
       return ResponseHandler(res, "orderStatus", 406, lang);
     }
 
-    OrderStatus.create({ name: camelize(name) }).then((orderStatus) => {
+    let orderedOrderStatuses = orderStatuses.sort(
+      (a, b) => a.orderIndex - b.orderIndex
+    );
+
+    OrderStatus.create({
+      name: camelize(name),
+      orderIndex: orderedOrderStatuses[orderStatuses.length - 1].orderIndex + 1,
+    }).then((orderStatus) => {
       return ResponseHandler(res, "common", 201, lang, orderStatus);
     });
   } catch (error) {

@@ -37,7 +37,7 @@ export const addOrderItem = async (req, res) => {
 
   try {
     const orderItem = await OrderItem.create({
-      product: productVariantId,
+      productVariant: productVariantId,
       quantity,
       couponCode,
     });

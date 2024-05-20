@@ -47,6 +47,9 @@ export const addOrder = async (req, res) => {
       let user = await User.findById(uid);
 
       user.orders.push(data._id);
+      cartInfo.orderItems = [];
+
+      await cartInfo.save();
       await user.save();
 
       return ResponseHandler(res, "common", 201, lang, data);

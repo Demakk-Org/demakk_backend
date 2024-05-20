@@ -17,7 +17,7 @@ const getOrderStatuses = async (req, res) => {
   }
 
   try {
-    const orderStatuses = await OrderStatus.find({});
+    const orderStatuses = await OrderStatus.find({}).select("-__v");
 
     return ResponseHandler(res, "common", 200, lang, orderStatuses);
   } catch (error) {

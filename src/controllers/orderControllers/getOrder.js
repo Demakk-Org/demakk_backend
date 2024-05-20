@@ -31,7 +31,7 @@ export const getOrder = async (req, res) => {
 
   try {
     const order = await Order.findById(orderId)
-      .select("-updatedAt -createdAt -__v -_id")
+      .select("-updatedAt -__v")
       .populate({
         path: "user",
         select: "firstName lastName email phoneNumber",
@@ -42,8 +42,16 @@ export const getOrder = async (req, res) => {
       })
       .populate({
         path: "orderItems",
-        select: "product quantity",
-        populate: { path: "product", select: "name price images" },
+        // select: "productVariant quantity",
+        populate: {
+          path: "productVariant",
+          // select: "name product price imageIndex images stockVarieties",
+          populate: {
+            path: "product",
+            // select: "name price images",
+            populate: "images",
+          },
+        },
       });
 
     console.log(order);
@@ -56,7 +64,51 @@ export const getOrder = async (req, res) => {
       return ResponseHandler(res, "order", 405, lang);
     }
 
-    return ResponseHandler(res, "common", 200, lang, order);
+    let orderData = {
+      _id: order._id,
+      orderItems: order.orderItems.map((orderItem) => ({
+        _id: orderItem._id,
+        quantity: orderItem.quantity,
+        couponCode: orderItem.couponCode,
+        productVariant: {
+          _id: orderItem.productVariant._id,
+          stockVarieties: orderItem.productVariant.stockVarieties.map((v) => ({
+            type: v.type.name,
+            value: v.value,
+            class: v.class,
+          })),
+          product: {
+            _id: orderItem.productVariant.product._id,
+            name: orderItem.productVariant.product.name.get(lang)
+              ? orderItem.productVariant.product.name.get(lang)
+              : orderItem.productVariant.product.name.get(LANG)
+              ? orderItem.productVariant.product.name.get(LANG)
+              : orderItem.productVariant.product.name.get("en"),
+            description: orderItem.productVariant.product.description.get(lang)
+              ? orderItem.productVariant.product.description.get(lang)
+              : orderItem.productVariant.product.description.get(LANG)
+              ? orderItem.productVariant.product.description.get(LANG)
+              : orderItem.productVariant.product.description.get("en"),
+            tags: orderItem.productVariant.product.tags,
+            price: orderItem.productVariant.product.price,
+          },
+
+          imageUrl:
+            orderItem.productVariant.product.images.imageUrls[
+              orderItem.productVariant.imageIndex
+            ],
+          price:
+            orderItem.productVariant.product.price +
+            orderItem.productVariant.additionalPrice,
+          numberOfAvailable: orderItem.productVariant.numberOfAvailable,
+        },
+      })),
+      orderDate: order.orderDate,
+      deliveryDate: order.deliveryDate,
+      orderStatus: order.orderStatus.name,
+    };
+
+    return ResponseHandler(res, "common", 200, lang, orderData);
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

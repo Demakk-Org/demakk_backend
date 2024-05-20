@@ -51,7 +51,6 @@ export const getOrders = async (req, res) => {
       .select("-updatedAt -createdAt -__v")
       .populate({
         path: "orderItems",
-        // select: "product quantity -_id",
         populate: [
           {
             path: "productVariant",

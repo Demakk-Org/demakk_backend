@@ -10,6 +10,6 @@ const orderStatusRoute = Router();
 
 orderStatusRoute.post("/", AdminAuthentication, addOrderStatus);
 orderStatusRoute.delete("/", AdminAuthentication, deleteOrderStatus);
-orderStatusRoute.get("/", AdminAuthentication, getOrderStatuses);
+orderStatusRoute.get("/", getOrderStatuses);
 
 export default orderStatusRoute;
