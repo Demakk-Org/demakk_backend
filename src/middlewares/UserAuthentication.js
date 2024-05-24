@@ -29,29 +29,29 @@ const UserAuthentication = (req, res, next) => {
     return ResponseHandler(res, "auth", 412, lang);
   }
 
-  let { exp, uid } = tokenValues;
+  let { exp, user_id } = tokenValues;
 
-  if (!uid) {
+  if (!user_id) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
-  if (!isValidObjectId(uid)) {
+  if (!isValidObjectId(user_id)) {
     return ResponseHandler(res, "user", 402, lang);
   }
 
-  if (Date.now() > exp) {
+  if (Date.now() > exp * 1000) {
     console.error("Authentication failed: Token has expired");
     return ResponseHandler(res, "auth", 413, lang);
   }
 
   try {
-    User.findById(uid)
+    User.findById(user_id)
       .select("-password")
       .populate("role")
       .then((user) => {
         req.language = user.lang;
         req.user = user;
-        req.uid = uid;
+        req.uid = user_id;
         req.role = user.role.name;
         next();
       });

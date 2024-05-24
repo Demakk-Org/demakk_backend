@@ -1,11 +1,12 @@
 import { config } from "dotenv";
 import bcrypt from "bcryptjs";
-import Jwt from "jsonwebtoken";
 
 import User from "../../models/userSchema.js";
 import queryByType from "../../utils/queryByType.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+import { app } from "../../firebase/firebase.js";
+import generateCustomToken from "../../libs/generateCustomToken.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -40,19 +41,21 @@ async function loginUser(req, res) {
     }
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const token = Jwt.sign(
-        {
-          from: "Demakk Printing Enterprise",
-          uid: user._id,
-          name: user.firstName,
-          ...queryAndType.searchQuery,
-          iat: Date.now(),
-          lang: user.lang ? user.lang : lang,
-        },
-        "your_secret_key",
-        { expiresIn: 1000 * 60 * 60 * 24 * 30 }
-      );
-      return ResponseHandler(res, "auth", 200, lang, token);
+      app
+        .auth()
+        .createCustomToken(user._id.toString())
+        .then(() => {
+          const token = generateCustomToken({
+            user,
+            account: queryAndType.searchQuery,
+            lang,
+          });
+          return ResponseHandler(res, "auth", 200, lang, token);
+        })
+        .catch((error) => {
+          console.log("Error creating custom token:", error);
+          return ResponseHandler(res, "common", 500, lang);
+        });
     } else {
       return ResponseHandler(res, "auth", 410, lang);
     }

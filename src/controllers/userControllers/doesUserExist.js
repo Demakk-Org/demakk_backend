@@ -25,9 +25,10 @@ const doesUserExist = async (req, res) => {
     const user = await User.findOne(QueryByType(phoneOrEmail).searchQuery);
 
     if (!user) {
-      return ResponseHandler(res, "common", 200, lang, { exists: false });
+      return ResponseHandler(res, "user", 404, lang);
     }
-    return ResponseHandler(res, "common", 200, lang, { exists: true });
+
+    return ResponseHandler(res, "common", 200, lang);
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

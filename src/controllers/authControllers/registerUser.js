@@ -1,5 +1,4 @@
 import { config } from "dotenv";
-import Jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 import { camelize } from "../../utils/validate.js";
@@ -9,6 +8,8 @@ import responsse from "../../../responsse.js";
 import Cart from "../../models/cartSchema.js";
 import User from "../../models/userSchema.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+import { app } from "../../firebase/firebase.js";
+import generateCustomToken from "../../libs/generateCustomToken.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -20,7 +21,13 @@ const registerUser = async (req, res) => {
     lang = LANG;
   }
 
-  if (!account || !firstName || !lastName || !password || !confirmPassword) {
+  if (
+    !account ||
+    //  !firstName ||
+    // !lastName ||
+    !password ||
+    !confirmPassword
+  ) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
@@ -53,8 +60,8 @@ const registerUser = async (req, res) => {
   }
 
   var query = {
-    firstName: camelize(firstName),
-    lastName: camelize(lastName),
+    firstName: firstName ? camelize(firstName) : "",
+    lastName: lastName ? camelize(lastName) : "",
     password: await bcrypt.hash(password, 10),
     role: "65a6ee8675aa7a6c6924c260",
     cart: cart._id,
@@ -75,21 +82,17 @@ const registerUser = async (req, res) => {
       cart.user = user._id;
       cart.save();
 
-      const token = Jwt.sign(
-        {
-          from: "Demakk Printing Enterprise",
-          uid: user._id,
-          name: user.firstName,
-          ...queryAndType.searchQuery,
-          iat: Date.now(),
-          lang,
-        },
-        "your_secret_key",
-
-        { expiresIn: 1000 * 60 * 60 * 24 * 30 }
-      );
-
-      return ResponseHandler(res, "common", 201, lang, token);
+      app
+        .auth()
+        .createCustomToken(user._id.toString())
+        .then(async (customToken) => {
+          const token = generateCustomToken({
+            user,
+            account: queryAndType.searchQuery,
+            lang,
+          });
+          return ResponseHandler(res, "common", 201, lang, token);
+        });
     } catch (err) {
       console.log(err.message);
       return ResponseHandler(res, "common", 500, lang);
