@@ -6,6 +6,10 @@ const { Schema } = mongoose;
 
 export const UserSchema = new Schema(
   {
+    firebaseId: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       lowercase: true,
@@ -25,15 +29,13 @@ export const UserSchema = new Schema(
     },
     firstName: {
       type: String,
-      // required: true,
     },
     lastName: {
       type: String,
-      // required: true,
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     role: {
       type: mongoose.Types.ObjectId,

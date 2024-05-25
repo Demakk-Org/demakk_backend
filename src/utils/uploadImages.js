@@ -20,7 +20,7 @@ export const uploadImage = (images) => {
     try {
       images.forEach(async (image) => {
         const result = await cloudinary.uploader.upload(image.path, options);
-        results.push(result.url);
+        results.push(result.public_id);
 
         if (results.length == images.length) {
           resolve(results);

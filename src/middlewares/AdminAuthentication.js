@@ -29,7 +29,9 @@ const AdminAuthentication = (req, res, next) => {
 
   const { exp, user_id } = tokenValues;
 
-  if (Date.now() > exp) {
+  console.log(exp * 1000, Date.now());
+
+  if (Date.now() > exp * 1000) {
     return ResponseHandler(res, "auth", 413, lang);
   }
 
