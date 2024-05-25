@@ -9,7 +9,7 @@ import registerUser from "../controllers/authControllers/registerUser.js";
 import requestResetPassword from "../controllers/authControllers/requestResetPassword.js";
 import resetPassword from "../controllers/authControllers/resetPassword.js";
 import changePassword from "../controllers/authControllers/changePassword.js";
-import firebaseLogin from "../controllers/authControllers/firbaseLogin.js";
+// import firebaseLogin from "../controllers/authControllers/firbaseLogin.js";
 
 const authRoute = Router();
 
@@ -20,6 +20,6 @@ authRoute.post("/", registerUser);
 authRoute.post("/login", loginUser);
 authRoute.post("/requestResetPassword", requestResetPassword);
 authRoute.post("/resetPassword", resetPassword);
-authRoute.post("/login/firebase", firebaseLogin);
+// authRoute.post("/login/firebase", firebaseLogin);
 
 export default authRoute;
