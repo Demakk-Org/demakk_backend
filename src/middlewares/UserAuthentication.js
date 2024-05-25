@@ -1,6 +1,5 @@
 import { decode } from "jsonwebtoken";
 import { config } from "dotenv";
-import { isValidObjectId } from "mongoose";
 import User from "../models/userSchema.js";
 import responsse from "../../responsse.js";
 import { ResponseHandler } from "../utils/responseHandler.js";
@@ -35,23 +34,19 @@ const UserAuthentication = (req, res, next) => {
     return ResponseHandler(res, "common", 400, lang);
   }
 
-  if (!isValidObjectId(user_id)) {
-    return ResponseHandler(res, "user", 402, lang);
-  }
-
   if (Date.now() > exp * 1000) {
     console.error("Authentication failed: Token has expired");
     return ResponseHandler(res, "auth", 413, lang);
   }
 
   try {
-    User.findById(user_id)
+    User.findOne({ firebaseId: user_id })
       .select("-password")
       .populate("role")
       .then((user) => {
         req.language = user.lang;
         req.user = user;
-        req.uid = user_id;
+        req.uid = user._id;
         req.role = user.role.name;
         next();
       });
