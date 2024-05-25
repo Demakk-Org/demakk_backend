@@ -27,13 +27,13 @@ export const addOrder = async (req, res) => {
     return ResponseHandler(res, "common", 405, lang);
   }
 
-  const cart = await Cart.findById(cartId);
+  const cartInfo = await Cart.findById(cartId);
 
-  if (!cart) {
+  if (!cartInfo) {
     return ResponseHandler(res, "cart", 404, lang);
   }
 
-  if (cart.orderItems.length == 0) {
+  if (cartInfo.orderItems.length == 0) {
     return ResponseHandler(res, "orderItem", 405, lang);
   }
 
@@ -47,6 +47,9 @@ export const addOrder = async (req, res) => {
       let user = await User.findById(uid);
 
       user.orders.push(data._id);
+      cartInfo.orderItems = [];
+
+      await cartInfo.save();
       await user.save();
 
       return ResponseHandler(res, "common", 201, lang, data);

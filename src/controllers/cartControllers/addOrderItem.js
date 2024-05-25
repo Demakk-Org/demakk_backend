@@ -19,7 +19,7 @@ async function addOrderItem(req, res) {
   if (req?.language) {
     lang = req.language;
   }
-
+  console.log(orderItem);
   if (!orderItem) {
     return ResponseHandler(res, "common", 400, lang);
   }
@@ -32,7 +32,7 @@ async function addOrderItem(req, res) {
     let cart = await Cart.findById(cartId);
 
     if (!cart) {
-      return ResponseHandler(res, "cart", 404, lang)
+      return ResponseHandler(res, "cart", 404, lang);
     }
 
     cart.orderItems.push(orderItem);

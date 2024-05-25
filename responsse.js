@@ -201,7 +201,14 @@ export default {
         410: "This product does not accept product variants, Please update the product first!",
         411: "This variant already exists in this product",
         412: "Stock variety list cannot be empty",
-        413: "Can't have multiple main stock variety"
+        413: "Can't have multiple main stock variety",
+      },
+      orderStatus: {
+        401: "Invalid order status name",
+        402: "Invalid order status id",
+        404: "Order status not found",
+        406: "Order status already exists",
+        407: "The Order status is in use, it cannot be deleted",
       },
     },
     message: {

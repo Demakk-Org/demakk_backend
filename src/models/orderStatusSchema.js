@@ -7,6 +7,11 @@ const OrderStatusSchema = new Schema({
     type: String,
     required: true,
   },
+  orderIndex: {
+    type: Number,
+    required: true,
+    unique: true,
+  },
 });
 
 const OrderStatus = mongoose.model("OrderStatus", OrderStatusSchema);
