@@ -5,7 +5,7 @@ import User from "../../models/userSchema.js";
 import queryByType from "../../utils/queryByType.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
-import { app } from "../../firebase/firebase.js";
+// import { app } from "../../firebase/firebase.js";
 import generateCustomToken from "../../libs/generateCustomToken.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
@@ -41,21 +41,22 @@ async function loginUser(req, res) {
     }
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      app
-        .auth()
-        .createCustomToken(user._id.toString())
-        .then(() => {
-          const token = generateCustomToken({
-            user,
-            account: queryAndType.searchQuery,
-            lang,
-          });
-          return ResponseHandler(res, "auth", 200, lang, token);
-        })
-        .catch((error) => {
-          console.log("Error creating custom token:", error);
-          return ResponseHandler(res, "common", 500, lang);
-        });
+      // app
+      //   .auth()
+      //   .createCustomToken(user._id.toString())
+      //   .then(() => {
+      //     const token = generateCustomToken({
+      //       user,
+      //       account: queryAndType.searchQuery,
+      //       lang,
+      //     });
+      //     return ResponseHandler(res, "auth", 200, lang, token);
+      //   })
+      //   .catch((error) => {
+      //     console.log("Error creating custom token:", error);
+      //     return ResponseHandler(res, "common", 500, lang);
+      //   });
+      return ResponseHandler(res, "auth", 200, lang, token);
     } else {
       return ResponseHandler(res, "auth", 410, lang);
     }
