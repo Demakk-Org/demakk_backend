@@ -1,12 +1,15 @@
 import { config } from "dotenv";
+import { readFileSync } from "fs";
 
-const { PRIVATE_KEY_ID, PRIVATE_KEY } = config(process.cwd, ".env").parsed;
+const { PRIVATE_KEY_ID } = config(process.cwd, ".env").parsed;
+
+let privateKey = readFileSync("src/firebase/private.pem", "utf8");
 
 export default {
   type: "service_account",
   project_id: "demakk-customer-site",
   private_key_id: PRIVATE_KEY_ID,
-  private_key: PRIVATE_KEY,
+  private_key: privateKey,
   client_email:
     "firebase-adminsdk-kbeki@demakk-customer-site.iam.gserviceaccount.com",
   client_id: "115910301497318918951",
