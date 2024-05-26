@@ -4,12 +4,12 @@ const { PRIVATE_KEY_ID, PRIVATE_KEY } = config(process.cwd, ".env").parsed;
 
 export default {
   type: "service_account",
-  project_id: "demakk-backend",
+  project_id: "demakk-customer-site",
   private_key_id: PRIVATE_KEY_ID,
   private_key: PRIVATE_KEY,
   client_email:
-    "firebase-adminsdk-k5kho@demakk-backend.iam.gserviceaccount.com",
-  client_id: "103709148264299666808",
+    "firebase-adminsdk-kbeki@demakk-customer-site.iam.gserviceaccount.com",
+  client_id: "115910301497318918951",
   auth_uri: "https://accounts.google.com/o/oauth2/auth",
   token_uri: "https://oauth2.googleapis.com/token",
   auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
