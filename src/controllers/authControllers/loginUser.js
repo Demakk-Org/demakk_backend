@@ -6,7 +6,7 @@ import queryByType from "../../utils/queryByType.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 // import { app } from "../../firebase/firebase.js";
-import generateCustomToken from "../../libs/generateCustomToken.js";
+// import generateCustomToken from "../../libs/generateCustomToken.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
