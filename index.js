@@ -26,8 +26,10 @@ import discountRoute from "./src/routes/discountRoute.js";
 import { productVariantRoute } from "./src/routes/productVariantRoute.js";
 import orderStatusRoute from "./src/routes/orderStatusRoute.js";
 
-const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
-const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;
+const { PORT, MONGODB_ULI, ORIGIN_URL } = dotenv.config(
+  process.cwd,
+  ".env"
+).parsed;
 
 console.log(PORT);
 
@@ -35,7 +37,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ORIGIN_URL,
     credentials: true, //access-control-allow-credentials:true
     optionSuccessStatus: 200,
   })
