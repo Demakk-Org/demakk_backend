@@ -26,12 +26,11 @@ import discountRoute from "./src/routes/discountRoute.js";
 import { productVariantRoute } from "./src/routes/productVariantRoute.js";
 import orderStatusRoute from "./src/routes/orderStatusRoute.js";
 
-const { PORT, MONGODB_ULI, ORIGIN_URL } = dotenv.config(
-  process.cwd,
-  ".env"
-).parsed;
+const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
+const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;
+const ORIGIN_URL = dotenv.config(process.cwd, ".env").parsed.ORIGIN_URL;
 
-console.log(PORT, ORIGIN_URL);
+console.log(PORT, ORIGIN_URL, MONGODB_ULI);
 
 const app = express();
 app.use(express.json());
