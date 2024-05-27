@@ -31,13 +31,13 @@ const { PORT, MONGODB_ULI, ORIGIN_URL } = dotenv.config(
   ".env"
 ).parsed;
 
-console.log(PORT);
+console.log(PORT, ORIGIN_URL);
 
 const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ORIGIN_URL,
+    origin: "*",
     credentials: true, //access-control-allow-credentials:true
     optionSuccessStatus: 200,
   })
