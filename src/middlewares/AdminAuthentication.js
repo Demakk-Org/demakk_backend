@@ -36,7 +36,7 @@ const AdminAuthentication = (req, res, next) => {
   }
 
   try {
-    User.findById(user_id)
+    User.findOne({ firebaseId: user_id })
       .select("-password")
       .populate("role")
       .then((user) => {
