@@ -33,13 +33,6 @@ productRoute.post(
   AdminAuthentication,
   addImages
 );
-productRoute.put(
-  "/images",
-  ExpressFormidable({
-    multiples: true,
-  }),
-  AdminAuthentication,
-  updateImages
-);
+productRoute.put("/images", AdminAuthentication, updateImages);
 
 export { productRoute };

@@ -45,6 +45,7 @@ export default {
         417: "Message was not sent successfully",
         418: "The email is already in use",
         419: "Your email is already verified",
+        420: "Please try another way to log in",
       },
       user: {
         201: "User is blocked",
@@ -110,6 +111,7 @@ export default {
         404: "Order item not found",
         405: "Order item can not be empty",
         406: "Quantity is a type of number",
+        407: "Is checked is a type of boolean",
       },
       coupon: {
         401: "Invalid coupon name",
@@ -273,6 +275,7 @@ export default {
         417: "መልእክት በተሳካ ሁኔታ አልተላከም",
         418: "ኢሜይሉ አስቀድሞ ጥቅም ላይ ውሏል",
         419: "ኢሜይልህ አስቀድሞ ተረጋግጧል",
+        420: "እባክዎ ለመግባት ሌላ መንገድ ይሞክሩ",
       },
       user: {
         201: "ተጠቃሚ ታግዷል",

@@ -11,6 +11,8 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const addAddress = async (req, res) => {
   let {
     lang,
+    contactName,
+    phoneNumber,
     country,
     region,
     city,
@@ -19,6 +21,7 @@ const addAddress = async (req, res) => {
     uniqueIdentifier,
     streetAddress,
     postalCode,
+    asDefault,
   } = req.body;
 
   const uid = req.uid;
@@ -35,11 +38,13 @@ const addAddress = async (req, res) => {
     return ResponseHandler(res, "user", 402, lang);
   }
 
-  if (!country || !region || !city) {
+  if (!country || !region || !city || !phoneNumber || !contactName) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
   if (
+    (contactName && typeof contactName !== "string") ||
+    (phoneNumber && typeof phoneNumber !== "string") ||
     (country && typeof country !== "string") ||
     (region && typeof region !== "string") ||
     (city && typeof city !== "string") ||
@@ -47,7 +52,8 @@ const addAddress = async (req, res) => {
     (woreda && typeof woreda !== "string") ||
     (uniqueIdentifier && typeof uniqueIdentifier !== "string") ||
     (streetAddress && typeof streetAddress !== "string") ||
-    (postalCode && typeof postalCode !== "string")
+    (postalCode && typeof postalCode !== "string") ||
+    (asDefault && typeof asDefault !== "boolean")
   ) {
     return ResponseHandler(res, "common", 406, lang);
   }
@@ -60,6 +66,8 @@ const addAddress = async (req, res) => {
 
       Address.create({
         uid: user._id,
+        contactName,
+        phoneNumber,
         country,
         region,
         city,
@@ -68,6 +76,7 @@ const addAddress = async (req, res) => {
         uniqueIdentifier,
         streetAddress,
         postalCode,
+        asDefault,
       }).then((data) => {
         return ResponseHandler(res, "common", 201, lang, data);
       });

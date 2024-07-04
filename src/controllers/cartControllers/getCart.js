@@ -20,17 +20,58 @@ export const getCart = async (req, res) => {
   }
 
   try {
-    const cart = await Cart.findById(cartId)
+    const cartResponse = await Cart.findById(cartId)
       .populate({
         path: "orderItems",
-        select: "product quantity",
-        populate: { path: "product", select: "name price images" },
+        select: "productVariant quantity isChecked",
+        populate: {
+          path: "productVariant",
+          select: "-createdAt -updatedAt -__v",
+          populate: {
+            path: "product",
+            select: "name price images",
+            populate: {
+              path: "images",
+            },
+          },
+        },
       })
       .select("orderItems");
 
-    if (!cart) {
+    if (!cartResponse) {
       return ResponseHandler(res, "cart", 404, lang);
     }
+
+    let cart = {
+      id: cartResponse._id,
+      orderItems: cartResponse.orderItems.map((orderItem) => ({
+        _id: orderItem._id,
+        quantity: orderItem.quantity,
+        couponCode: orderItem.couponCode,
+        productVariant: {
+          _id: orderItem.productVariant._id,
+          stockVarieties: orderItem.productVariant.stockVarieties,
+          product: {
+            _id: orderItem.productVariant.product._id,
+            name: orderItem.productVariant.product.name.get(lang)
+              ? orderItem.productVariant.product.name.get(lang)
+              : orderItem.productVariant.product.name.get(LANG)
+              ? orderItem.productVariant.product.name.get(LANG)
+              : orderItem.productVariant.product.name.get("en"),
+          },
+          imageIndex: orderItem.productVariant.imageIndex,
+          numberOfAvailable: orderItem.productVariant.numberOfAvailable,
+          price:
+            orderItem.productVariant.additionalPrice +
+            orderItem.productVariant.product.price,
+          imageUrl:
+            orderItem.productVariant.product.images.imageUrls[
+              orderItem.productVariant.imageIndex
+            ],
+        },
+        isChecked: orderItem.isChecked,
+      })),
+    };
 
     return ResponseHandler(res, "common", 200, lang, cart);
   } catch (error) {

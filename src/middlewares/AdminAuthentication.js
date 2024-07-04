@@ -27,26 +27,22 @@ const AdminAuthentication = (req, res, next) => {
     return ResponseHandler(res, "auth", 412, lang);
   }
 
-  const { exp, user_id } = tokenValues;
+  const { exp, uid } = tokenValues;
 
-  console.log(exp * 1000, Date.now());
-
-  if (Date.now() > exp * 1000) {
+  if (Date.now() > exp) {
     return ResponseHandler(res, "auth", 413, lang);
   }
 
   try {
-    User.findOne({ firebaseId: user_id })
+    User.findById(uid)
       .select("-password")
       .populate("role")
       .then((user) => {
         if (!user) {
           return ResponseHandler(res, "user", 404, lang);
         }
-        console.log(user_id, user);
         if (user.role.name === "admin") {
           req.language = user.lang;
-          req.uid = user_id;
           req.user = user;
           req.role = "admin";
           return next();

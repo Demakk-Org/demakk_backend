@@ -24,26 +24,27 @@ const UserAuthentication = (req, res, next) => {
   console.log(tokenValues, "values");
 
   if (!tokenValues) {
-    console.error("Authentication failed: Invalid token");
+    console.error("Authentication failed: Invalid token", token);
     return ResponseHandler(res, "auth", 412, lang);
   }
 
-  let { exp, user_id } = tokenValues;
+  let { exp, uid } = tokenValues;
 
-  if (!user_id) {
+  if (!uid) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
-  if (Date.now() > exp * 1000) {
+  if (Date.now() > exp) {
     console.error("Authentication failed: Token has expired");
     return ResponseHandler(res, "auth", 413, lang);
   }
 
   try {
-    User.findOne({ firebaseId: user_id })
+    User.findById(uid)
       .select("-password")
       .populate("role")
       .then((user) => {
+        console.log(user);
         req.language = user.lang;
         req.user = user;
         req.uid = user._id;

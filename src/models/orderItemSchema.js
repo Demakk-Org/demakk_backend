@@ -15,6 +15,10 @@ export const orderItemSchema = new Schema(
       type: Number,
       required: true,
     },
+    isChecked: {
+      type: Boolean,
+      default: false,
+    },
     couponCode: {
       type: mongoose.Types.ObjectId,
       ref: "Coupon",

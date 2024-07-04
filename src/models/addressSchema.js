@@ -9,6 +9,8 @@ export const AddressSchema = new Schema(
       ref: "User",
       required: true,
     },
+    contactName: String,
+    phoneNumber: String,
     country: String,
     region: String,
     city: String,
@@ -17,6 +19,7 @@ export const AddressSchema = new Schema(
     uniqueIdentifier: String,
     streetAddress: String,
     postalCode: String,
+    asDefault: { type: Boolean, default: false },
   },
   {
     timestamps: {

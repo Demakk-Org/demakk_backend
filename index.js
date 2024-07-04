@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: "*",
-    credentials: true, //access-control-allow-credentials:true
+    credentials: true,
     optionSuccessStatus: 200,
   })
 );
@@ -48,7 +48,7 @@ mongoose
     console.log("Database is connected successfully");
   })
   .catch((error) => {
-    console.log(error.message);
+    console.log("Mongo error", error.message);
   });
 
 app.use("/api/v1/user", userRoute);

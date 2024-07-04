@@ -104,10 +104,6 @@ export const getOrders = async (req, res) => {
                     : orderItem.productVariant.product.description.get("en"),
                   tags: orderItem.productVariant.product.tags,
                   price: orderItem.productVariant.product.price,
-                  // stockVarietyTypeList:
-                  //   orderItem.productVariant.product.stockVarietyTypeList.map(
-                  //     (l) => l.name
-                  //   ),
                 },
 
                 imageUrl:

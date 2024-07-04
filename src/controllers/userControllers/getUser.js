@@ -10,8 +10,7 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 async function getUser(req, res) {
   let { lang } = req.body;
 
-  const token = req.headers.authorization.split(" ")[1];
-  const { uid } = Jwt.decode(token, "your_secret_key");
+  const uid = req.uid;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -28,8 +27,7 @@ async function getUser(req, res) {
   try {
     const user = await User.findById(uid)
       .select("-password -_id")
-      .populate("role shippingAddress billingAddress cart")
-      .populate("image", "images primary");
+      .populate("role shippingAddress billingAddress cart image");
 
     if (!user) {
       return ResponseHandler(res, "user", 404, lang);

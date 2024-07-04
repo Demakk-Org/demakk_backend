@@ -124,7 +124,7 @@ const sendVerification = async (req, res) => {
       service: "gmail",
       auth: {
         user: "melkatole1@gmail.com",
-        pass: "gxwu fpjh psnj fgzz",
+        pass: "oxvj ewpx pcbz utup",
       },
     });
 

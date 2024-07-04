@@ -6,10 +6,6 @@ const { Schema } = mongoose;
 
 export const UserSchema = new Schema(
   {
-    firebaseId: {
-      type: String,
-      required: true,
-    },
     email: {
       type: String,
       lowercase: true,
@@ -69,6 +65,13 @@ export const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    providers: [
+      {
+        type: String,
+        enum: ["password", "google", "facebook", "apple", "twitter"],
+        default: "password",
+      },
+    ],
     image: {
       type: mongoose.Types.ObjectId,
       ref: "Image",

@@ -10,6 +10,8 @@ const LANG = config(process.cwd, ".env").parsed.LANG;
 const updateAddress = async (req, res) => {
   let {
     addressId,
+    contactName,
+    phoneNumber,
     country,
     region,
     city,
@@ -18,6 +20,7 @@ const updateAddress = async (req, res) => {
     uniqueIdentifier,
     streetAddress,
     postalCode,
+    asDefault,
     lang,
   } = req.body;
 
@@ -40,6 +43,8 @@ const updateAddress = async (req, res) => {
   }
 
   if (
+    !contactName &&
+    !phoneNumber &&
     !country &&
     !region &&
     !city &&
@@ -72,10 +77,12 @@ const updateAddress = async (req, res) => {
       return ResponseHandler(res, "address", 404, lang);
     }
 
-    if (address.uid.toString() !== uid) {
+    if (address.uid.toString() !== uid.toString()) {
       return ResponseHandler(res, "address", 405, lang);
     }
 
+    if (contactName) address.contactName = contactName;
+    if (phoneNumber) address.phoneNumber = phoneNumber;
     if (country) address.country = country;
     if (region) address.region = region;
     if (city) address.city = city;
@@ -84,10 +91,12 @@ const updateAddress = async (req, res) => {
     if (uniqueIdentifier) address.uniqueIdentifier = uniqueIdentifier;
     if (streetAddress) address.streetAddress = streetAddress;
     if (postalCode) address.postalCode = postalCode;
+    if (asDefault || typeof asDefault == "boolean")
+      address.asDefault = asDefault;
 
-    await address.save();
-
-    return ResponseHandler(res, "common", 202, lang, address);
+    await address.save().then((response) => {
+      return ResponseHandler(res, "common", 202, lang, response);
+    });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

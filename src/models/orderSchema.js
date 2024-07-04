@@ -22,6 +22,11 @@ const OrderSchema = new Schema(
       default: Date.now,
     },
     deliveryDate: Date,
+    deliveryAddress: {
+      type: mongoose.Types.ObjectId,
+      ref: "Address",
+      required: true,
+    },
     orderStatus: {
       type: mongoose.Types.ObjectId,
       ref: "OrderStatus",

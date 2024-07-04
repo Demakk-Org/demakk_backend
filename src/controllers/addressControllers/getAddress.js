@@ -52,7 +52,7 @@ const getAddresses = async (req, res) => {
           pages: Math.ceil(count / limit).toString(),
           limit: limit.toString(),
           count: count.toString(),
-          users: addresses,
+          addresses,
         };
         return ResponseHandler(res, "common", 200, lang, data);
       });

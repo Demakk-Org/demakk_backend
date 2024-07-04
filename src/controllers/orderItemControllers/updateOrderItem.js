@@ -9,7 +9,7 @@ import OrderItem from "../../models/orderItemSchema.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const UpdateOrderItem = async (req, res) => {
-  let { orderItemId, quantity, couponCode, lang } = req.body;
+  let { orderItemId, quantity, couponCode, isChecked, lang } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -27,7 +27,7 @@ export const UpdateOrderItem = async (req, res) => {
     return ResponseHandler(res, "orderItem", 402, lang);
   }
 
-  if (!quantity && !couponCode) {
+  if (!quantity && !couponCode && !isChecked && isChecked != false) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
@@ -39,6 +39,10 @@ export const UpdateOrderItem = async (req, res) => {
     return ResponseHandler(res, "orderItem", 406, lang);
   }
 
+  if ((isChecked || isChecked == false) && typeof isChecked != "boolean") {
+    return ResponseHandler(res, "orderItem", 407, lang);
+  }
+
   try {
     const orderItem = await OrderItem.findById(orderItemId);
 
@@ -48,6 +52,7 @@ export const UpdateOrderItem = async (req, res) => {
 
     if (couponCode) orderItem.couponCode = couponCode;
     if (quantity) orderItem.quantity = quantity;
+    if (isChecked || isChecked == false) orderItem.isChecked = isChecked;
 
     await orderItem.save();
 
