@@ -68,6 +68,10 @@ export const getOrders = async (req, res) => {
           },
         ],
       })
+      .populate({
+        path: "deliveryAddress",
+        select: "-__v -createdAt -updatedAt",
+      })
       .populate({ path: "orderStatus", select: "name -_id" })
       .then((orders) => {
         let orderList = [];
@@ -119,6 +123,7 @@ export const getOrders = async (req, res) => {
             orderDate: order.orderDate,
             deliveryDate: order.deliveryDate,
             orderStatus: order.orderStatus.name,
+            deliveryAddress: order.deliveryAddress,
           });
         });
 
