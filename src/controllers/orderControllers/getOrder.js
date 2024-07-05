@@ -33,6 +33,10 @@ export const getOrder = async (req, res) => {
     const order = await Order.findById(orderId)
       .select("-updatedAt -__v")
       .populate({
+        path: "deliveryAddress",
+        select: "-__v -createdAt -updatedAt",
+      })
+      .populate({
         path: "user",
         select: "firstName lastName email phoneNumber",
       })
@@ -42,13 +46,10 @@ export const getOrder = async (req, res) => {
       })
       .populate({
         path: "orderItems",
-        // select: "productVariant quantity",
         populate: {
           path: "productVariant",
-          // select: "name product price imageIndex images stockVarieties",
           populate: {
             path: "product",
-            // select: "name price images",
             populate: "images",
           },
         },
@@ -106,6 +107,7 @@ export const getOrder = async (req, res) => {
       orderDate: order.orderDate,
       deliveryDate: order.deliveryDate,
       orderStatus: order.orderStatus.name,
+      deliveryAddress: order.deliveryAddress,
     };
 
     return ResponseHandler(res, "common", 200, lang, orderData);

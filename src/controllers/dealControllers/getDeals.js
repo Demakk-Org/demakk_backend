@@ -18,7 +18,7 @@ const getDeals = async (req, res) => {
   }
 
   try {
-    const deals = await Deal.find({})
+    const deals = await Deal.find({ status: "active" })
       .populate({
         path: "dealType",
         select: "name subTitle",
