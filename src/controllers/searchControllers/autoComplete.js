@@ -11,7 +11,7 @@ import { Product } from "../../models/productSchema.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const autoComplete = async (req, res) => {
-  let { text, lang } = req.body;
+  let { text, lang } = req.query;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
