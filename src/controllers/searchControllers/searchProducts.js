@@ -11,7 +11,7 @@ import { Product } from "../../models/productSchema.js";
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 const searchProducts = async (req, res) => {
-  let { page, limit, lang, sort, text, price } = req.params;
+  let { page, limit, lang, sort, text, price } = req.query;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
