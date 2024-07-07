@@ -7,6 +7,7 @@ import { ResponseHandler } from "../../utils/responseHandler.js";
 
 import User from "../../models/userSchema.js";
 import { Product } from "../../models/productSchema.js";
+import getNameFromLanguage from "../../utils/getNameFromLanguage.js";
 
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
@@ -183,6 +184,21 @@ const searchProducts = async (req, res) => {
     },
     {
       $lookup: {
+        from: "images",
+        localField: "images",
+        foreignField: "_id",
+        as: "images",
+      },
+    },
+    {
+      $addFields: {
+        images: {
+          $first: "$images",
+        },
+      },
+    },
+    {
+      $lookup: {
         from: "stockitems",
         localField: "productCategory.stockItem",
         foreignField: "_id",
@@ -224,7 +240,14 @@ const searchProducts = async (req, res) => {
         description: 1,
         tags: 1,
         productCategory: 1,
+        images: 1,
+        ratings: 1,
+        reviews: 1,
+        popularity: 1,
+        sold: 1,
+        productVariants: 1,
         price: 1,
+        stockVarietyTypeList: 1,
         score: { $meta: "searchScore" },
       },
     },
@@ -259,22 +282,47 @@ const searchProducts = async (req, res) => {
 
     let products = [];
     searchList.forEach((product) => {
+      console.log(product.productCategory);
       let productItem = {
-        id: product._id,
-        name: product.name[lang]
-          ? product.name[lang]
-          : product.name[LANG]
-          ? product.name[LANG]
-          : product.name["en"],
-        description: product.description[lang]
-          ? product.description[lang]
-          : product.description[LANG]
-          ? product.description[LANG]
-          : product.description["en"],
+        _id: product._id,
+        name: getNameFromLanguage({ type: product.name, lang }),
+        description: getNameFromLanguage({ type: product.description, lang }),
         tags: product.tags,
+        popularity: product.popularity,
+        images: product.images?._id && {
+          _id: product.images._id,
+          name: product.images.name,
+          imageUrls: product.images.imageUrls,
+          primary: product.images.primary,
+        },
+        rating: product.ratings,
+        reviews: product.reviews,
+        sold: product.sold,
         price: product.price,
-        productCategory: product.productCategory,
-        score: product.score,
+        productVariants: product?.productVariants,
+        productCategory: product?.productCategory?._id && {
+          id: product.productCategory._id,
+          name: getNameFromLanguage({
+            type: product.productCategory.name,
+            lang,
+          }),
+          additionalPrice: product.productCategory.additionalPrice,
+          stockItem: product.productCategory?.stockItem?._id && {
+            id: product.productCategory.stockItem._id,
+            name: getNameFromLanguage({
+              type: product.productCategory.stockItem.name,
+              lang,
+            }),
+            stockType: product.productCategory.stockItem?.stockType?._id && {
+              id: product.productCategory.stockItem.stockType._id,
+              name: getNameFromLanguage({
+                type: product.productCategory.stockItem.stockType.name,
+                lang,
+              }),
+            },
+            price: product.productCategory.stockItem.price,
+          },
+        },
       };
 
       products.push(productItem);
