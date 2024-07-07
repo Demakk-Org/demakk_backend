@@ -219,7 +219,7 @@ const searchProducts = async (req, res) => {
     },
     {
       $project: {
-        _id: 0,
+        _id: 1,
         name: 1,
         description: 1,
         tags: 1,
@@ -273,6 +273,7 @@ const searchProducts = async (req, res) => {
           : product.description["en"],
         tags: product.tags,
         price: product.price,
+        productCategory: product.productCategory,
         score: product.score,
       };
 
@@ -286,7 +287,7 @@ const searchProducts = async (req, res) => {
       pages: Math.ceil(count / limit).toString(),
       limit: limit.toString(),
       count: count.toString(),
-      products: products,
+      products,
     };
 
     return ResponseHandler(res, "common", 200, lang, data);
