@@ -52,7 +52,7 @@ const searchProducts = async (req, res) => {
 
   let match = {};
 
-  const regex = /[^(A-Z0-9\s\.)]+/gi;
+  const regex = /[^(A-Z0-9\s\.\-\@\#\&\*\%\_"\')]+/gi;
   const regex1 = /[A-Z0-9]+/gi;
 
   const text1 = text.match(regex1)?.join(" ");
