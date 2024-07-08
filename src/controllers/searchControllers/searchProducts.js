@@ -302,27 +302,7 @@ const searchProducts = async (req, res) => {
           product?.productCategory?.stockItem?.price &&
           product.productCategory.additionalPrice +
             product.productCategory.stockItem?.price,
-        productCategory: product?.productCategory?._id && {
-          id: product.productCategory._id,
-          name: getNameFromLanguage({
-            type: product.productCategory.name,
-            lang,
-          }),
-          stockItem: product.productCategory?.stockItem?._id && {
-            id: product.productCategory.stockItem._id,
-            name: getNameFromLanguage({
-              type: product.productCategory.stockItem.name,
-              lang,
-            }),
-            stockType: product.productCategory.stockItem?.stockType?._id && {
-              id: product.productCategory.stockItem.stockType._id,
-              name: getNameFromLanguage({
-                type: product.productCategory.stockItem.stockType.name,
-                lang,
-              }),
-            },
-          },
-        },
+        productCategory: product?.productCategory?._id,
       };
 
       products.push(productItem);

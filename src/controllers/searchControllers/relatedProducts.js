@@ -22,7 +22,6 @@ const relatedProducts = async (req, res) => {
   if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
-
   if (!productCategoryIds) productCategoryIds = [];
 
   let uid;
@@ -59,13 +58,13 @@ const relatedProducts = async (req, res) => {
       userViewProductCategoryIds = userProductCategories.views.map((view) =>
         view.pid.productCategory.toString()
       );
-
-      combinedProductCategoryIds = [
-        ...productCategoryIds,
-        ...userFavProductCategoryIds,
-        ...userViewProductCategoryIds,
-      ];
     }
+
+    combinedProductCategoryIds = [
+      ...productCategoryIds,
+      ...userFavProductCategoryIds,
+      ...userViewProductCategoryIds,
+    ];
 
     const frequencyMap = {};
 
