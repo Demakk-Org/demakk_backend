@@ -91,7 +91,6 @@ const relatedProducts = async (req, res) => {
         populate: { path: "stockItem", populate: { path: "stockType" } },
       })
       .then((response) => {
-        console.log("--------------------------------");
         let productsRanks = response.map((p) => {
           let score = 1;
           if (!p.productCategory?._id) return;
@@ -157,36 +156,11 @@ const relatedProducts = async (req, res) => {
               product?.productCategory?.stockItem?.price &&
               product.productCategory.additionalPrice +
                 product.productCategory.stockItem?.price,
-            productCategory: product?.productCategory?._id && {
-              id: product.productCategory._id,
-              name: getNameFromLanguage({
-                type: fromMapToObject(product.productCategory.name),
-                lang,
-              }),
-              stockItem: product.productCategory?.stockItem?._id && {
-                id: product.productCategory.stockItem._id,
-                name: getNameFromLanguage({
-                  type: fromMapToObject(product.productCategory.stockItem.name),
-                  lang,
-                }),
-                stockType: product.productCategory.stockItem?.stockType
-                  ?._id && {
-                  id: product.productCategory.stockItem.stockType._id,
-                  name: getNameFromLanguage({
-                    type: fromMapToObject(
-                      product.productCategory.stockItem.stockType.name
-                    ),
-                    lang,
-                  }),
-                },
-              },
-            },
+            productCategory: product?.productCategory?._id,
           };
 
           returnedOrderedProduct.push(productItem);
         });
-
-        // console.log(returnedOrderedProduct);
 
         return ResponseHandler(
           res,
