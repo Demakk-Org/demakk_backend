@@ -10,9 +10,7 @@ import { deleteProduct } from "../controllers/productControllers/deleteProduct.j
 import { getProducts } from "../controllers/productControllers/getProducts.js";
 import { getProduct } from "../controllers/productControllers/getProduct.js";
 import { addReview } from "../controllers/productControllers/addReview.js";
-import { addFavourite } from "../controllers/productControllers/addFavourite.js";
-import { addImages } from "../controllers/productControllers/addImages.js";
-import { updateImages } from "../controllers/productControllers/updateImages.js";
+import { addFavorite } from "../controllers/productControllers/addFavorite.js";
 import { deleteReview } from "../controllers/productControllers/deleteReview.js";
 
 const productRoute = Router();
@@ -24,15 +22,6 @@ productRoute.put("/", AdminAuthentication, updateProduct);
 productRoute.delete("/", AdminAuthentication, deleteProduct);
 productRoute.post("/review", UserAuthentication, addReview);
 productRoute.delete("/review", UserAuthentication, deleteReview);
-productRoute.post("/fav", UserAuthentication, addFavourite);
-productRoute.post(
-  "/images",
-  ExpressFormidable({
-    multiples: true,
-  }),
-  AdminAuthentication,
-  addImages
-);
-productRoute.put("/images", AdminAuthentication, updateImages);
+productRoute.post("/fav", UserAuthentication, addFavorite);
 
 export { productRoute };

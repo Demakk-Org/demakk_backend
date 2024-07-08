@@ -89,7 +89,7 @@ const searchProducts = async (req, res) => {
           },
           score: {
             boost: {
-              value: 3,
+              value: 6,
             },
           },
         },
@@ -103,7 +103,7 @@ const searchProducts = async (req, res) => {
           },
           score: {
             boost: {
-              value: 1,
+              value: 4,
             },
           },
         },
@@ -117,7 +117,7 @@ const searchProducts = async (req, res) => {
           },
           score: {
             boost: {
-              value: 5,
+              value: 2,
             },
           },
         },
@@ -137,7 +137,7 @@ const searchProducts = async (req, res) => {
             },
             score: {
               boost: {
-                value: 5,
+                value: 3,
               },
             },
           },
@@ -282,12 +282,11 @@ const searchProducts = async (req, res) => {
 
     let products = [];
     searchList.forEach((product) => {
-      console.log(product.productCategory);
       let productItem = {
         _id: product._id,
+        score: product.score,
         name: getNameFromLanguage({ type: product.name, lang }),
         description: getNameFromLanguage({ type: product.description, lang }),
-        tags: product.tags,
         popularity: product.popularity,
         images: product.images?._id && {
           _id: product.images._id,
@@ -298,15 +297,17 @@ const searchProducts = async (req, res) => {
         rating: product.ratings,
         reviews: product.reviews,
         sold: product.sold,
-        price: product.price,
-        productVariants: product?.productVariants,
+        price:
+          product?.productCategory?.additionalPrice &&
+          product?.productCategory?.stockItem?.price &&
+          product.productCategory.additionalPrice +
+            product.productCategory.stockItem?.price,
         productCategory: product?.productCategory?._id && {
           id: product.productCategory._id,
           name: getNameFromLanguage({
             type: product.productCategory.name,
             lang,
           }),
-          additionalPrice: product.productCategory.additionalPrice,
           stockItem: product.productCategory?.stockItem?._id && {
             id: product.productCategory.stockItem._id,
             name: getNameFromLanguage({
@@ -320,7 +321,6 @@ const searchProducts = async (req, res) => {
                 lang,
               }),
             },
-            price: product.productCategory.stockItem.price,
           },
         },
       };

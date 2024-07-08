@@ -9,7 +9,7 @@ import { Product } from "../../models/productSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
-export const addFavourite = async (req, res) => {
+export const addFavorite = async (req, res) => {
   let { productId, lang } = req.body;
   let uid = req.uid;
 
