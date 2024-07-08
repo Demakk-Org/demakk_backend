@@ -11,9 +11,9 @@ import fromMapToObject from "../../utils/fromMapToObject.js";
 const { LANG } = config(process.cwd, ".env").parsed;
 
 let productCategoriesRank = {
-  fav: 7,
-  view: 5,
-  search: 2,
+  view: 2,
+  fav: 5,
+  search: 7,
 };
 
 const relatedProducts = async (req, res) => {
@@ -160,6 +160,23 @@ const relatedProducts = async (req, res) => {
 
           returnedOrderedProduct.push(productItem);
         });
+
+        let maxScore = Math.max(...returnedOrderedProduct.map((p) => p.score));
+        let maxPopularity = Math.max(
+          ...returnedOrderedProduct.map((p) => p.popularity)
+        );
+        let maxRating = Math.max(
+          ...returnedOrderedProduct.map((p) => p.rating.average)
+        );
+
+        returnedOrderedProduct.forEach((p) => {
+          p.score =
+            (p.score / maxScore) * 100 +
+            (p.popularity / maxPopularity) * 100 +
+            (p.rating.average / maxRating) * 100;
+        });
+
+        returnedOrderedProduct.sort((a, b) => b.score - a.score);
 
         return ResponseHandler(
           res,
