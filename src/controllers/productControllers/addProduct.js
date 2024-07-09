@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import { isValidObjectId } from "mongoose";
 import { config } from "dotenv";
 
 import { isArr } from "../../utils/validate.js";
@@ -52,7 +52,16 @@ const addProduct = async (req, res) => {
     return ResponseHandler(res, "product", 406, lang);
   }
 
-  if (stockVarietyTypeList && !isArr(stockVarietyTypeList, "ObjectId")) {
+  let validStockVarietyTypeList = true;
+
+  stockVarietyTypeList &&
+    stockVarietyTypeList.map((stockVarietyType) => {
+      if (!isValidObjectId(stockVarietyType)) {
+        validStockVarietyTypeList = false;
+      }
+    });
+
+  if (!validStockVarietyTypeList) {
     return ResponseHandler(res, "product", 408, lang);
   }
 

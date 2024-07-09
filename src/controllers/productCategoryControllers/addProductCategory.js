@@ -71,7 +71,7 @@ const addProductCategory = async (req, res) => {
       additionalCost,
     });
 
-    return ResponseHandler(res, "common", 201, lang, productCategory);
+    return ResponseHandler(res, "common", 201, lang, { productCategory });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);
