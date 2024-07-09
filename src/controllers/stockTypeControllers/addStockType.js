@@ -50,7 +50,7 @@ const addStockType = async (req, res) => {
       availableVarieties: stockVarieties,
     });
 
-    return ResponseHandler(res, "common", 201, lang, stockType);
+    return ResponseHandler(res, "common", 201, lang, { stockType });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

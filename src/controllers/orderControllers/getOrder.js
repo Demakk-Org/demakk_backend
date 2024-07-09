@@ -110,7 +110,7 @@ export const getOrder = async (req, res) => {
       deliveryAddress: order.deliveryAddress,
     };
 
-    return ResponseHandler(res, "common", 200, lang, orderData);
+    return ResponseHandler(res, "common", 200, lang, { order: orderData });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

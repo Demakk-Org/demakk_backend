@@ -12,7 +12,7 @@ import getNameFromLanguage from "../../utils/getNameFromLanguage.js";
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 const searchProducts = async (req, res) => {
-  let { page, limit, lang, sort, text, price } = req.query;
+  let { page, limit, lang, sort, text, filter } = req.query;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -42,13 +42,9 @@ const searchProducts = async (req, res) => {
     return ResponseHandler(res, "common", 406, lang);
   }
 
-  if (
-    price &&
-    (!(price instanceof Object && price.constructor === Object) ||
-      !price.gte ||
-      !price.lt)
-  ) {
-    return ResponseHandler(res, "product", 407, lang);
+  if (filter?.price) {
+    if (!filter.price.min) filter.price.min = 0;
+    if (!filter.price.max) filter.price.max = Number.POSITIVE_INFINITY;
   }
 
   let match = {};
@@ -59,17 +55,17 @@ const searchProducts = async (req, res) => {
   const text1 = text.match(regex1)?.join(" ");
   const text2 = text.match(regex);
 
-  if (price) {
+  if (filter?.price) {
     match["$match"] = {
       $and: [
         {
           price: {
-            $lt: price.lt,
+            $lt: filter.price.max,
           },
         },
         {
           price: {
-            $gte: price.gte,
+            $gte: filter.price.min,
           },
         },
       ],
@@ -253,11 +249,11 @@ const searchProducts = async (req, res) => {
     },
   ];
 
-  if (price) {
+  if (filter) {
     pipeline.splice(1, 0, { ...match });
   }
 
-  let countPipeline = pipeline.slice(0, price ? 2 : 1);
+  let countPipeline = pipeline.slice(0, filter ? 2 : 1);
   countPipeline.push({ $count: "count" });
 
   try {
@@ -315,10 +311,10 @@ const searchProducts = async (req, res) => {
       pages: Math.ceil(count / limit).toString(),
       limit: limit.toString(),
       count: count.toString(),
-      products,
+      list: products,
     };
 
-    return ResponseHandler(res, "common", 200, lang, data);
+    return ResponseHandler(res, "common", 200, lang, { products: data });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

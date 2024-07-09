@@ -1,5 +1,4 @@
 import { Router } from "express";
-import ExpressFormidable from "express-formidable";
 
 import AdminAuthentication from "../middlewares/AdminAuthentication.js";
 import UserAuthentication from "../middlewares/UserAuthentication.js";

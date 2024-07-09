@@ -84,7 +84,7 @@ const registerUser = async (req, res) => {
         { expiresIn: 1000 * 60 * 60 * 24 * 30 }
       );
 
-      return ResponseHandler(res, "common", 201, lang, token);
+      return ResponseHandler(res, "common", 201, lang, { token });
     });
   } catch (error) {
     console.log(error);

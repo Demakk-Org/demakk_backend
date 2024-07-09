@@ -28,7 +28,7 @@ const getStockItem = (req, res) => {
     StockItem.findById(stockItemId)
       .populate("stockType", "name")
       .then((data) => {
-        let stockItemList = {
+        let stockItem = {
           id: data._id,
           name: data.name.get(lang)
             ? data.name.get(lang)
@@ -45,7 +45,7 @@ const getStockItem = (req, res) => {
           },
         };
 
-        return ResponseHandler(res, "common", 200, lang, stockItemList);
+        return ResponseHandler(res, "common", 200, lang, { stockItem });
       });
   } catch (error) {
     console.log(error.message);

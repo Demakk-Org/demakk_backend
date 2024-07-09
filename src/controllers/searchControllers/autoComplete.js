@@ -115,7 +115,6 @@ export const autoComplete = async (req, res) => {
             en: 1,
             am: 1,
           },
-          // score: { $meta: "searchScore" },
         },
       },
     ]);
@@ -126,10 +125,9 @@ export const autoComplete = async (req, res) => {
       productList.push(product.name.am || product.name.en);
     });
 
-    return ResponseHandler(res, "common", 200, lang, [
-      ...previousSearch,
-      ...productList,
-    ]);
+    return ResponseHandler(res, "common", 200, lang, {
+      autoCompleteList: [...previousSearch, ...productList],
+    });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

@@ -33,7 +33,7 @@ const getDeals = async (req, res) => {
         populate: { path: "products", populate: "images" },
       });
 
-    return ResponseHandler(res, "common", 200, lang, deals);
+    return ResponseHandler(res, "common", 200, lang, { deals });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

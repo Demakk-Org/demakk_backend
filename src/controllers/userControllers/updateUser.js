@@ -148,7 +148,7 @@ const updateUser = async (req, res) => {
       lang: user.lang,
     };
 
-    return ResponseHandler(res, "common", 202, lang, data);
+    return ResponseHandler(res, "common", 202, lang, { user: data });
   } catch (err) {
     console.error(err.message);
     return ResponseHandler(res, "common", 500, lang);

@@ -34,7 +34,9 @@ export const addStockVarietyType = async (req, res) => {
     }
 
     StockVarietyType.create({ name }).then((data) => {
-      return ResponseHandler(res, "common", 201, lang, data);
+      return ResponseHandler(res, "common", 201, lang, {
+        stockVarietyType: data,
+      });
     });
   } catch (error) {
     console.log(error.message);

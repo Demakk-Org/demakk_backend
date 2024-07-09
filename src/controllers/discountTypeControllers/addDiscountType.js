@@ -26,10 +26,6 @@ export const addDiscountType = async (req, res) => {
     return ResponseHandler(res, "discountType", 401, lang);
   }
 
-  // if (above && (typeof above !== "number" || above < 0)) {
-  //   return ResponseHandler(res, "discountType", 405, lang);
-  // }
-
   try {
     const discountType = await DiscountType.findOne({ name });
 

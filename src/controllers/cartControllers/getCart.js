@@ -73,7 +73,7 @@ export const getCart = async (req, res) => {
       })),
     };
 
-    return ResponseHandler(res, "common", 200, lang, cart);
+    return ResponseHandler(res, "common", 200, lang, { cart });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

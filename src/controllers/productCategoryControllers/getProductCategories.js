@@ -83,10 +83,10 @@ const getProductCategories = async (req, res) => {
           pages: Math.ceil(count / limit).toString(),
           limit: limit.toString(),
           count: count.toString(),
-          data: productCategoryList,
+          list: productCategoryList,
         };
 
-        return ResponseHandler(res, "common", 200, lang, productCategories);
+        return ResponseHandler(res, "common", 200, lang, { productCategories });
       });
   } catch (error) {
     console.log(error.message);

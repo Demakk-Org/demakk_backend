@@ -106,7 +106,7 @@ const updateProduct = async (req, res) => {
     if (tags) product.tags = tags;
 
     await product.save();
-    return ResponseHandler(res, "common", 201, lang, product);
+    return ResponseHandler(res, "common", 201, lang, { product });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

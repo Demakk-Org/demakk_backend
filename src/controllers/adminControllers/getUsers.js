@@ -4,9 +4,8 @@ import responsse from "../../../responsse.js";
 import Role from "../../models/roleSchema.js";
 import User from "../../models/userSchema.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
-import { isValidObjectId } from "mongoose";
 
-const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
+const { LANG, LIMIT, PAGE } = config(process.cwd, ".env").parsed;
 
 const getUsers = async (req, res) => {
   let { page, limit, lang, sort } = req.body;
@@ -19,7 +18,6 @@ const getUsers = async (req, res) => {
     lang = req.language;
   }
 
-  if (sort === undefined) sort = SORT;
   if (page === undefined || typeof page !== "number") page = PAGE;
   if (limit === undefined || typeof limit !== "number") limit = LIMIT;
 
@@ -51,7 +49,6 @@ const getUsers = async (req, res) => {
       User.find(query)
         .limit(limit)
         .skip((page - 1) * limit)
-        .sort(sort)
         .select(
           "email phoneNumber firstName lastName role shippingAddress billingAddress cart blocked image"
         )
@@ -68,9 +65,9 @@ const getUsers = async (req, res) => {
             pages: Math.ceil(count / limit).toString(),
             limit: limit.toString(),
             count: count.toString(),
-            users: users,
+            list: users,
           };
-          return ResponseHandler(res, "common", 200, lang, data);
+          return ResponseHandler(res, "common", 200, lang, { users: data });
         });
     });
   } catch (error) {

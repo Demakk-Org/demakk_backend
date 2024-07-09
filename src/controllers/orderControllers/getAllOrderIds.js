@@ -19,7 +19,7 @@ const getAllOrderIds = async (req, res) => {
   try {
     const orderIds = await Order.find({}).select("_id");
 
-    return ResponseHandler(res, "common", 200, lang, orderIds);
+    return ResponseHandler(res, "common", 200, lang, { orderIds });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

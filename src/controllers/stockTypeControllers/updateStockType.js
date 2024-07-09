@@ -10,7 +10,7 @@ import { StockType } from "../../models/stockTypeSchema.js";
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const updateStockType = async (req, res) => {
-  let { stockTypeName, stockTypeId, images, stockVarities, lang } = req.body;
+  let { stockTypeName, stockTypeId, images, stockVarieties, lang } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -36,12 +36,12 @@ const updateStockType = async (req, res) => {
     return ResponseHandler(res, "stockType", 408, lang);
   }
 
-  if (stockVarities && !isArr(stockVarities, "string")) {
+  if (stockVarieties && !isArr(stockVarieties, "string")) {
     return ResponseHandler(res, "stockVariety", 408, lang);
   }
 
-  if (stockVarities) {
-    stockVarities.forEach((item) => {
+  if (stockVarieties) {
+    stockVarieties.forEach((item) => {
       if (!isValidObjectId(item)) {
         return ResponseHandler(res, "stockType", 402, lang);
       }
@@ -78,7 +78,7 @@ const updateStockType = async (req, res) => {
       stockType.name.set(key, name[key]);
     });
 
-    if (stockVarities) stockType.availableVarieties = stockVarities;
+    if (stockVarieties) stockType.availableVarieties = stockVarieties;
     if (images) stockType.images = images;
 
     await stockType.save();

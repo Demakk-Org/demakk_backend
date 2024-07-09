@@ -43,7 +43,7 @@ export const updateStockVarietyType = async (req, res) => {
     stockVarietyType.name = name;
     await stockVarietyType.save();
 
-    return ResponseHandler(res, "common", 202, lang, stockVarietyType);
+    return ResponseHandler(res, "common", 202, lang, { stockVarietyType });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

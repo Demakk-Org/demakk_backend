@@ -18,13 +18,14 @@ import { couponRoute } from "./src/routes/couponRoute.js";
 import { stockVarietyTypeRoute } from "./src/routes/stockVarietyTypeRoute.js";
 import { stockVarietyRoute } from "./src/routes/stockVarietyRoute.js";
 import { discountTypeRoute } from "./src/routes/discountTypeRoute.js";
+import { imageRoute } from "./src/routes/imageRoute.js";
+import { productVariantRoute } from "./src/routes/productVariantRoute.js";
+import dealTypeRoute from "./src/routes/dealTypeRoute.js";
+import discountRoute from "./src/routes/discountRoute.js";
+import dealRoute from "./src/routes/dealRoute.js";
+import orderStatusRoute from "./src/routes/orderStatusRoute.js";
 
 import cors from "cors";
-import dealTypeRoute from "./src/routes/dealTypeRoute.js";
-import dealRoute from "./src/routes/dealRoute.js";
-import discountRoute from "./src/routes/discountRoute.js";
-import { productVariantRoute } from "./src/routes/productVariantRoute.js";
-import orderStatusRoute from "./src/routes/orderStatusRoute.js";
 
 const PORT = dotenv.config(process.cwd, ".env").parsed.PORT;
 const MONGODB_ULI = dotenv.config(process.cwd, ".env").parsed.MONGODB_URI;
@@ -72,8 +73,9 @@ app.use("/api/v1/deal", dealRoute);
 app.use("/api/v1/discount", discountRoute);
 app.use("/api/v1/productVariant", productVariantRoute);
 app.use("/api/v1/orderStatus", orderStatusRoute);
+app.use("/api/v1/image", imageRoute);
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("Hello, this is demakk your most trusted e-commerce site");
 });
 

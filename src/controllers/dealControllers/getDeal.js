@@ -44,7 +44,7 @@ const getDeal = async (req, res) => {
       return ResponseHandler(res, "deal", 404, lang);
     }
 
-    return ResponseHandler(res, "common", 200, lang, deal);
+    return ResponseHandler(res, "common", 200, lang, { deal });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

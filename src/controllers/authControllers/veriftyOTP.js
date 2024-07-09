@@ -54,7 +54,7 @@ const veriftyOTP = async (req, res) => {
       otp.status = "complete";
       otp.save();
 
-      return ResponseHandler(res, "auth", 204, lang, user);
+      return ResponseHandler(res, "auth", 204, lang);
     } else if (otp.type == "phoneNumber") {
       if (otp.status == "complete") {
         return ResponseHandler(res, "auth", 403, lang);
@@ -73,7 +73,7 @@ const veriftyOTP = async (req, res) => {
       otp.status = "complete";
       otp.save();
 
-      return ResponseHandler(res, "auth", 206, lang, user);
+      return ResponseHandler(res, "auth", 206, lang);
     }
   }
 };

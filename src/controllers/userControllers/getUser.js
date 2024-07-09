@@ -34,7 +34,7 @@ async function getUser(req, res) {
     }
 
     console.log(user);
-    return ResponseHandler(res, "common", 200, lang, user);
+    return ResponseHandler(res, "common", 200, lang, { user });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

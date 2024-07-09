@@ -42,7 +42,7 @@ const checkAllOrderItems = async (req, res) => {
       })
     )
       .then(() => {
-        return ResponseHandler(res, "common", 200, lang, cart);
+        return ResponseHandler(res, "common", 200, lang, { cart });
       })
       .catch((error) => {
         console.log(error);

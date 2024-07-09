@@ -178,13 +178,9 @@ const relatedProducts = async (req, res) => {
 
         returnedOrderedProduct.sort((a, b) => b.score - a.score);
 
-        return ResponseHandler(
-          res,
-          "common",
-          200,
-          lang,
-          returnedOrderedProduct
-        );
+        return ResponseHandler(res, "common", 200, lang, {
+          relatedProducts: returnedOrderedProduct,
+        });
       })
       .catch((err) => {
         console.log(err);

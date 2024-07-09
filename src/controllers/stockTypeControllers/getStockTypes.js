@@ -30,7 +30,9 @@ const getStockTypes = async (req, res) => {
       });
     });
 
-    return ResponseHandler(res, "common", 200, lang, stockTypeList);
+    return ResponseHandler(res, "common", 200, lang, {
+      stockTypes: stockTypeList,
+    });
   } catch (error) {
     console.log(err.message);
     return ResponseHandler(res, "common", 500, lang);

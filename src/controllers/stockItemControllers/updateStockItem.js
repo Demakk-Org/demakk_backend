@@ -78,7 +78,7 @@ const updateStockItem = async (req, res) => {
     if (costToProduce) stockItem.costToProduce = costToProduce;
     await stockItem.save();
 
-    return ResponseHandler(res, "common", 202, lang, stockItem);
+    return ResponseHandler(res, "common", 202, lang, { stockItem });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

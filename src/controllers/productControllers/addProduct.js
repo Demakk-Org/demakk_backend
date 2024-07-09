@@ -106,7 +106,7 @@ const addProduct = async (req, res) => {
       stockVarietyTypeList: stockVarietyTypeList || [],
     });
 
-    return ResponseHandler(res, "common", 200, lang, product);
+    return ResponseHandler(res, "common", 200, lang, { product });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

@@ -132,9 +132,9 @@ export const getOrders = async (req, res) => {
           pages: Math.ceil(count / limit).toString(),
           limit: limit.toString(),
           count: count.toString(),
-          data: orderList,
+          list: orderList,
         };
-        return ResponseHandler(res, "common", 200, lang, data);
+        return ResponseHandler(res, "common", 200, lang, { orders: data });
       });
   } catch (error) {
     console.log(error.message);

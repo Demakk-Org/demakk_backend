@@ -105,7 +105,7 @@ const updateDiscount = async (req, res) => {
 
     await discount.save();
 
-    return ResponseHandler(res, "common", 202, lang, discount);
+    return ResponseHandler(res, "common", 202, lang, { discount });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

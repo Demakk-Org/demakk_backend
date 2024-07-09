@@ -19,7 +19,7 @@ const getOrderStatuses = async (req, res) => {
   try {
     const orderStatuses = await OrderStatus.find({}).select("-__v");
 
-    return ResponseHandler(res, "common", 200, lang, orderStatuses);
+    return ResponseHandler(res, "common", 200, lang, { orderStatuses });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

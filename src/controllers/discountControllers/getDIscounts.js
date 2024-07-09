@@ -33,7 +33,7 @@ const getDiscounts = async (req, res) => {
       })
       .select("-createdAt -updatedAt -__v");
 
-    return ResponseHandler(res, "common", 200, lang, discounts);
+    return ResponseHandler(res, "common", 200, lang, { discounts });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

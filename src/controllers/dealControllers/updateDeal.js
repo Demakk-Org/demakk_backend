@@ -84,7 +84,7 @@ const updateDeal = async (req, res) => {
 
     await deal.save();
 
-    return ResponseHandler(res, "common", 202, lang, deal);
+    return ResponseHandler(res, "common", 202, lang, { deal });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

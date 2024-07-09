@@ -18,7 +18,7 @@ export function ResponseHandler(res, type, code, lang, data) {
     }
     return res
       .status(statusCode)
-      .json({ message: response[LANG].response[type][code], data });
+      .json({ message: response[LANG].response[type][code], ...data });
   }
 
   if (!data) {
@@ -29,5 +29,5 @@ export function ResponseHandler(res, type, code, lang, data) {
 
   return res
     .status(statusCode)
-    .json({ message: response[lang].response[type][code], data });
+    .json({ message: response[lang].response[type][code], ...data });
 }

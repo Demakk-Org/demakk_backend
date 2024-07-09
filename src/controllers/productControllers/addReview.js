@@ -97,13 +97,9 @@ export const addReview = async (req, res) => {
 
       await product.save();
 
-      return ResponseHandler(
-        res,
-        "common",
-        newReview ? 201 : 202,
-        lang,
-        review
-      );
+      return ResponseHandler(res, "common", newReview ? 201 : 202, lang, {
+        review,
+      });
     });
   } catch (error) {
     console.log(error.message);

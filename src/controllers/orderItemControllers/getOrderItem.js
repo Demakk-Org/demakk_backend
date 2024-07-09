@@ -37,7 +37,7 @@ export const getOrderItem = async (req, res) => {
       return ResponseHandler(res, "orderItem", 404, lang);
     }
 
-    return ResponseHandler(res, "common", 200, lang, orderItem);
+    return ResponseHandler(res, "common", 200, lang, { orderItem });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

@@ -143,12 +143,12 @@ const sendVerification = async (req, res) => {
             account: response.account,
             expiresIn: response.expiresIn,
           };
-          return ErrorHandler(res, 207, lang, data);
+          return ResponseHandler(res, "auth", 202, lang, { otpInfo: data });
         });
       });
     } catch (error) {
       console.log(error.message);
-      return ErrorHandler(res, 500, lang);
+      return ResponseHandler(res, "common", 500, lang);
     } finally {
       transporter.close();
     }

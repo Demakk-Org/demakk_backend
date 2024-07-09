@@ -186,7 +186,7 @@ const getProduct = async (req, res) => {
       stockVarietyTypeList: product?.stockVarietyTypeList.map((l) => l.name),
     };
 
-    return ResponseHandler(res, "common", 200, lang, data);
+    return ResponseHandler(res, "common", 200, lang, { product: data });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

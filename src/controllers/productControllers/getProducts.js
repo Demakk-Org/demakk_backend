@@ -47,7 +47,6 @@ const getProducts = async (req, res) => {
     Product.find(query)
       .limit(limit)
       .skip((page - 1) * limit)
-      // .sort(sort)
       .populate("images")
       .then((response) => {
         let products = [];
@@ -73,36 +72,6 @@ const getProducts = async (req, res) => {
             price: product.price,
             productCategory: product?.productCategory,
             productVariants: product?.productVariants,
-            // productCategory: product?.productCategory && {
-            //   id: product.productCategory._id,
-            //   name: product.productCategory.name.get(lang)
-            //     ? product.productCategory.name.get(lang)
-            //     : product.productCategory.name.get(LANG)
-            //     ? product.productCategory.name.get(LANG)
-            //     : product.productCategory.name.get("en"),
-            //   additionalPrice: product.productCategory.additionalPrice,
-            //   stockItem: product?.productCategory?.stockItem && {
-            //     id: product.productCategory.stockItem._id,
-            //     name: product.productCategory.stockItem.name.get(lang)
-            //       ? product.productCategory.stockItem.name.get(lang)
-            //       : product.productCategory.stockItem.name.get(LANG)
-            //       ? product.productCategory.stockItem.name.get(LANG)
-            //       : product.productCategory.stockItem.name.get("en"),
-            //     stockType: product?.productCategory?.stockItem?.stockType && {
-            //       id: product.productCategory.stockItem.stockType._id,
-            //       name: product.productCategory.stockItem.stockType.name.get(
-            //         lang
-            //       )
-            //         ? product.productCategory.stockItem.stockType.name.get(lang)
-            //         : product.productCategory.stockItem.stockType.name.get(LANG)
-            //         ? product.productCategory.stockItem.stockType.name.get(LANG)
-            //         : product.productCategory.stockItem.stockType.name.get(
-            //             "en"
-            //           ),
-            //     },
-            //     price: product.productCategory.stockItem.price,
-            //   },
-            // },
           };
           products.push(productItem);
         });
@@ -112,10 +81,10 @@ const getProducts = async (req, res) => {
           pages: Math.ceil(count / limit).toString(),
           limit: limit.toString(),
           count: count.toString(),
-          data: products,
+          list: products,
         };
 
-        return ResponseHandler(res, "common", 200, lang, data);
+        return ResponseHandler(res, "common", 200, lang, { products: data });
       });
   } catch (err) {
     console.log(err.message);

@@ -57,7 +57,7 @@ const addStockItem = async (req, res) => {
       costToProduce,
     });
 
-    return ResponseHandler(res, "common", 201, lang, stockItem);
+    return ResponseHandler(res, "common", 201, lang, { stockItem });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

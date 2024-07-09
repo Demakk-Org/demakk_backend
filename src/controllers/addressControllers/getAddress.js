@@ -37,24 +37,21 @@ const getAddresses = async (req, res) => {
 
   query.uid = req.uid;
 
-  console.log(query);
-
   try {
     const count = await Address.countDocuments(query);
 
     Address.find(query)
       .limit(limit)
       .skip((page - 1) * limit)
-      // .sort(sort)
       .then((addresses) => {
         let data = {
           page: page.toString(),
           pages: Math.ceil(count / limit).toString(),
           limit: limit.toString(),
           count: count.toString(),
-          addresses,
+          list: addresses,
         };
-        return ResponseHandler(res, "common", 200, lang, data);
+        return ResponseHandler(res, "common", 200, lang, { addresses: data });
       });
   } catch (error) {
     console.log(error.message);

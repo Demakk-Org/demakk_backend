@@ -19,7 +19,7 @@ const getDealTypes = async (req, res) => {
   try {
     const dealTypes = await DealType.find({});
 
-    return ResponseHandler(res, "common", 200, lang, dealTypes);
+    return ResponseHandler(res, "common", 200, lang, { dealTypes });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

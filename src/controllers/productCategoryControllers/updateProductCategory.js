@@ -87,7 +87,7 @@ const updateProductCategory = async (req, res) => {
     if (additionalCost) productCategory.additionalCost = additionalCost;
     await productCategory.save();
 
-    return ResponseHandler(res, "common", 202, lang, productCategory);
+    return ResponseHandler(res, "common", 202, lang, { productCategory });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);
