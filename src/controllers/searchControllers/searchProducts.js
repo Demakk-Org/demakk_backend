@@ -9,10 +9,10 @@ import User from "../../models/userSchema.js";
 import { Product } from "../../models/productSchema.js";
 import getNameFromLanguage from "../../utils/getNameFromLanguage.js";
 
-const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
+const { LANG, LIMIT, PAGE } = config(process.cwd, ".env").parsed;
 
 const searchProducts = async (req, res) => {
-  let { page, limit, lang, sort, text, filter } = req.query;
+  let { page, limit, lang, text, filter } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -30,7 +30,6 @@ const searchProducts = async (req, res) => {
     uid = "";
   }
 
-  if (sort === undefined) sort = SORT;
   if (page === undefined || typeof page !== "number") page = PAGE;
   if (limit === undefined || typeof limit !== "number") limit = LIMIT;
 
@@ -54,23 +53,6 @@ const searchProducts = async (req, res) => {
 
   const text1 = text.match(regex1)?.join(" ");
   const text2 = text.match(regex);
-
-  if (filter?.price) {
-    match["$match"] = {
-      $and: [
-        {
-          price: {
-            $lt: filter.price.max,
-          },
-        },
-        {
-          price: {
-            $gte: filter.price.min,
-          },
-        },
-      ],
-    };
-  }
 
   let shouldList = [];
 
@@ -223,12 +205,12 @@ const searchProducts = async (req, res) => {
         },
       },
     },
-    {
-      $skip: (page - 1) * limit,
-    },
-    {
-      $limit: limit * 1,
-    },
+    // {
+    //   $skip: (page - 1) * limit,
+    // },
+    // {
+    //   $limit: limit * 1,
+    // },
     {
       $project: {
         _id: 1,
@@ -249,13 +231,6 @@ const searchProducts = async (req, res) => {
     },
   ];
 
-  if (filter) {
-    pipeline.splice(1, 0, { ...match });
-  }
-
-  let countPipeline = pipeline.slice(0, filter ? 2 : 1);
-  countPipeline.push({ $count: "count" });
-
   try {
     try {
       if (uid) {
@@ -271,8 +246,6 @@ const searchProducts = async (req, res) => {
     } catch (error) {
       console.log(error.message);
     }
-
-    let count = await Product.aggregate(countPipeline);
 
     const searchList = await Product.aggregate(pipeline);
 
@@ -304,13 +277,18 @@ const searchProducts = async (req, res) => {
       products.push(productItem);
     });
 
-    count = count[0]?.count ? count[0]?.count : 0;
+    //filter section-----------------
+    if (filter?.price) {
+      products = products.filter(
+        (p) => p.price >= filter.price.min && p.price <= filter.price.max
+      );
+    }
 
     let data = {
       page: page.toString(),
-      pages: Math.ceil(count / limit).toString(),
+      pages: Math.ceil(products.length / limit).toString(),
       limit: limit.toString(),
-      count: count.toString(),
+      count: products.length.toString(),
       list: products,
     };
 

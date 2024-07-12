@@ -6,7 +6,7 @@ import relatedProducts from "../controllers/searchControllers/relatedProducts.js
 const searchRoute = Router();
 
 searchRoute.get("/autocomplete", autoComplete);
-searchRoute.get("/", searchProducts);
+searchRoute.post("/", searchProducts);
 searchRoute.post("/related", relatedProducts);
 
 export { searchRoute };
