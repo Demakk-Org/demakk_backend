@@ -53,7 +53,7 @@ export const addOrderItem = async (req, res) => {
     cart.orderItems.push(orderItem);
     await cart.save();
 
-    return ResponseHandler(res, "common", 201, lang, cart);
+    return ResponseHandler(res, "common", 201, lang, { cart });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);

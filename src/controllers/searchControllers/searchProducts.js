@@ -46,8 +46,6 @@ const searchProducts = async (req, res) => {
     if (!filter.price.max) filter.price.max = Number.POSITIVE_INFINITY;
   }
 
-  let match = {};
-
   const regex = /[^(A-Z0-9\s\.\-\@\#\&\*\%\_"\')]+/gi;
   const regex1 = /[A-Z0-9]+/gi;
 
@@ -205,12 +203,6 @@ const searchProducts = async (req, res) => {
         },
       },
     },
-    // {
-    //   $skip: (page - 1) * limit,
-    // },
-    // {
-    //   $limit: limit * 1,
-    // },
     {
       $project: {
         _id: 1,

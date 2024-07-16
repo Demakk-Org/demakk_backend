@@ -147,7 +147,9 @@ export const addProductVariant = async (req, res) => {
       product.productVariants = variantList;
       await product.save();
 
-      return ResponseHandler(res, "common", 201, lang, data);
+      return ResponseHandler(res, "common", 201, lang, {
+        productVariant: data,
+      });
     });
   } catch (error) {
     console.log(error.message);
