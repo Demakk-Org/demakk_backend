@@ -4,16 +4,15 @@ import { isDateValid } from "../../utils/validate.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 
-import Cart from "../../models/cartSchema.js";
-import User from "../../models/userSchema.js";
 import Order from "../../models/orderSchema.js";
+import Cart from "../../models/cartSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const addOrder = async (req, res) => {
-  let { deliveryDate, lang } = req.body;
+  let { deliveryDate, deliveryAddressId, lang } = req.body;
   let uid = req.uid;
-  let cartId = req.user?.cart;
+  let user = req.user;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -27,32 +26,37 @@ export const addOrder = async (req, res) => {
     return ResponseHandler(res, "common", 405, lang);
   }
 
-  const cartInfo = await Cart.findById(cartId);
-
-  if (!cartInfo) {
-    return ResponseHandler(res, "cart", 404, lang);
-  }
-
-  if (cartInfo.orderItems.length == 0) {
-    return ResponseHandler(res, "orderItem", 405, lang);
-  }
-
   try {
+    let cart = await Cart.findById(user.cart).populate("orderItems");
+
+    if (!cart) {
+      return ResponseHandler(res, "cart", 404, lang);
+    }
+
+    if (cart.orderItems.filter((oi) => oi.isChecked).length == 0) {
+      return ResponseHandler(res, "common", 400, lang);
+    }
+
     Order.create({
       user: uid,
-      orderItems: cartInfo.orderItems,
+      orderItems: cart.orderItems
+        .filter((oi) => oi.isChecked)
+        .map((oi) => oi._id),
+      deliveryAddress: deliveryAddressId,
       deliveryDate,
-      orderStatus: "65a6f9a6e2caf4bfc91f2b27",
+      orderStatus: "663fd0f4f89e8b403ab77c90",
     }).then(async (data) => {
-      let user = await User.findById(uid);
-
       user.orders.push(data._id);
-      cartInfo.orderItems = [];
+      cart.orderItems = cart.orderItems.filter((oi) => !oi.isChecked);
 
-      await cartInfo.save();
-      await user.save();
-
-      return ResponseHandler(res, "common", 201, lang, data);
+      Promise.all([user.save(), cart.save()])
+        .then(() => {
+          return ResponseHandler(res, "common", 201, lang, { data });
+        })
+        .catch((err) => {
+          console.log(err);
+          return ResponseHandler(res, "common", 500, lang);
+        });
     });
   } catch (error) {
     console.log(error.message);
