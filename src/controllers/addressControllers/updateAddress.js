@@ -94,8 +94,8 @@ const updateAddress = async (req, res) => {
     if (asDefault || typeof asDefault == "boolean")
       address.asDefault = asDefault;
 
-    await address.save().then((response) => {
-      return ResponseHandler(res, "common", 202, lang, response);
+    await address.save().then(() => {
+      return ResponseHandler(res, "common", 202, lang);
     });
   } catch (error) {
     console.log(error.message);
