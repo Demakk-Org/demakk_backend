@@ -1,12 +1,12 @@
 import { config } from "dotenv";
-import response from "../../response.js";
+import responsse from "../../responsse.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 export const phoneNumberText = (code, lang) => {
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
-  return response[lang].message.text + code;
+  return responsse[lang].message.text + code;
 };

@@ -1,11 +1,11 @@
 import { isValidObjectId } from "mongoose";
 import { config } from "dotenv";
 
-import response from "../../../response.js";
 import User from "../../models/userSchema.js";
 
 import { ResponseHandler } from "../../utils/responseHandler.js";
 import { Product } from "../../models/productSchema.js";
+import responsse from "../../../responsse.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -13,7 +13,7 @@ export const addFavorite = async (req, res) => {
   let { productId, lang } = req.body;
   let uid = req.uid;
 
-  if (!lang || !(lang in response)) {
+  if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 

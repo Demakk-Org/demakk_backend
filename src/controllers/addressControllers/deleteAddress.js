@@ -28,17 +28,25 @@ const deleteAddress = async (req, res) => {
   }
 
   try {
-    const address = await Address.findByIdAndDelete(addressId);
+    const address = await Address.findById(addressId);
 
     if (!address) {
       return ResponseHandler(res, "address", 404, lang);
     }
 
-    if (address.uid.toString() !== uid) {
+    if (address.uid.toString() != uid) {
       return ResponseHandler(res, "address", 405, lang);
     }
 
-    return ResponseHandler(res, "common", 204, lang);
+    await address
+      .deleteOne()
+      .then(() => {
+        return ResponseHandler(res, "common", 203, lang);
+      })
+      .catch((err) => {
+        console.log(err);
+        return ResponseHandler(res, "common", 500, lang);
+      });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);
