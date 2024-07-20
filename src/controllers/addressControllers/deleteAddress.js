@@ -4,6 +4,7 @@ import { config } from "dotenv";
 import Address from "../../models/addressSchema.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 import responsse from "../../../responsse.js";
+import Order from "../../models/orderSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -36,6 +37,20 @@ const deleteAddress = async (req, res) => {
 
     if (address.uid.toString() != uid) {
       return ResponseHandler(res, "address", 405, lang);
+    }
+
+    let isAddressUsed = await Order.find({ deliveryAddress: addressId });
+
+    if (isAddressUsed) {
+      await address
+        .updateOne({ isActive: false })
+        .then(() => {
+          return ResponseHandler(res, "common", 203, lang);
+        })
+        .catch((err) => {
+          console.log(err);
+          return ResponseHandler(res, "common", 500, lang);
+        });
     }
 
     await address

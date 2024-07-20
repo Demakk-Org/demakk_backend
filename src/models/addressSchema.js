@@ -20,6 +20,10 @@ export const AddressSchema = new Schema(
     streetAddress: String,
     postalCode: String,
     asDefault: { type: Boolean, default: false },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: {

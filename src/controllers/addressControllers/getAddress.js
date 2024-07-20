@@ -38,9 +38,9 @@ const getAddresses = async (req, res) => {
   query.uid = req.uid;
 
   try {
-    const count = await Address.countDocuments(query);
+    const count = await Address.countDocuments({ ...query, isActive: true });
 
-    Address.find(query)
+    Address.find(query, { isActive: true })
       .limit(limit)
       .skip((page - 1) * limit)
       .then((addresses) => {
