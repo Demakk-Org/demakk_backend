@@ -1,9 +1,9 @@
 import User from "../../models/userSchema.js";
-import Jwt from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
 import { config } from "dotenv";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
+import Address from "../../models/addressSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -11,6 +11,7 @@ async function getUser(req, res) {
   let { lang } = req.body;
 
   const uid = req.uid;
+  const userFromMiddleware = req.user;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -25,15 +26,23 @@ async function getUser(req, res) {
   }
 
   try {
+    if (!userFromMiddleware.shippingAddress) {
+      let userAddresses = await Address.find({ uid, isActive: true });
+
+      console.log(userAddresses);
+
+      if (userAddresses.length) {
+        userAddresses.sort((a, b) => Number(b.asDefault) - Number(a.asDefault));
+        userFromMiddleware.shippingAddress = userAddresses[0]._id;
+
+        await userFromMiddleware.save();
+      }
+    }
+
     const user = await User.findById(uid)
       .select("-password -_id")
       .populate("role shippingAddress billingAddress cart image");
 
-    if (!user) {
-      return ResponseHandler(res, "user", 404, lang);
-    }
-
-    console.log(user);
     return ResponseHandler(res, "common", 200, lang, { user });
   } catch (error) {
     console.log(error.message);
