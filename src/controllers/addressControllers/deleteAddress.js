@@ -42,8 +42,9 @@ const deleteAddress = async (req, res) => {
     let isAddressUsed = await Order.find({ deliveryAddress: addressId });
 
     if (isAddressUsed) {
-      await address
-        .updateOne({ isActive: false })
+      address.isActive = false;
+      return await address
+        .save()
         .then(() => {
           return ResponseHandler(res, "common", 203, lang);
         })
