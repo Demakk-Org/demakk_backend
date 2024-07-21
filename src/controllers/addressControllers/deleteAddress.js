@@ -5,6 +5,7 @@ import Address from "../../models/addressSchema.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 import responsse from "../../../responsse.js";
 import Order from "../../models/orderSchema.js";
+import User from "../../models/userSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -43,8 +44,16 @@ const deleteAddress = async (req, res) => {
 
     if (isAddressUsed) {
       address.isActive = false;
-      return await address
-        .save()
+      let user = await User.findById(uid);
+
+      let promises = [address.save()];
+
+      if (user.shippingAddress.toString() == addressId) {
+        user.shippingAddress = null;
+        promises.push(user.save());
+      }
+
+      return Promise.all(promises)
         .then(() => {
           return ResponseHandler(res, "common", 203, lang);
         })
