@@ -8,9 +8,11 @@ import { getOrder } from "../controllers/orderControllers/getOrder.js";
 import { getOrders } from "../controllers/orderControllers/getOrders.js";
 import getAllOrderIds from "../controllers/orderControllers/getAllOrderIds.js";
 import deleteOrderItem from "../controllers/orderControllers/deleteOrderItemFromOrder.js";
+import getDeletedOrders from "../controllers/orderControllers/getDeletedOrders.js";
 
 const orderRoute = Router();
 
+orderRoute.get("/deleted", UserAuthentication, getDeletedOrders);
 orderRoute.get("/ids", getAllOrderIds);
 orderRoute.get("/:id", UserAuthentication, getOrder);
 orderRoute.get("/", UserAuthentication, getOrders);
