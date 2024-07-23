@@ -37,15 +37,34 @@ const deleteOrderItem = async (req, res) => {
       return ResponseHandler(res, "order", 404, lang);
     }
 
-    OrderItem.findByIdAndDelete(orderItemId).then(() => {
-      if (order.orderItems.filter((oi) => oi.id !== orderItemId).length == 0) {
-        Order.findByIdAndDelete(orderId).then((res) => {
-          return ResponseHandler(res, "common", 203, lang);
-        });
-      }
+    let promises = [];
 
-      return ResponseHandler(res, "common", 203, lang);
-    });
+    let orderItem = await OrderItem.findById(orderItemId);
+
+    if (orderItem.isActive) {
+      orderItem.isActive = false;
+      promises.push(orderItem.save());
+    } else {
+      promises.push(orderItem.deleteOne());
+    }
+
+    if (
+      order.orderItems.filter((oi) => oi._id.toString != orderItemId).length ==
+        0 &&
+      orderItem.isActive == false
+    ) {
+      promises.push(order.deleteOne());
+    }
+
+    Promise.all(promises)
+      .then((response) => {
+        console.log(response);
+        return ResponseHandler(res, "common", 203, lang);
+      })
+      .catch((err) => {
+        console.log(err);
+        return ResponseHandler(res, "common", 500, lang);
+      });
   } catch (error) {
     console.log(error);
     return ResponseHandler(res, "common", 500, lang);

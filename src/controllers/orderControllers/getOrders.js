@@ -1,4 +1,4 @@
-import { config, populate } from "dotenv";
+import { config } from "dotenv";
 
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
@@ -40,10 +40,7 @@ export const getOrders = async (req, res) => {
     query.orderStatus = order._id;
   }
 
-  console.log(query, req?.language);
-
   try {
-    const count = await Order.countDocuments(query);
     Order.find(query)
       .limit(limit)
       .skip((page - 1) * limit)
@@ -77,49 +74,58 @@ export const getOrders = async (req, res) => {
         let orderList = [];
 
         orders.forEach((order) => {
+          if (
+            order.orderItems.filter((oi) => oi.isActive == true).length == 0
+          ) {
+            return;
+          }
+
           orderList.push({
             _id: order._id,
-            orderItems: order.orderItems.map((orderItem) => ({
-              _id: orderItem._id,
-              quantity: orderItem.quantity,
-              couponCode: orderItem.couponCode,
-              productVariant: {
-                _id: orderItem.productVariant._id,
-                stockVarieties: orderItem.productVariant.stockVarieties.map(
-                  (v) => ({
-                    type: v.type.name,
-                    value: v.value,
-                    class: v.class,
-                  })
-                ),
-                product: {
-                  _id: orderItem.productVariant.product._id,
-                  name: orderItem.productVariant.product.name.get(lang)
-                    ? orderItem.productVariant.product.name.get(lang)
-                    : orderItem.productVariant.product.name.get(LANG)
-                    ? orderItem.productVariant.product.name.get(LANG)
-                    : orderItem.productVariant.product.name.get("en"),
-                  description: orderItem.productVariant.product.description.get(
-                    lang
-                  )
-                    ? orderItem.productVariant.product.description.get(lang)
-                    : orderItem.productVariant.product.description.get(LANG)
-                    ? orderItem.productVariant.product.description.get(LANG)
-                    : orderItem.productVariant.product.description.get("en"),
-                  tags: orderItem.productVariant.product.tags,
-                  price: orderItem.productVariant.product.price,
-                },
+            orderItems: order.orderItems
+              .filter((oi) => oi.isActive == true)
+              .map((orderItem) => ({
+                _id: orderItem._id,
+                quantity: orderItem.quantity,
+                couponCode: orderItem.couponCode,
+                productVariant: {
+                  _id: orderItem.productVariant._id,
+                  stockVarieties: orderItem.productVariant.stockVarieties.map(
+                    (v) => ({
+                      type: v.type.name,
+                      value: v.value,
+                      class: v.class,
+                    })
+                  ),
+                  product: {
+                    _id: orderItem.productVariant.product._id,
+                    name: orderItem.productVariant.product.name.get(lang)
+                      ? orderItem.productVariant.product.name.get(lang)
+                      : orderItem.productVariant.product.name.get(LANG)
+                      ? orderItem.productVariant.product.name.get(LANG)
+                      : orderItem.productVariant.product.name.get("en"),
+                    description:
+                      orderItem.productVariant.product.description.get(lang)
+                        ? orderItem.productVariant.product.description.get(lang)
+                        : orderItem.productVariant.product.description.get(LANG)
+                        ? orderItem.productVariant.product.description.get(LANG)
+                        : orderItem.productVariant.product.description.get(
+                            "en"
+                          ),
+                    tags: orderItem.productVariant.product.tags,
+                    price: orderItem.productVariant.product.price,
+                  },
 
-                imageUrl:
-                  orderItem.productVariant.product.images.imageUrls[
-                    orderItem.productVariant.imageIndex
-                  ],
-                price:
-                  orderItem.productVariant.product.price +
-                  orderItem.productVariant.additionalPrice,
-                numberOfAvailable: orderItem.productVariant.numberOfAvailable,
-              },
-            })),
+                  imageUrl:
+                    orderItem.productVariant.product.images.imageUrls[
+                      orderItem.productVariant.imageIndex
+                    ],
+                  price:
+                    orderItem.productVariant.product.price +
+                    orderItem.productVariant.additionalPrice,
+                  numberOfAvailable: orderItem.productVariant.numberOfAvailable,
+                },
+              })),
             orderDate: order.orderDate,
             deliveryDate: order.deliveryDate,
             orderStatus: order.orderStatus.name,
@@ -129,9 +135,9 @@ export const getOrders = async (req, res) => {
 
         const data = {
           page: page.toString(),
-          pages: Math.ceil(count / limit).toString(),
+          pages: Math.ceil(orderList.length / limit).toString(),
           limit: limit.toString(),
-          count: count.toString(),
+          count: orderList.length.toString(),
           list: orderList,
         };
         return ResponseHandler(res, "common", 200, lang, { orders: data });

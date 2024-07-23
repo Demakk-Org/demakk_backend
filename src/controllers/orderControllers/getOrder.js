@@ -55,8 +55,6 @@ export const getOrder = async (req, res) => {
         },
       });
 
-    console.log(order);
-
     if (!order) {
       return ResponseHandler(res, "order", 404, lang);
     }
@@ -67,43 +65,49 @@ export const getOrder = async (req, res) => {
 
     let orderData = {
       _id: order._id,
-      orderItems: order.orderItems.map((orderItem) => ({
-        _id: orderItem._id,
-        quantity: orderItem.quantity,
-        couponCode: orderItem.couponCode,
-        productVariant: {
-          _id: orderItem.productVariant._id,
-          stockVarieties: orderItem.productVariant.stockVarieties.map((v) => ({
-            type: v.type.name,
-            value: v.value,
-            class: v.class,
-          })),
-          product: {
-            _id: orderItem.productVariant.product._id,
-            name: orderItem.productVariant.product.name.get(lang)
-              ? orderItem.productVariant.product.name.get(lang)
-              : orderItem.productVariant.product.name.get(LANG)
-              ? orderItem.productVariant.product.name.get(LANG)
-              : orderItem.productVariant.product.name.get("en"),
-            description: orderItem.productVariant.product.description.get(lang)
-              ? orderItem.productVariant.product.description.get(lang)
-              : orderItem.productVariant.product.description.get(LANG)
-              ? orderItem.productVariant.product.description.get(LANG)
-              : orderItem.productVariant.product.description.get("en"),
-            tags: orderItem.productVariant.product.tags,
-            price: orderItem.productVariant.product.price,
-          },
+      orderItems: order.orderItems
+        .filter((oi) => oi.isActive == true)
+        .map((orderItem) => ({
+          _id: orderItem._id,
+          quantity: orderItem.quantity,
+          couponCode: orderItem.couponCode,
+          productVariant: {
+            _id: orderItem.productVariant._id,
+            stockVarieties: orderItem.productVariant.stockVarieties.map(
+              (v) => ({
+                type: v.type.name,
+                value: v.value,
+                class: v.class,
+              })
+            ),
+            product: {
+              _id: orderItem.productVariant.product._id,
+              name: orderItem.productVariant.product.name.get(lang)
+                ? orderItem.productVariant.product.name.get(lang)
+                : orderItem.productVariant.product.name.get(LANG)
+                ? orderItem.productVariant.product.name.get(LANG)
+                : orderItem.productVariant.product.name.get("en"),
+              description: orderItem.productVariant.product.description.get(
+                lang
+              )
+                ? orderItem.productVariant.product.description.get(lang)
+                : orderItem.productVariant.product.description.get(LANG)
+                ? orderItem.productVariant.product.description.get(LANG)
+                : orderItem.productVariant.product.description.get("en"),
+              tags: orderItem.productVariant.product.tags,
+              price: orderItem.productVariant.product.price,
+            },
 
-          imageUrl:
-            orderItem.productVariant.product.images.imageUrls[
-              orderItem.productVariant.imageIndex
-            ],
-          price:
-            orderItem.productVariant.product.price +
-            orderItem.productVariant.additionalPrice,
-          numberOfAvailable: orderItem.productVariant.numberOfAvailable,
-        },
-      })),
+            imageUrl:
+              orderItem.productVariant.product.images.imageUrls[
+                orderItem.productVariant.imageIndex
+              ],
+            price:
+              orderItem.productVariant.product.price +
+              orderItem.productVariant.additionalPrice,
+            numberOfAvailable: orderItem.productVariant.numberOfAvailable,
+          },
+        })),
       orderDate: order.orderDate,
       deliveryDate: order.deliveryDate,
       orderStatus: order.orderStatus.name,

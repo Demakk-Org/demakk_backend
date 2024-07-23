@@ -23,6 +23,10 @@ export const orderItemSchema = new Schema(
       type: mongoose.Types.ObjectId,
       ref: "Coupon",
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: {
