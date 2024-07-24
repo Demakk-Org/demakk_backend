@@ -27,14 +27,31 @@ export const updateUserImage = async (req, res) => {
   try {
     const user = await User.findById(uid);
 
-    Image.findByIdAndUpdate(user.image, {
-      imageUrls: image,
-    }).then(async (img) => {
-      user.image = img._id;
-      await user.save();
+    let promises = [];
 
-      return ResponseHandler(res, "common", 202, lang, img);
-    });
+    if (!user.image) {
+      return Image.create({ imageUrls: image, rid: uid, type: "user" }).then(
+        async (res) => {
+          user.image = res._id;
+          promises.push(user.save());
+        }
+      );
+    } else {
+      promises.push(
+        Image.findByIdAndUpdate(user.image, {
+          imageUrls: image,
+        })
+      );
+    }
+
+    return Promise.all(promises)
+      .then(() => {
+        return ResponseHandler(res, "common", 201, lang);
+      })
+      .catch((err) => {
+        console.log(err);
+        return ResponseHandler(res, "common", 500, lang);
+      });
   } catch (error) {
     console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);
