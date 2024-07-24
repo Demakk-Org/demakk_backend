@@ -25,7 +25,7 @@ export const updateUserImage = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(uid);
+    const user = await User.findById(uid).populate("image");
 
     let promises = [];
 
@@ -46,7 +46,7 @@ export const updateUserImage = async (req, res) => {
 
     return Promise.all(promises)
       .then(() => {
-        return ResponseHandler(res, "common", 201, lang);
+        return ResponseHandler(res, "common", 200, lang);
       })
       .catch((err) => {
         console.log(err);
