@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { StockVarietyType } from "./stockVarietyTypeSchema.js";
 import { Product } from "./productSchema.js";
-
+import OrderItem from "./orderItemSchema.js";
 const { Schema } = mongoose;
 
 const productVariantSchema = new Schema(
@@ -25,6 +25,7 @@ const productVariantSchema = new Schema(
     imageIndex: { type: Number, default: 0 },
     additionalPrice: { type: Number, default: 0 },
     numberOfAvailable: { type: Number, required: true },
+    orders: [{ type: mongoose.Types.ObjectId, ref: "OrderItem" }],
   },
   {
     timestamps: {

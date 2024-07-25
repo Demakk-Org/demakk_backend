@@ -42,7 +42,7 @@ const UserAuthentication = (req, res, next) => {
   try {
     User.findById(uid)
       .select("-password")
-      .populate("role")
+      .populate("role shippingAddress")
       .then((user) => {
         console.log(user);
         req.language = user.lang;

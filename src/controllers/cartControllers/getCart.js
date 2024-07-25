@@ -27,13 +27,19 @@ export const getCart = async (req, res) => {
         populate: {
           path: "productVariant",
           select: "-createdAt -updatedAt -__v",
-          populate: {
-            path: "product",
-            select: "name price images",
-            populate: {
-              path: "images",
+          populate: [
+            {
+              path: "product",
+              select: "name price images",
+              populate: {
+                path: "images",
+              },
             },
-          },
+            {
+              path: "orders",
+              select: "quantity",
+            },
+          ],
         },
       })
       .select("orderItems");
@@ -60,7 +66,9 @@ export const getCart = async (req, res) => {
               : orderItem.productVariant.product.name.get("en"),
           },
           imageIndex: orderItem.productVariant.imageIndex,
-          numberOfAvailable: orderItem.productVariant.numberOfAvailable,
+          numberOfAvailable:
+            orderItem.productVariant.numberOfAvailable -
+            orderItem.productVariant.orders.reduce((a, b) => a + b.quantity, 0),
           price:
             orderItem.productVariant.additionalPrice +
             orderItem.productVariant.product.price,
