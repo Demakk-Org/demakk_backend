@@ -40,7 +40,7 @@ async function getUser(req, res) {
     }
 
     const user = await User.findById(uid)
-      .select("-password -_id")
+      .select("-password")
       .populate("role shippingAddress billingAddress cart image");
 
     return ResponseHandler(res, "common", 200, lang, { user });
