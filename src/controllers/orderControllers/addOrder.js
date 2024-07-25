@@ -6,6 +6,8 @@ import { ResponseHandler } from "../../utils/responseHandler.js";
 
 import Order from "../../models/orderSchema.js";
 import Cart from "../../models/cartSchema.js";
+import { ProductVariant } from "../../models/productVariantSchema.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
@@ -20,6 +22,14 @@ export const addOrder = async (req, res) => {
 
   if (req?.language) {
     lang = req.language;
+  }
+
+  if (!deliveryAddressId || !deliveryDate) {
+    return ResponseHandler(res, "common", 400, lang);
+  }
+
+  if (!isValidObjectId(deliveryAddressId)) {
+    return ResponseHandler(res, "address", 402, lang);
   }
 
   if (deliveryDate && !isDateValid(deliveryDate)) {
@@ -37,6 +47,14 @@ export const addOrder = async (req, res) => {
       return ResponseHandler(res, "common", 400, lang);
     }
 
+    let promises = cart.orderItems.map((oi) =>
+      ProductVariant.findOneAndUpdate(oi.productVariant, {
+        $push: {
+          orders: oi._id,
+        },
+      })
+    );
+
     Order.create({
       user: uid,
       orderItems: cart.orderItems
@@ -49,7 +67,7 @@ export const addOrder = async (req, res) => {
       user.orders.push(data._id);
       cart.orderItems = cart.orderItems.filter((oi) => !oi.isChecked);
 
-      Promise.all([user.save(), cart.save()])
+      Promise.all([user.save(), cart.save(), ...promises])
         .then(() => {
           return ResponseHandler(res, "common", 201, lang, { data });
         })

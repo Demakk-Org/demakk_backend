@@ -37,7 +37,7 @@ export const getCart = async (req, res) => {
             },
             {
               path: "orders",
-              select: "quantity",
+              select: "quantity isActive",
             },
           ],
         },
@@ -68,7 +68,9 @@ export const getCart = async (req, res) => {
           imageIndex: orderItem.productVariant.imageIndex,
           numberOfAvailable:
             orderItem.productVariant.numberOfAvailable -
-            orderItem.productVariant.orders.reduce((a, b) => a + b.quantity, 0),
+            orderItem.productVariant.orders
+              .filter((a) => a.isActive)
+              .reduce((a, b) => a + b.quantity, 0),
           price:
             orderItem.productVariant.additionalPrice +
             orderItem.productVariant.product.price,
