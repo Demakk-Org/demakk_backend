@@ -47,13 +47,18 @@ export const addOrder = async (req, res) => {
       return ResponseHandler(res, "common", 400, lang);
     }
 
-    let promises = cart.orderItems.map((oi) =>
-      ProductVariant.findOneAndUpdate(oi.productVariant, {
-        $push: {
-          orders: oi._id,
-        },
-      })
-    );
+    let promises = cart.orderItems
+      .filter((oi) => oi.isChecked)
+      .map((oi) =>
+        ProductVariant.findOneAndUpdate(
+          { _id: oi.productVariant },
+          {
+            $push: {
+              orders: oi._id,
+            },
+          }
+        )
+      );
 
     Order.create({
       user: uid,
