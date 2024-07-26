@@ -43,22 +43,22 @@ export const addOrder = async (req, res) => {
       return ResponseHandler(res, "cart", 404, lang);
     }
 
-    if (cart.orderItems.filter((oi) => oi.isChecked).length == 0) {
+    let checkedOrderItems = cart.orderItems.filter((oi) => oi.isChecked);
+
+    if (checkedOrderItems.length == 0) {
       return ResponseHandler(res, "common", 400, lang);
     }
 
-    let promises = cart.orderItems
-      .filter((oi) => oi.isChecked)
-      .map((oi) =>
-        ProductVariant.findOneAndUpdate(
-          { _id: oi.productVariant },
-          {
-            $push: {
-              orders: oi._id,
-            },
-          }
-        )
-      );
+    let promises = checkedOrderItems.map((oi) =>
+      ProductVariant.findOneAndUpdate(
+        { _id: oi.productVariant },
+        {
+          $push: {
+            orders: oi._id,
+          },
+        }
+      )
+    );
 
     Order.create({
       user: uid,
