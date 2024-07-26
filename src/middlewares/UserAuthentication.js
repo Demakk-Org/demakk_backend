@@ -44,7 +44,6 @@ const UserAuthentication = (req, res, next) => {
       .select("-password")
       .populate("role shippingAddress")
       .then((user) => {
-        console.log(user);
         req.language = user.lang;
         req.user = user;
         req.uid = user._id;
