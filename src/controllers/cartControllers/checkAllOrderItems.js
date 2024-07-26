@@ -21,7 +21,7 @@ const checkAllOrderItems = async (req, res) => {
 
   if (
     !cartId ||
-    isChecked !== "boolean" ||
+    typeof isChecked !== "boolean" ||
     !Array.isArray(orderItems) ||
     orderItems.length == 0
   ) {
