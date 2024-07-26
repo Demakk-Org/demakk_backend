@@ -66,11 +66,12 @@ export const getCart = async (req, res) => {
               : orderItem.productVariant.product.name.get("en"),
           },
           imageIndex: orderItem.productVariant.imageIndex,
-          numberOfAvailable:
-            orderItem.productVariant.numberOfAvailable -
-            orderItem.productVariant.orders
-              .filter((a) => a.isActive)
-              .reduce((a, b) => a + b.quantity, 0),
+          numberOfAvailable: orderItem.productVariant.orders
+            .filter((a) => a.isActive)
+            .reduce(
+              (a, b) => a - b.quantity,
+              orderItem.productVariant.numberOfAvailable
+            ),
           price:
             orderItem.productVariant.additionalPrice +
             orderItem.productVariant.product.price,

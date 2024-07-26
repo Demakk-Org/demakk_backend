@@ -1,13 +1,13 @@
 import { config } from "dotenv";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
-import Cart from "../../models/cartSchema.js";
 import OrderItem from "../../models/orderItemSchema.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const checkAllOrderItems = async (req, res) => {
-  let { lang, isChecked } = req.body;
+  let { lang, isChecked, orderItems } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -19,21 +19,32 @@ const checkAllOrderItems = async (req, res) => {
 
   let cartId = req.user.cart;
 
-  if (!cartId || (!isChecked && typeof isChecked !== "boolean")) {
+  if (
+    !cartId ||
+    isChecked !== "boolean" ||
+    !Array.isArray(orderItems) ||
+    orderItems.length == 0
+  ) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
-  try {
-    let cart = await Cart.findById(cartId);
+  let isValid = true;
 
-    if (!cart) {
-      return ResponseHandler(res, "cart", 404, lang);
+  orderItems.forEach((orderItem) => {
+    if (!isValidObjectId(orderItem)) {
+      isValid = false;
     }
+  });
 
+  if (!isValid) {
+    return ResponseHandler(res, "orderItem", 402, lang);
+  }
+
+  try {
     Promise.all(
-      [...cart.orderItems].map((orderItem) => {
+      orderItems.map((orderItem) => {
         try {
-          return OrderItem.findByIdAndUpdate(orderItem._id, {
+          return OrderItem.findByIdAndUpdate(orderItem, {
             isChecked,
           });
         } catch (error) {
@@ -42,7 +53,7 @@ const checkAllOrderItems = async (req, res) => {
       })
     )
       .then(() => {
-        return ResponseHandler(res, "common", 200, lang, { cart });
+        return ResponseHandler(res, "common", 200, lang);
       })
       .catch((error) => {
         console.log(error);

@@ -21,7 +21,6 @@ const UserAuthentication = (req, res, next) => {
   }
 
   const tokenValues = decode(token, "your_secret_key");
-  console.log(tokenValues, "values");
 
   if (!tokenValues) {
     console.error("Authentication failed: Invalid token", token);
