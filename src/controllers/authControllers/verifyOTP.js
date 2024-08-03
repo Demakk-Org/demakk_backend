@@ -8,8 +8,8 @@ import OTP from "../../models/otpSchema.js";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
-const veriftyOTP = async (req, res) => {
-  let { otpID, otpValue, lang } = req.body;
+const verifyOTP = async (req, res) => {
+  let { otpID, otpValue, activation, lang } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -41,15 +41,17 @@ const veriftyOTP = async (req, res) => {
         return ResponseHandler(res, "auth", 419, lang);
       }
 
-      const user = await User.findOneAndUpdate(
-        { email: otp.account },
-        {
-          emailVerified: true,
-        },
-        {
-          returnDocument: "after",
-        }
-      ).select("email emailVerified");
+      if (activation) {
+        await User.findOneAndUpdate(
+          { email: otp.account },
+          {
+            emailVerified: true,
+          },
+          {
+            returnDocument: "after",
+          }
+        ).select("email emailVerified");
+      }
 
       otp.status = "complete";
       otp.save();
@@ -60,15 +62,17 @@ const veriftyOTP = async (req, res) => {
         return ResponseHandler(res, "auth", 403, lang);
       }
 
-      const user = await User.findOneAndUpdate(
-        { phoneNumber: otp.account },
-        {
-          phoneNumberVerified: true,
-        },
-        {
-          returnDocument: "after",
-        }
-      ).select("phone phoneNumberVerified");
+      if (activation) {
+        await User.findOneAndUpdate(
+          { phoneNumber: otp.account },
+          {
+            phoneNumberVerified: true,
+          },
+          {
+            returnDocument: "after",
+          }
+        ).select("phone phoneNumberVerified");
+      }
 
       otp.status = "complete";
       otp.save();
@@ -78,4 +82,4 @@ const veriftyOTP = async (req, res) => {
   }
 };
 
-export default veriftyOTP;
+export default verifyOTP;

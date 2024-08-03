@@ -9,10 +9,10 @@ import { Product } from "../../models/productSchema.js";
 const { LANG, LIMIT, PAGE, SORT } = config(process.cwd, ".env").parsed;
 
 const getProducts = async (req, res) => {
-  let { page, limit, lang, sort } = req.query;
+  let { page, limit, lang, sort, productIds } = req.query;
 
   const token = req.headers?.authorization?.split(" ")[1];
-  console.log(typeof page, page, limit, lang, sort, " params");
+  console.log(typeof page, page, limit, lang, sort, productIds, " params");
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -25,9 +25,16 @@ const getProducts = async (req, res) => {
   if (sort === undefined) sort = SORT;
   if (page === undefined || typeof (page * 1) !== "number") page = PAGE;
   if (limit === undefined || typeof (limit * 1) !== "number") limit = LIMIT;
-  console.log(typeof page, page, limit, lang, sort, " params");
 
   let query = {};
+
+  if (productIds == "empty") {
+    query._id = { $in: [] };
+  } else if (productIds) {
+    query._id = { $in: productIds.split(",") };
+  }
+
+  console.log(query);
 
   Array.from(Object.keys(req.query)).forEach((item) => {
     if (
@@ -35,7 +42,8 @@ const getProducts = async (req, res) => {
       item != "page" &&
       item != "limit" &&
       item != "lang" &&
-      item != "sort"
+      item != "sort" &&
+      item != "productIds"
     ) {
       query[item] = req.query[item];
     }

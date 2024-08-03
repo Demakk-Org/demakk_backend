@@ -6,7 +6,6 @@ import emailText from "../../utils/emailText.js";
 import { phoneNumberText } from "../../utils/phoneNumberText.js";
 import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
-import User from "../../models/userSchema.js";
 import OTP from "../../models/otpSchema.js";
 
 const { LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID, GEEZ_SMS_URL } = config(
@@ -15,7 +14,7 @@ const { LANG, GEEZ_SMS_TOKEN, SHORTCODE_ID, GEEZ_SMS_URL } = config(
 ).parsed;
 
 const sendVerification = async (req, res) => {
-  let { type, lang } = req.body;
+  let { accountType, activation, newEmail, newPhoneNumber, lang } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -25,32 +24,32 @@ const sendVerification = async (req, res) => {
     lang = req.language;
   }
 
-  if (!type) {
+  if (!accountType) {
     return ResponseHandler(res, "common", 400, lang);
   }
 
-  if (type !== "email" && type !== "phoneNumber") {
+  if (accountType !== "email" && accountType !== "phoneNumber") {
     return ResponseHandler(res, "common", 400, lang);
   }
 
-  const user = await User.findById(req.uid).select(
-    "email phoneNumber emailVerified phoneNumberVerified"
-  );
+  let user = req.user;
 
-  if (!user) {
-    return ResponseHandler(res, "user", 404, lang);
-  }
+  if (activation) {
+    if (!user) {
+      return ResponseHandler(res, "user", 404, lang);
+    }
 
-  if (type == "email" && user.emailVerified) {
-    return ResponseHandler(res, "auth", 419, lang);
-  }
+    if (accountType == "email" && user.emailVerified) {
+      return ResponseHandler(res, "auth", 419, lang);
+    }
 
-  if (type == "phoneNumber" && user.phoneNumberVerified) {
-    return ResponseHandler(res, "auth", 403, lang);
+    if (accountType == "phoneNumber" && user.phoneNumberVerified) {
+      return ResponseHandler(res, "auth", 403, lang);
+    }
   }
 
   OTP.updateMany(
-    { account: type == "email" ? user.email : user.phoneNumber },
+    { account: accountType == "email" ? user.email : user.phoneNumber },
     { status: "complete" }
   ).catch((error) => {
     console.log(error.message);
@@ -61,7 +60,7 @@ const sendVerification = async (req, res) => {
 
   var otpKey = Math.round(Math.random() * 900000 + 100000);
 
-  if (type == "phoneNumber") {
+  if (accountType == "phoneNumber") {
     if (!user.phoneNumber) {
       return ResponseHandler(res, "auth", 415, lang);
     }
@@ -82,10 +81,10 @@ const sendVerification = async (req, res) => {
         .then(async (response) => {
           console.log(JSON.stringify(response.data));
           await OTP.create({
-            type: type,
+            type: accountType,
             otp: otpKey,
             account: user.phoneNumber,
-            expiresIn: 1000 * 60 * 5, //5 minutes
+            expiresIn: 1000 * 60 * 5,
           }).then((response) => {
             const data = {
               id: response._id,
@@ -94,27 +93,26 @@ const sendVerification = async (req, res) => {
               expiresIn: response.expiresIn,
             };
 
-            return ResponseHandler(res, "auth", 205, lang, data);
+            return ResponseHandler(res, "auth", 205, lang, { otp: data });
           });
         })
         .catch((error) => {
-          console.log(JSON.stringify(error));
-          return ErrorHandler(res, 457, lang);
+          return ResponseHandler(res, "auth", 417, lang);
         });
     } catch (err) {
       console.log(err.message);
-      return ErrorHandler(res, 500, lang);
+      return ResponseHandler(res, "common", 500, lang);
     }
   }
 
-  if (type == "email") {
+  if (accountType == "email") {
     if (!user.email) {
-      return ErrorHandler(res, 454, lang);
+      return ResponseHandler(res, 454, lang);
     }
 
     message = {
       from: "Demakk: ",
-      to: user.email,
+      to: newEmail || user.email,
       subject: "Demakk - Let's get you verified!",
       html: emailText(otpKey),
     };
@@ -129,12 +127,11 @@ const sendVerification = async (req, res) => {
 
     try {
       transporter.sendMail(message).then(async (data) => {
-        console.log("Message sent: %s", data.accepted);
         await OTP.create({
-          type: type,
+          type: accountType,
           otp: otpKey,
-          account: user.email,
-          expiresIn: 1000 * 60 * 5, //5 minutes
+          account: newEmail || user.email,
+          expiresIn: 1000 * 60 * 5,
         }).then((response) => {
           const data = {
             id: response._id,

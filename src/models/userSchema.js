@@ -99,6 +99,16 @@ export const UserSchema = new Schema(
         ref: "Product",
       },
     ],
+    address: {
+      city: String,
+      country: String,
+      streetAddress: String,
+      zipCode: String,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+    },
   },
   {
     timestamps: {

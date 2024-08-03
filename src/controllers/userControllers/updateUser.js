@@ -23,9 +23,14 @@ const updateUser = async (req, res) => {
     lastName,
     email,
     phoneNumber,
+    verify,
+    gender,
+    address,
     shippingAddress,
     billingAddress,
   } = req.body;
+
+  let { city, country, zipCode, streetAddress } = address;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
@@ -42,7 +47,10 @@ const updateUser = async (req, res) => {
     !email &&
     !phoneNumber &&
     !shippingAddress &&
-    !billingAddress
+    !billingAddress &&
+    !gender &&
+    !city &&
+    !country
   ) {
     return ResponseHandler(res, "common", 400, lang);
   }
@@ -91,6 +99,14 @@ const updateUser = async (req, res) => {
     }
   }
 
+  if (gender && gender != "male" && gender != "female") {
+    return ResponseHandler(res, "common", 400, lang);
+  }
+
+  if ((country && !city) || (city && !country)) {
+    return ResponseHandler(res, "common", 400, lang);
+  }
+
   if (billingAddress) {
     const address = await Address.findById(billingAddress);
     if (!address) {
@@ -120,7 +136,7 @@ const updateUser = async (req, res) => {
       }
 
       user.email = email;
-      user.emailVerified = false;
+      user.emailVerified = verify ? true : false;
     }
     if (phoneNumber && phoneNumber !== user.phoneNumber) {
       const userPhoneNumber = await User.findOne({ phoneNumber });
@@ -130,8 +146,11 @@ const updateUser = async (req, res) => {
       }
 
       user.phoneNumber = phoneNumber;
-      user.phoneNumberVerified = false;
+      user.phoneNumberVerified = verify ? true : false;
     }
+
+    if (gender) user.gender = gender;
+    if (address) user.address = address;
 
     await user.save();
 
@@ -146,6 +165,8 @@ const updateUser = async (req, res) => {
       shippingAddress: user.shippingAddress,
       billingAddress: user.billingAddress,
       lang: user.lang,
+      gender: user.gender,
+      address: user.address,
     };
 
     return ResponseHandler(res, "common", 202, lang, { user: data });

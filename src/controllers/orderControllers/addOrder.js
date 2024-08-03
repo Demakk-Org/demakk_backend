@@ -74,7 +74,7 @@ export const addOrder = async (req, res) => {
 
       Promise.all([user.save(), cart.save(), ...promises])
         .then(() => {
-          return ResponseHandler(res, "common", 201, lang, { data });
+          return ResponseHandler(res, "common", 201, lang, { order: data });
         })
         .catch((err) => {
           console.log(err);
