@@ -4,21 +4,37 @@ import responsse from "../../../responsse.js";
 import { ResponseHandler } from "../../utils/responseHandler.js";
 
 import { ProductVariant } from "../../models/productVariantSchema.js";
+import { isValidObjectId } from "mongoose";
 
 const LANG = config(process.cwd, ".env").parsed.LANG;
 
 const getProductVariants = async (req, res) => {
-  let { lang } = req.query;
-  let { id } = req.params;
+  let { productVariantIds, lang } = req.body;
 
   if (!lang || !(lang in responsse)) {
     lang = LANG;
   }
 
+  if (!productVariantIds || !Array.isArray(productVariantIds)) {
+    return ResponseHandler(res, "common", 400, lang);
+  }
+
+  let isValid = true;
+
+  productVariantIds.forEach((pv) => {
+    if (!isValidObjectId(pv)) {
+      isValid = false;
+    }
+  });
+
+  if (!isValid) {
+    return ResponseHandler(res, "common", 400, lang);
+  }
+
+  let query = { _id: { $in: productVariantIds } };
+
   try {
-    const productVariants = await ProductVariant.find({
-      product: id,
-    }).populate([
+    const productVariants = await ProductVariant.find(query).populate([
       {
         path: "product",
         select: "name description price stockVarietyTypeList tags images",
@@ -34,16 +50,21 @@ const getProductVariants = async (req, res) => {
         path: "stockVarieties",
         populate: { path: "type", select: "-createdAt -updatedAt -__v" },
       },
+      {
+        path: "orders",
+      },
     ]);
 
+    console.log(productVariants);
     let productVariantList = [];
 
     productVariants.forEach((productVariant) => {
       productVariantList.push({
         _id: productVariant._id,
         stockVarieties: productVariant.stockVarieties.map((v) => ({
-          type: v.type.name,
+          type: v.type.type,
           value: v.value,
+          class: v.class,
         })),
         product: {
           _id: productVariant.product._id,
@@ -63,17 +84,24 @@ const getProductVariants = async (req, res) => {
             (l) => l.name
           ),
         },
-
-        image:
+        imageIndex: productVariant.imageIndex,
+        imageUrl:
           productVariant.product.images.imageUrls[productVariant.imageIndex],
         price: productVariant.product.price + productVariant.additionalPrice,
-        numberOfAvailable: productVariant.numberOfAvailable,
+        numberOfAvailable: productVariant.orders
+          .filter((oi) => oi.isActive)
+          .reduce(
+            (acc, oi) => acc - oi.quantity,
+            productVariant.numberOfAvailable
+          ),
       });
     });
 
-    return ResponseHandler(res, "common", 200, lang, productVariantList);
+    return ResponseHandler(res, "common", 200, lang, {
+      productVariants: productVariantList,
+    });
   } catch (error) {
-    console.log(err.message);
+    console.log(error.message);
     return ResponseHandler(res, "common", 500, lang);
   }
 };

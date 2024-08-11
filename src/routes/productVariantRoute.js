@@ -11,7 +11,7 @@ import { getProductVariants } from "../controllers/productVariantControllers/get
 export const productVariantRoute = Router();
 
 productVariantRoute.get("/:id", getProductVariant);
-productVariantRoute.get("/product/:id", getProductVariants);
+productVariantRoute.post("/fetch", getProductVariants);
 productVariantRoute.post("/", AdminAuthentication, addProductVariant);
 productVariantRoute.put("/", AdminAuthentication, updateProductVariant);
 productVariantRoute.delete("/", AdminAuthentication, deleteProductVariant);

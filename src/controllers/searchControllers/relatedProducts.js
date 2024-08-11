@@ -51,12 +51,12 @@ const relatedProducts = async (req, res) => {
           populate: { path: "pid", select: "productCategory" },
         });
 
-      userFavProductCategoryIds = userProductCategories.favs.map((fav) =>
-        fav.productCategory.toString()
+      userFavProductCategoryIds = userProductCategories.favs.map(
+        (fav) => fav && fav.productCategory.toString()
       );
 
-      userViewProductCategoryIds = userProductCategories.views.map((view) =>
-        view.pid.productCategory.toString()
+      userViewProductCategoryIds = userProductCategories.views.map(
+        (view) => view.pid && view.pid.productCategory.toString()
       );
     }
 
@@ -88,6 +88,9 @@ const relatedProducts = async (req, res) => {
       .populate({
         path: "productCategory",
         populate: { path: "stockItem", populate: { path: "stockType" } },
+      })
+      .populate({
+        path: "stockVarietyTypeList",
       })
       .then((response) => {
         let productsRanks = response.map((p) => {
@@ -156,6 +159,8 @@ const relatedProducts = async (req, res) => {
               product.productCategory.additionalPrice +
                 product.productCategory.stockItem?.price,
             productCategory: product?.productCategory?._id,
+            productVariants: product.productVariants,
+            stockVarietyTypeList: product.stockVarietyTypeList,
           };
 
           returnedOrderedProduct.push(productItem);

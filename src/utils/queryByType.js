@@ -2,9 +2,7 @@ const QueryByType = (account, lang) => {
   if (typeof account != "string") return { status: 403 };
 
   if (
-    account.match(
-      /^(251|0)(?:(-|\s)?)?\d{3}(?:(-|\s)?)?\d{2}(?:(-|\s)?)?\d{4}$/
-    )
+    account.match(/^(?:\+?[1-9]\d{0,2}|0)[-\s]?\d{3}[-\s]?\d{2}[-\s]?\d{4}$/)
   ) {
     return {
       status: 200,

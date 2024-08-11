@@ -204,6 +204,14 @@ const searchProducts = async (req, res) => {
       },
     },
     {
+      $lookup: {
+        from: "stockvarietytypes",
+        localField: "stockVarietyTypeList",
+        foreignField: "_id",
+        as: "stockVarietyTypeList",
+      },
+    },
+    {
       $project: {
         _id: 1,
         name: 1,
@@ -211,7 +219,7 @@ const searchProducts = async (req, res) => {
         tags: 1,
         productCategory: 1,
         images: 1,
-        ratings: 1,
+        rating: 1,
         reviews: 1,
         popularity: 1,
         sold: 1,
@@ -255,7 +263,7 @@ const searchProducts = async (req, res) => {
           imageUrls: product.images.imageUrls,
           primary: product.images.primary,
         },
-        rating: product.ratings,
+        rating: product.rating,
         reviews: product.reviews,
         sold: product.sold,
         price:
@@ -264,12 +272,13 @@ const searchProducts = async (req, res) => {
           product.productCategory.additionalPrice +
             product.productCategory.stockItem?.price,
         productCategory: product?.productCategory?._id,
+        productVariants: product.productVariants,
+        stockVarietyTypeList: product.stockVarietyTypeList,
       };
 
       products.push(productItem);
     });
 
-    //filter section-----------------
     if (filter?.price) {
       products = products.filter(
         (p) => p.price >= filter.price.min && p.price <= filter.price.max

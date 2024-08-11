@@ -74,7 +74,7 @@ const getProducts = async (req, res) => {
             tags: product.tags,
             popularity: product.popularity,
             images: product.images,
-            rating: product.ratings,
+            rating: product.rating,
             reviews: product.reviews,
             sold: product.sold,
             price: product.price,
