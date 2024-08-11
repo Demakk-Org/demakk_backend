@@ -7,7 +7,7 @@ import { ResponseHandler } from "../../utils/responseHandler.js";
 
 const { LANG } = config(process.cwd, ".env").parsed;
 
-export const addOrUpdateProductImages = async (req, res) => {
+export const addOrUpdateImages = async (req, res) => {
   let { lang, rid, name, description, primary, imageUrls, type } = req.body;
 
   if (!lang || !(lang in responsse)) {
