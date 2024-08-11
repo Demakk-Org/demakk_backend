@@ -4,9 +4,15 @@ const { Schema } = mongoose;
 
 const StockVarietyTypeSchema = new Schema(
   {
-    name: {
+    type: {
       type: String,
       required: true,
+    },
+    class: {
+      type: String,
+      value: "Main" | "Sub",
+      required: true,
+      default: "Sub",
     },
   },
 
